@@ -6,6 +6,10 @@ ruby "3.2.3"
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 7.0.8", ">= 7.0.8.4"
 
+# Gemfile
+gem 'ruby-oci8'
+gem 'activerecord-oracle_enhanced-adapter'
+
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem "sprockets-rails"
 
