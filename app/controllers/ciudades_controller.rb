@@ -44,7 +44,16 @@ class CiudadesController < ApplicationController
   end
   # GET /ciudades
   def index
+    # Filtrar por ciudad y país si se proporcionan en los parámetros
     ciudades = Ciudad.all
+
+    if params[:ciudad].present?
+      ciudades = ciudades.where('LOWER(ciudad) LIKE ?', "%#{params[:ciudad].downcase}%")
+    end
+
+    if params[:pais].present?
+      ciudades = ciudades.where('LOWER(pais) LIKE ?', "%#{params[:pais].downcase}%")
+    end
 
     if ciudades.any?
       render json: ciudades, status: :ok
@@ -57,13 +66,16 @@ class CiudadesController < ApplicationController
     ciudad = Ciudad.find_by(id: params[:id])
 
     if ciudad
-      zonas = Zona.where(ciudad_id: ciudad.id)
+      # Obtener el parámetro de descripción
+      descripcion = params[:descripcion]&.strip
 
-      if zonas.any?
-        render json: zonas, status: :ok
-      else
-        render json: { error: 'No hay zonas disponibles para esta ciudad' }, status: :no_content
+      # Filtrar las zonas por ciudad y descripción si corresponde
+      zonas = Zona.where(ciudad_id: ciudad.id)
+      if descripcion.present?
+        zonas = zonas.where("LOWER(descripcion) LIKE ?", "%#{descripcion.downcase}%")
       end
+
+      render json: zonas, status: :ok
     else
       render json: { error: 'Ciudad no encontrada' }, status: :not_found
     end

@@ -54,6 +54,11 @@ class ComerciosController < ApplicationController
     # Calcular el offset
     offset = (page - 1) * per_page
 
+    # Query SQL para contar los registros totales
+    count_sql = "SELECT COUNT(*) AS count FROM COMERCIOS WHERE #{where_conditions}"
+    count_cursor = ActiveRecord::Base.connection.execute(count_sql)
+    total_count = count_cursor.fetch[0].to_i
+
     # Query SQL para obtener los comercios paginados
     sql = <<~SQL
       SELECT *
@@ -75,6 +80,7 @@ class ComerciosController < ApplicationController
     render json: {
       page: page,
       per_page: per_page,
+      count: total_count, # Total de registros
       results: results
     }, status: :ok
   rescue => e

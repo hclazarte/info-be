@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_01_15_175516) do
+ActiveRecord::Schema[7.0].define(version: 2025_01_19_225655) do
   create_table "ciudades", force: :cascade do |t|
     t.string "ciudad", null: false
     t.string "cod_municipio"
@@ -21,8 +21,41 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_15_175516) do
     t.datetime "updated_at", null: false
   end
 
-# Could not dump table "comercios" because of following StandardError
-#   Unknown type 'MDSYS.SDO_GEOMETRY' for column 'shape'
+  create_table "comercios", force: :cascade do |t|
+    t.decimal "latitud", precision: 10, scale: 6
+    t.decimal "longitud", precision: 10, scale: 6
+    t.date "fecha_registro", null: false
+    t.date "fecha_encuesta", null: false
+    t.string "zona_nombre", limit: 60
+    t.string "fundempresa", limit: 10
+    t.integer "numero_comercio", precision: 38, null: false
+    t.string "calle_numero", limit: 200, null: false
+    t.string "planta", limit: 30
+    t.string "numero_local", limit: 13
+    t.string "telefono1", limit: 50
+    t.string "telefono2", limit: 50
+    t.string "telefono3", limit: 50
+    t.string "horario", limit: 100
+    t.string "observacion", limit: 200
+    t.string "empresa", limit: 200
+    t.string "observacion2", limit: 200
+    t.string "email", limit: 100
+    t.string "pagina_web", limit: 200
+    t.string "servicios", limit: 600
+    t.string "ofertas", limit: 600
+    t.binary "logo"
+    t.string "contacto", limit: 100
+    t.string "ocultas", limit: 500
+    t.boolean "bloqueado", default: false, null: false
+    t.boolean "activo", default: true, null: false
+    t.integer "seprec", precision: 38, null: false
+    t.decimal "seprec_est", precision: 10, scale: 2, null: false
+    t.string "nit", limit: 12
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "ciudad_id", precision: 38, null: false
+    t.index ["ciudad_id"], name: "index_comercios_on_ciudad_id"
+  end
 
   create_table "impresiones", force: :cascade do |t|
     t.datetime "fecha", null: false

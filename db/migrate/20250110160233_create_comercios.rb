@@ -27,8 +27,8 @@ class CreateComercios < ActiveRecord::Migration[7.0]
       t.string :ocultas, limit: 500                # Ocultas
       t.boolean :bloqueado, null: false, default: false # Bloqueado
       t.boolean :activo, null: false, default: true     # Activo
-      t.integer :seprec, null: false               # SEPREC
-      t.decimal :seprec_est, precision: 10, scale: 2, null: false # SEPREC_EST
+      t.integer :seprec, null: true                # SEPREC
+      t.integer :seprec_est, null: true            # SEPREC_EST
       t.string :nit, limit: 12                     # NIT
 
       t.timestamps
