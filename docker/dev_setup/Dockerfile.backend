@@ -1,0 +1,43 @@
+# Dockerfile para entorno de desarrollo
+FROM ruby:3.2.3
+
+# Instalar dependencias necesarias
+RUN apt-get update -qq && \
+    apt-get install -y libaio1 build-essential unzip && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Configurar variables de entorno
+ENV LD_LIBRARY_PATH=/opt/oracle/instantclient_21_4
+ENV TNS_ADMIN=/opt/oracle/instantclient_21_4/network/admin
+ENV PATH="/opt/oracle/instantclient_21_4:${PATH}"
+ENV NLS_LANG=AMERICAN_AMERICA.AL32UTF8
+
+# Cliente de Oracle
+RUN wget https://download.oracle.com/otn_software/linux/instantclient/214000/instantclient-basic-linux.x64-21.4.0.0.0dbru.zip && \
+    wget https://download.oracle.com/otn_software/linux/instantclient/214000/instantclient-sdk-linux.x64-21.4.0.0.0dbru.zip && \
+    wget https://download.oracle.com/otn_software/linux/instantclient/214000/instantclient-sqlplus-linux.x64-21.4.0.0.0dbru.zip && \
+    mkdir -p /opt/oracle && \
+    unzip instantclient-basic-linux.x64-21.4.0.0.0dbru.zip -d /opt/oracle/ && \
+    unzip instantclient-sdk-linux.x64-21.4.0.0.0dbru.zip -d /opt/oracle/ && \
+    unzip instantclient-sqlplus-linux.x64-21.4.0.0.0dbru.zip -d /opt/oracle/ && \
+    rm -rf *.zip
+
+# Configurar directorio de trabajo
+WORKDIR /app
+
+# Copiar Gemfile y Gemfile.lock
+COPY ../Gemfile /app/
+COPY ../Gemfile.lock /app/
+
+# Instalar Bundler y gems
+RUN gem install bundler && bundle install
+
+# Copiar código fuente y configuraciones
+COPY ../ /app
+
+# Configurar el puerto
+EXPOSE 3002
+
+# Comando por defecto
+CMD ["rails", "server", "-b", "0.0.0.0", "-p", "3002"]
