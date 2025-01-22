@@ -1,27 +1,17 @@
 Rails.application.routes.draw do
-  get 'comercios/search'
-  get 'zonas/active'
-  get 'ciudades/show'
-  get 'ciudades/by_client_ip'
-  get 'ciudades/index'
-  # RecuperaCiudadesQue - Devuelve la ciudad por ID
-  get 'ciudades/:id', to: 'ciudades#show', as: 'recupera_ciudad'
+  scope '/api' do
+    # Ciudades
+    get 'ciudades/by_client_ip', to: 'ciudades#by_client_ip', as: 'recupera_ciudad_client_ip'
+    get 'ciudades/:id', to: 'ciudades#show', as: 'recupera_ciudad'
+    get 'ciudades', to: 'ciudades#index', as: 'recupera_todas_ciudades'
+    get 'ciudades/:id/zonas', to: 'ciudades#zonas_por_ciudad', as: 'zonas_por_ciudad'
 
-  # RecuperaCiudadClientIP - Devuelve la ciudad correspondiente al IP del cliente
-  get 'ciudades/client_ip', to: 'ciudades#by_client_ip', as: 'recupera_ciudad_client_ip'
+    # Comercios
+    get 'comercios/search', to: 'comercios#search', as: 'busca_comercios'
+    get 'comercios/contar', to: 'comercios#contar', as: 'contar_comercios'
+    get 'comercios/lista', to: 'comercios#lista', as: 'lista_comercios'
 
-  # RecuperaTodosCiudades - Devuelve todas las ciudades
-  get 'ciudades', to: 'ciudades#index', as: 'recupera_todas_ciudades'
-
-  # Devuelve las zonas por ciudad
-  get 'ciudades/:id/zonas', to: 'ciudades#zonas_por_ciudad', as: 'zonas_por_ciudad'
-
-  # BuscaComercios - Busca comercios por texto
-  get 'comercios/buscar', to: 'comercios#search', as: 'busca_comercios'
-
-  # Contar Búsqueda
-  get 'comercios/contar', to: 'comercios#contar', as: 'contar_comercios'
-
-  # Devuelve Comercios
-  get 'comercios/lista', to: 'comercios#lista', as: 'lista_comercios'
+    # Zonas
+    get 'zonas/active', to: 'zonas#active', as: 'zonas_activas'
+  end
 end
