@@ -45,7 +45,7 @@ class CiudadesController < ApplicationController
   # GET /ciudades
   def index
     # Filtrar por ciudad y país si se proporcionan en los parámetros
-    ciudades = Ciudad.all
+    ciudades = Ciudad.order(:ciudad)
 
     if params[:ciudad].present?
       ciudades = ciudades.where('LOWER(ciudad) LIKE ?', "%#{params[:ciudad].downcase}%")

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_01_19_225655) do
+ActiveRecord::Schema[7.0].define(version: 2025_01_24_163146) do
   create_table "ciudades", force: :cascade do |t|
     t.string "ciudad", null: false
     t.string "cod_municipio"
@@ -19,6 +19,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_19_225655) do
     t.binary "imagen"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["ciudad"], name: "index_ciudades_on_ciudad"
   end
 
   create_table "comercios", force: :cascade do |t|
@@ -123,6 +124,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_19_225655) do
     t.datetime "updated_at", null: false
     t.integer "ciudad_id", precision: 38, null: false
     t.index ["ciudad_id"], name: "index_zonas_on_ciudad_id"
+    t.index ["descripcion"], name: "index_zonas_on_descripcion"
   end
 
   add_foreign_key "comercios", "ciudades", column: "ciudad_id"
