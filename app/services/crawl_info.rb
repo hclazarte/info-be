@@ -20,12 +20,14 @@ class CrawlInfo
 
   def run
     log("INICIO DE SINCRONIZACIÓN")
+    @stat_5 = 0
 
     (@last_id + 1).upto(@last_id + @step) do |id|
       begin
         process_id(id)
       rescue => e
         log("Error procesando #{e.message}",id)
+        @stat_5 += 1
       end
     end
 
@@ -50,6 +52,10 @@ class CrawlInfo
     return log("Información no encontrada",id_seprec) unless informacion_data
 
     process_comercio(id_seprec, id_est, empresa_data, establecimientos_data, informacion_data)
+
+    # Actualizar la última fecha procesada
+    fecha_inscripcion = DateTime.parse(empresa_data.dig("datos", "fechaInscripcion")) rescue nil
+    @ultima_fecha = fecha_inscripcion if fecha_inscripcion && (!@ultima_fecha || fecha_inscripcion > @ultima_fecha)
   end
 
   def process_comercio(id_seprec, id_est, empresa_data, establecimientos_data, informacion_data)
@@ -78,13 +84,7 @@ class CrawlInfo
       contacto_correo = informacion_data.dig("datos", "contactos")&.find { |c| c["tipoContacto"] == "CORREO" }
       comercio.email = contacto_correo.dig("descripcion", 0, "correo") if contacto_correo
       #comercio.pagina_web
-      # Procesar los servicios
-      servicios = informacion_data.dig("datos", "objetos_sociales")&.map { |o| o["objetoSocial"] }&.join(", ").gsub(/ {2,}/, " ")
-      if servicios && servicios.length > 500
-        # Truncar al último espacio antes de los 500 caracteres
-        servicios = servicios[0, 500].rpartition(' ').first
-      end
-      comercio.servicios = servicios
+      comercio.servicios = format_servicios (informacion_data)
       #comercio.ofertas
       
       # Paso 3: Asociar la ciudad, crearla si no existe
@@ -112,6 +112,16 @@ class CrawlInfo
   end  
 
   # Métodos Auxiliares
+  def format_servicios (informacion_data)
+    # Procesar los servicios
+    servicios = informacion_data.dig("datos", "objetos_sociales")&.map { |o| o["objetoSocial"] }&.join(", ").gsub(/ {2,}/, " ")
+    if servicios && servicios.length > 500
+      # Truncar al último espacio antes de los 500 caracteres
+      servicios = servicios[0, 500].rpartition(' ').first
+    end
+    servicios
+  end
+
   def fetch_data(url, id_seprec)
     response = RestClient.get(url)
     JSON.parse(response.body)
@@ -125,9 +135,19 @@ class CrawlInfo
   end
 
   def save_config
-    @config['last'] = @last_id
+    # Determinar el nuevo valor de `last`
+    @config['last'] = if @ultima_fecha && (DateTime.now - @ultima_fecha).to_i < 5
+                        0 # Reinicia a 0 si la última fecha procesada es menor a 5 días atrás
+                      elsif @stat_5 && (@stat_5 > @step * 0.8 && @step > 1000)
+                        0 # Reinicia a 0 si más del 80% son registros inexistentes y el paso es grande
+                      else
+                        @last_id # Mantiene el último ID procesado
+                      end
+  
+    # Guardar el valor actualizado en el archivo YAML
     File.open(CONFIG_PATH, 'w') { |f| f.write(@config.to_yaml) }
-  end
+    log("Configuración guardada: Último ID procesado actualizado a #{@config['last']}")
+  end 
 
   def log(message, id_seprec = nil)
     timestamp = Time.now.strftime('%Y-%m-%d %H:%M:%S')
@@ -150,5 +170,5 @@ class CrawlInfo
       .gsub(/\s+/, ' ')   # Reemplaza múltiples espacios por uno solo
       .strip              # Elimina espacios al inicio y final
       .upcase             # Convierte todo a mayúsculas
-  end  
+  end
 end
