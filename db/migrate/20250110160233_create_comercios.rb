@@ -10,7 +10,7 @@ class CreateComercios < ActiveRecord::Migration[7.0]
       t.integer :numero_comercio, null: false       # Número de comercio
       t.string :calle_numero, limit: 200, null: false # Dirección
       t.string :planta, limit: 30                  # Planta
-      t.string :numero_local, limit: 13            # Número local
+      t.string :numero_local, limit: 20            # Número local
       t.string :telefono1, limit: 50               # Teléfono 1
       t.string :telefono2, limit: 50               # Teléfono 2
       t.string :telefono3, limit: 50               # Teléfono 3

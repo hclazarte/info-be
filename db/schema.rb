@@ -32,7 +32,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_24_163146) do
     t.integer "numero_comercio", precision: 38, null: false
     t.string "calle_numero", limit: 200, null: false
     t.string "planta", limit: 30
-    t.string "numero_local", limit: 13
+    t.string "numero_local", limit: 20
     t.string "telefono1", limit: 50
     t.string "telefono2", limit: 50
     t.string "telefono3", limit: 50
