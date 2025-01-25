@@ -30,6 +30,7 @@ class CrawlInfo
         @stat_5 += 1
       end
     end
+    @last_id = @last_id + @step
 
     save_config
     log("FIN DE SINCRONIZACIÓN")
@@ -42,14 +43,15 @@ class CrawlInfo
   def process_id(id_seprec)
     empresa_data = fetch_data("https://servicios.seprec.gob.bo/api/empresas/#{id_seprec}", id_seprec)
     return log("Empresa no encontrada", id_seprec) unless empresa_data
+    return log("Error procesando comercio en estado #{empresa_data.dig("datos", "estado").to_s}", id_seprec) if (empresa_data.dig("datos", "estado").to_s != 'ACTIVO')
 
     establecimientos_data = fetch_data("https://servicios.seprec.gob.bo/api/empresas/#{id_seprec}/establecimientos", id_seprec)
     return log("Establecimientos no encontrados",id_seprec) if establecimientos_data.empty?
 
     id_est = establecimientos_data.dig("datos", "filas", 0, "id")
 
-    informacion_data = fetch_data("https://servicios.seprec.gob.bo/api/empresas/informacionBasicaEmpresa/#{id_seprec}/establecimiento/#{id_est}", id_seprec)
-    return log("Información no encontrada",id_seprec) unless informacion_data
+    informacion_data = fetch_data("https://servicios.seprec.gob.bo/api/empresas/informacionBasicaEmpresa/#{id_seprec}/establecimiento/#{id_est}", id_seprec, true)
+    # return log("Información no encontrada",id_seprec) unless informacion_data
 
     process_comercio(id_seprec, id_est, empresa_data, establecimientos_data, informacion_data)
 
@@ -69,23 +71,24 @@ class CrawlInfo
       comercio.longitud = empresa_data.dig("datos", "direccion", "longitud")
       comercio.fecha_registro ||= DateTime.now
       comercio.fecha_encuesta = DateTime.parse(empresa_data.dig("datos","fechaInscripcion"))
-      comercio.zona_nombre = empresa_data.dig("datos", "direccion", "nombreSubdivisionGeografica")
+      comercio.zona_nombre = format_zona(empresa_data)
       comercio.fundempresa = empresa_data.dig("datos","matriculaAnterior")
       #comercio.numero_comercio 
-      comercio.calle_numero = "#{empresa_data.dig('datos', 'direccion', 'nombreVia')} Nº #{empresa_data.dig('datos', 'direccion', 'numeroDomicilio')}"
+      comercio.calle_numero = "#{empresa_data.dig('datos', 'direccion', 'nombreVia')} Nº #{format_numero(empresa_data)}"
       #comercio.planta = empresa_data.dig("datos", "direccion", "piso")
       #comercio.numero_local = empresa_data.dig("datos", "direccion", "numeroNombreAmbiente")
-      contacto_telefono = informacion_data.dig("datos", "contactos")&.find { |c| c["tipoContacto"] == "TELEFONO" }
+      contacto_telefono = informacion_data&.dig("datos", "contactos")&.find { |c| c["tipoContacto"] == "TELEFONO" } || nil
       comercio.telefono1 = contacto_telefono.dig("descripcion", 0, "numero") if contacto_telefono
       #comercio.horario
-      #comercio.observacion
+      comercio.observacion = "SEPREC:" + empresa_data.dig("datos", "estado").to_s
       comercio.empresa = format_razon_social(empresa_data.dig("datos", "razonSocial"))
       #comercio.observacion2
-      contacto_correo = informacion_data.dig("datos", "contactos")&.find { |c| c["tipoContacto"] == "CORREO" }
+      contacto_correo = informacion_data&.dig("datos", "contactos")&.find { |c| c["tipoContacto"] == "CORREO" } || nil 
       comercio.email = contacto_correo.dig("descripcion", 0, "correo") if contacto_correo
       #comercio.pagina_web
       comercio.servicios = format_servicios (informacion_data)
       #comercio.ofertas
+      comercio.nit = empresa_data.dig("datos","nit")
       
       # Paso 3: Asociar la ciudad, crearla si no existe
       cod_municipio = empresa_data.dig("datos", "direccion", "codMunicipio")
@@ -112,21 +115,34 @@ class CrawlInfo
   end  
 
   # Métodos Auxiliares
-  def format_servicios (informacion_data)
-    # Procesar los servicios
-    servicios = informacion_data.dig("datos", "objetos_sociales")&.map { |o| o["objetoSocial"] }&.join(", ").gsub(/ {2,}/, " ")
-    if servicios && servicios.length > 500
-      # Truncar al último espacio antes de los 500 caracteres
-      servicios = servicios[0, 500].rpartition(' ').first
-    end
-    servicios
+  
+  def format_zona(empresa_data)
+    zona = empresa_data.dig("datos", "direccion", "nombreSubdivisionGeografica")&.gsub('.', '').gsub('-', '')
+    return nil if zona&.strip&.upcase == 'NO IDENTIFICADA' || zona&.strip&.upcase == 'S/Z'
+  
+    # Si no coincide con los valores, retornar la zona original
+    zona
+  end  
+  
+  def format_servicios(informacion_data)
+    # Retornar `nil` si informacion_data no existe o no contiene "objetos_sociales"
+    return nil unless informacion_data&.dig("datos", "objetos_sociales")
+  
+    # Formatear los servicios
+    servicios = informacion_data.dig("datos", "objetos_sociales")
+                               .map { |o| o["objetoSocial"] }
+                               .join(", ")
+                               .upcase.gsub(',', ', ').gsub(/ {2,}/, " ")
+                            
+                               # Truncar a 500 caracteres en el último espacio
+    servicios.length > 500 ? servicios[0..499].rpartition(" ").first : servicios
   end
-
-  def fetch_data(url, id_seprec)
+  
+  def fetch_data(url, id_seprec, skip_error = false)
     response = RestClient.get(url)
     JSON.parse(response.body)
   rescue RestClient::ExceptionWithResponse => e
-    log("Error llamando a #{url}: #{e.response}", id_seprec)
+    log("Error llamando a #{url}: #{e.response}", id_seprec) if skip_error
     {}
   end
 
@@ -171,4 +187,11 @@ class CrawlInfo
       .strip              # Elimina espacios al inicio y final
       .upcase             # Convierte todo a mayúsculas
   end
+
+  def format_numero(empresa_data)
+    texto = empresa_data.dig('datos', 'direccion', 'numeroDomicilio')&.upcase || ""
+    return 's/n' if texto.gsub('Ú', 'U').match?(/SIN NUMERO|SN|S\/N/)
+    
+    texto
+  end  
 end
