@@ -5,6 +5,9 @@ class GeneradorSitemap
   BASE_URL = Rails.env.production? ? "https://infomovil.com.bo" : "https://dev.infomovil.com.bo"
 
   def self.generar
+    # Asegurarse de que el directorio /public/sitemaps existe
+    ruta_sitemaps = Rails.root.join("public", "sitemaps")
+    Dir.mkdir(ruta_sitemaps) unless Dir.exist?(ruta_sitemaps)
     # Generar sitemaps por ciudades
     Ciudad.includes(:zonas, :comercios).find_each do |ciudad|
       next unless ciudad.comercios.count >= 100 # Solo para ciudades con 100 o más comercios
