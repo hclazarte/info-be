@@ -32,3 +32,6 @@
 # byebug_history
 .byebug_history
 
+#Sitemaps
+/public/sitemaps
+
