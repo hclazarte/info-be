@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_01_24_163146) do
+ActiveRecord::Schema[7.0].define(version: 2025_01_28_160228) do
   create_table "ciudades", force: :cascade do |t|
     t.string "ciudad", null: false
     t.string "cod_municipio"
@@ -29,7 +29,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_24_163146) do
     t.date "fecha_encuesta", null: false
     t.string "zona_nombre", limit: 60
     t.string "fundempresa", limit: 10
-    t.integer "numero_comercio", precision: 38, null: false
+    t.integer "numero_comercio", precision: 38
     t.string "calle_numero", limit: 200, null: false
     t.string "planta", limit: 30
     t.string "numero_local", limit: 20
@@ -49,14 +49,22 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_24_163146) do
     t.string "ocultas", limit: 500
     t.boolean "bloqueado", default: false, null: false
     t.boolean "activo", default: true, null: false
-    t.integer "seprec", precision: 38, null: false
-    t.decimal "seprec_est", precision: 10, scale: 2, null: false
+    t.integer "seprec", precision: 38
+    t.integer "seprec_est", precision: 38
     t.string "nit", limit: 12
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "ciudad_id", precision: 38, null: false
+    t.string "com_descr", limit: 4000
+    t.integer "zona_id", precision: 38
+    t.string "persona_natural"
     t.index ["ciudad_id"], name: "index_comercios_on_ciudad_id"
   end
+
+  add_context_index "comercios", ["com_descr"], name: "textindex_com"
+
+# Could not dump table "comercios_shape" because of following StandardError
+#   Unknown type 'PUBLIC.SDO_GEOMETRY' for column 'shape'
 
   create_table "impresiones", force: :cascade do |t|
     t.datetime "fecha", null: false
@@ -129,6 +137,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_24_163146) do
 
   add_foreign_key "comercios", "ciudades", column: "ciudad_id"
   add_foreign_key "comercios", "zonas"
+  add_foreign_key "comercios_shape", "comercios", column: "id", name: "fk_comercios_shape"
   add_foreign_key "impresiones", "comercios"
   add_foreign_key "log_clics", "comercios"
   add_foreign_key "logs", "ciudades", column: "ciudad_id"
