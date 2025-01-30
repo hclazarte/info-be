@@ -14,23 +14,23 @@ class ZonificarComercios
     zonas.each do |zona|
       Rails.logger.info "Coordenadas para zona #{zona[:nombre]}: #{zona[:comercios]}"
       zona_obj = Zona.find_or_create_by!(descripcion: zona[:nombre], ciudad_id: @ciudad_id)
-      poligono = generar_poligono(zona[:comercios])
-      if poligono.present?
-        Rails.logger.info "Generando polígono para zona: #{zona[:nombre]}"
-        guardar_poligono(zona_obj.id, poligono)
-      else
-        Rails.logger.warn "No se pudo generar polígono para zona: #{zona[:nombre]}"
-      end
+      # poligono = generar_poligono(zona[:comercios])
+      # if poligono.present?
+      #   Rails.logger.info "Generando polígono para zona: #{zona[:nombre]}"
+      #   guardar_poligono(zona_obj.id, poligono)
+      # else
+      #   Rails.logger.warn "No se pudo generar polígono para zona: #{zona[:nombre]}"
+      # end
     end
     actualizar_zonas_id_por_texto
     # actualizar_zona_id_por_geometria
     actualizar_total_zonas
-    verificar_existencia_zonas_shape
+    # verificar_existencia_zonas_shape
   end
 
   private
 
-        def obtener_zonas_elegibles
+  def obtener_zonas_elegibles
     zonas = Comercio.where(ciudad_id: @ciudad_id)
                     .where.not(latitud: nil, longitud: nil)
                     .group(:zona_nombre)

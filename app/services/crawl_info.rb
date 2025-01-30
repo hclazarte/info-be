@@ -117,12 +117,30 @@ class CrawlInfo
   # Métodos Auxiliares
   
   def format_zona(empresa_data)
-    zona = empresa_data.dig("datos", "direccion", "nombreSubdivisionGeografica")&.gsub('.', '').gsub('-', '')
-    return nil if zona&.strip&.upcase == 'NO IDENTIFICADA' || zona&.strip&.upcase == 'S/Z'
+    zona = empresa_data.dig("datos", "direccion", "nombreSubdivisionGeografica")&.gsub('.', '').gsub('-', '')&.strip
+    return nil if zona&.upcase == 'NO IDENTIFICADA' || zona&.upcase == 'S/Z'
   
-    # Si no coincide con los valores, retornar la zona original
+    # Mapeo de combinaciones incorrectas a sus versiones correctas
+    correcciones = {
+      /\bSUD ESTE\b/i => 'SUDESTE',
+      /\bSUD OESTE\b/i => 'SUDOESTE',
+      /\bNORD ESTE\b/i => 'NORDESTE',
+      /\bNORD OESTE\b/i => 'NOROESTE',
+      /\bSUR ESTE\b/i => 'SUDESTE',
+      /\bSUR OESTE\b/i => 'SUDOESTE',
+      /\bNORTE ESTE\b/i => 'NORDESTE',
+      /\bNORTE OESTE\b/i => 'NOROESTE',
+      /\bSUD\b/i => 'SUR',
+      /\bNORD\b/i => 'NORTE'
+    }
+  
+    # Aplicar las correcciones en la zona
+    correcciones.each do |incorrecto, correcto|
+      zona.gsub!(incorrecto, correcto) if zona&.match?(incorrecto)
+    end
+  
     zona
-  end  
+  end   
   
   def format_servicios(informacion_data)
     # Retornar `nil` si informacion_data no existe o no contiene "objetos_sociales"
