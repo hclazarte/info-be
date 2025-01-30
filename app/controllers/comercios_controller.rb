@@ -100,6 +100,8 @@ class ComerciosController < ApplicationController
 
     conditions << "CIUDAD_ID = #{ciudad_id.to_i}" if ciudad_id.present?
     conditions << "ZONA_ID = #{zona_id.to_i}" if zona_id.present?
+    conditions << "ACTIVO = 1"
+    conditions << "BLOQUEADO = 0"
 
     if text.present?
       clean_text = remove_city_and_zone(text, ciudad_nombre, zona_nombre)

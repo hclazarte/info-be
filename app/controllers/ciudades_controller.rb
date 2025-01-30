@@ -49,7 +49,7 @@ class CiudadesController < ApplicationController
   # GET /ciudades
   def index
     # Filtrar por ciudad y país si se proporcionan en los parámetros
-    ciudades = Ciudad.order(:ciudad)
+    ciudades = Ciudad.order(:ciudad).where("total > 10")
 
     if params[:ciudad].present?
       ciudades = ciudades.where('LOWER(ciudad) LIKE ?', "%#{params[:ciudad].downcase}%")
@@ -74,7 +74,7 @@ class CiudadesController < ApplicationController
       descripcion = params[:descripcion]&.strip
 
       # Filtrar las zonas por ciudad y descripción si corresponde
-      zonas = Zona.where(ciudad_id: ciudad.id)
+      zonas = Zona.where(ciudad_id: ciudad.id).where("\"ZONAS\".\"TOTAL\" > 10")
       if descripcion.present?
         zonas = zonas.where("LOWER(descripcion) LIKE ?", "%#{descripcion.downcase}%")
       end
