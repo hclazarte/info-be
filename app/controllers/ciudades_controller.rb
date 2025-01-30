@@ -12,13 +12,17 @@ class CiudadesController < ApplicationController
 
   def by_client_ip
     remote_ip = request.remote_ip
+    Rails.logger.info("Remote IP=#{remote_ip}")
     ipinfodb_key = '20b33a1e56e6b765d318228c9e3ef34022692b9cff4ae0c46edfe6da6d6a4175'
     ipinfodb_url = "http://api.ipinfodb.com/v3/ip-city/?key=#{ipinfodb_key}&ip=#{remote_ip}"
 
     ciudad = nil
 
     # Excluir IP locales específicas
-    unless remote_ip == '190.181.25.130' || remote_ip.start_with?('192.168.0')
+    unless (remote_ip.include?('190.181.25.130') || 
+           remote_ip.start_with?('192.168.0') || 
+           remote_ip.include?('127.0.0.1') ||
+           remote_ip.include?('::1'))
       begin
         response = Net::HTTP.get(URI(ipinfodb_url))
         ip_info = response.split(';')

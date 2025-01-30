@@ -21,9 +21,10 @@ class ComerciosController < ApplicationController
 
   # GET /comercios/contar
   def contar
-    where_conditions = build_where_conditions(params[:ciudad], params[:zona], params[:text])
+    where_conditions = build_where_conditions(params[:ciudad_id], params[:zona_id], params[:text])
+    Rails.logger.info(where_conditions)
     if where_conditions.blank?
-      render json: { error: 'Debe proporcionar al menos uno de los parámetros: ciudad, zona o text.' }, status: :bad_request
+      render json: { error: 'Debe proporcionar al menos uno de los parámetros: ciudad_id, zona_id o text.' }, status: :bad_request
       return
     end
 
@@ -46,9 +47,9 @@ class ComerciosController < ApplicationController
     per_page = params[:per_page].to_i > 0 ? params[:per_page].to_i : 10
 
     # Construcción de las condiciones WHERE
-    where_conditions = build_where_conditions(params[:ciudad], params[:zona], params[:text])
+    where_conditions = build_where_conditions(params[:ciudad_id], params[:zona_id], params[:text])
     if where_conditions.blank?
-      return render json: { error: 'Debe proporcionar al menos uno de los parámetros: ciudad, zona o text.' }, status: :bad_request
+      return render json: { error: 'Debe proporcionar al menos uno de los parámetros: ciudad_id, zona_id o text.' }, status: :bad_request
     end
 
     # Calcular el offset
@@ -89,20 +90,22 @@ class ComerciosController < ApplicationController
 
   private
 
-  # Construir las condiciones WHERE dinámicamente
-  def build_where_conditions(ciudad, zona, text)
+  # Construir condiciones WHERE dinámicamente
+  def build_where_conditions(ciudad_id, zona_id, text)
     conditions = []
+    
+    # Obtener nombres de ciudad y zona si existen
+    ciudad_nombre = get_ciudad_nombre(ciudad_id) if ciudad_id.present?
+    zona_nombre = get_zona_nombre(zona_id) if zona_id.present?
 
-    # Procesar texto
-    conditions.concat(process_words(text)) if text.present?
+    conditions << "CIUDAD_ID = #{ciudad_id.to_i}" if ciudad_id.present?
+    conditions << "ZONA_ID = #{zona_id.to_i}" if zona_id.present?
 
-    # Procesar ciudad
-    conditions.concat(process_words(ciudad)) if ciudad.present?
+    if text.present?
+      clean_text = remove_city_and_zone(text, ciudad_nombre, zona_nombre)
+      conditions.concat(process_words(clean_text))
+    end
 
-    # Procesar zona
-    conditions.concat(process_words(zona)) if zona.present?
-
-    # Combinar condiciones con AND
     conditions.join(' AND ')
   end
 
@@ -112,4 +115,47 @@ class ComerciosController < ApplicationController
       "TEXTO_OK(ID, '#{word}') = 'TRUE'"
     end
   end
+
+  # Eliminar el nombre de la ciudad y la zona del texto
+  def remove_city_and_zone(text, ciudad_nombre, zona_nombre)
+    words = text.to_s.downcase.split
+    words.reject! { |word| word == ciudad_nombre.to_s.downcase } if ciudad_nombre.present?
+    words.reject! { |word| word == zona_nombre.to_s.downcase } if zona_nombre.present?
+    words.join(' ')
+  end
+
+  # Métodos para obtener nombres de ciudad y zona
+  def get_ciudad_nombre(ciudad_id)
+    ciudad_id = ciudad_id.to_i
+    return nil if ciudad_id.zero?
+  
+    begin
+      ciudad = Ciudad.find_by(id: ciudad_id)
+      if ciudad.nil?
+        Rails.logger.error "Ciudad con ID #{ciudad_id} no encontrada"
+        return nil
+      end
+      ciudad.nombre
+    rescue => e
+      Rails.logger.error "Error al obtener la ciudad: #{e.message}"
+      nil
+    end
+  end  
+
+  def get_zona_nombre(zona_id)
+    zona_id = zona_id.to_i
+    return nil if zona_id.zero?
+  
+    begin
+      zona = Zona.find_by(id: zona_id)
+      if zona.nil?
+        Rails.logger.error "Zona con ID #{zona_id} no encontrada"
+        return nil
+      end
+      zona.zona # Asegúrate de usar el nombre correcto de la columna
+    rescue => e
+      Rails.logger.error "Error al obtener la zona: #{e.message}"
+      nil
+    end
+  end  
 end
