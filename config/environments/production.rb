@@ -8,6 +8,7 @@ Rails.application.configure do
 
   # Production Server
   config.hosts << "infomovil.com.bo"
+  config.hosts << "localhost"
 
   # Eager load code on boot. This eager loads most of Rails and
   # your application in memory, allowing both threaded web servers
