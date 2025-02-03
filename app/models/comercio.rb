@@ -5,10 +5,8 @@ class Comercio < ApplicationRecord
 
   scope :activos, -> { where(activo: true, bloqueado: false) }
   
-  class Comercio < ApplicationRecord
-    def activo?
-      activo && !bloqueado
-    end
+  def activo?
+    activo && !bloqueado
   end
 
   # Ignorar campos no utilizados o redundantes
