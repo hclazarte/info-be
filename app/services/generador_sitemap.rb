@@ -41,7 +41,7 @@ class GeneradorSitemap
           end
 
           # Nivel comercios
-          ciudad.comercios.where(persona_natural: 'FALSE').where.not(email: nil).each do |comercio|
+          ciudad.comercios.where(persona_natural: 'FALSE').where.not(email: nil).where(activo: 1).where(bloqueado: 0).each do |comercio|
             xml.url do
               xml.loc "#{BASE_URL}/Bolivia/#{ciudad.ciudad.gsub(' ', '-')}/#{comercio.empresa.downcase.gsub(' ', '-')}"
               xml.changefreq "weekly"

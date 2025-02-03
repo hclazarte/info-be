@@ -87,6 +87,8 @@ class CrawlInfo
       comercio.email = contacto_correo.dig("descripcion", 0, "correo") if contacto_correo
       #comercio.pagina_web
       comercio.servicios = format_servicios (informacion_data)
+      #activo
+      comercio.activo = 1 #TODO poner en cero cuando el comercio esta inactivo
       #comercio.ofertas
       comercio.nit = empresa_data.dig("datos","nit")
       
