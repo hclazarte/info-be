@@ -41,6 +41,7 @@ class CrawlInfo
 
   # Procesar ID específico
   def process_id(id_seprec)
+    activo = true;
     empresa_data = fetch_data("https://servicios.seprec.gob.bo/api/empresas/#{id_seprec}", id_seprec)
     return log("Empresa no encontrada", id_seprec) unless empresa_data
     return log("Error procesando comercio en estado #{empresa_data.dig("datos", "estado").to_s}", id_seprec) if (empresa_data.dig("datos", "estado").to_s != 'ACTIVO')
@@ -51,16 +52,16 @@ class CrawlInfo
     id_est = establecimientos_data.dig("datos", "filas", 0, "id")
 
     informacion_data = fetch_data("https://servicios.seprec.gob.bo/api/empresas/informacionBasicaEmpresa/#{id_seprec}/establecimiento/#{id_est}", id_seprec, true)
-    # return log("Información no encontrada",id_seprec) unless informacion_data
+    activo = false unless informacion_data && informacion_data["mensaje"] != "No se encontró la empresa o esta inactiva."
 
-    process_comercio(id_seprec, id_est, empresa_data, establecimientos_data, informacion_data)
+    process_comercio(id_seprec, id_est, empresa_data, establecimientos_data, informacion_data, activo)
 
     # Actualizar la última fecha procesada
     fecha_inscripcion = DateTime.parse(empresa_data.dig("datos", "fechaInscripcion")) rescue nil
     @ultima_fecha = fecha_inscripcion if fecha_inscripcion && (!@ultima_fecha || fecha_inscripcion > @ultima_fecha)
   end
 
-  def process_comercio(id_seprec, id_est, empresa_data, establecimientos_data, informacion_data)
+  def process_comercio(id_seprec, id_est, empresa_data, establecimientos_data, informacion_data, activo)
     begin
       # Paso 1: Buscar el comercio existente o inicializar uno nuevo
       comercio = Comercio.where(seprec: id_seprec, seprec_est: id_est).first
@@ -80,7 +81,7 @@ class CrawlInfo
       contacto_telefono = informacion_data&.dig("datos", "contactos")&.find { |c| c["tipoContacto"] == "TELEFONO" } || nil
       comercio.telefono1 = contacto_telefono.dig("descripcion", 0, "numero") if contacto_telefono
       #comercio.horario
-      comercio.observacion = "SEPREC:" + empresa_data.dig("datos", "estado").to_s
+      comercio.observacion = "SEPREC:" + (activo ? " ACTIVANDO" : " DESACTIVANDO")
       comercio.empresa = format_razon_social(empresa_data.dig("datos", "razonSocial"))
       #comercio.observacion2
       contacto_correo = informacion_data&.dig("datos", "contactos")&.find { |c| c["tipoContacto"] == "CORREO" } || nil 
@@ -88,7 +89,7 @@ class CrawlInfo
       #comercio.pagina_web
       comercio.servicios = format_servicios (informacion_data)
       #activo
-      comercio.activo = 1 #TODO poner en cero cuando el comercio esta inactivo
+      comercio.activo = activo
       #comercio.ofertas
       comercio.nit = empresa_data.dig("datos","nit")
       

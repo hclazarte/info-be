@@ -11,7 +11,7 @@ class GeneradorSitemap
     total = 0
     # Generar sitemaps por ciudades
     Ciudad.includes(:zonas, :comercios).find_each do |ciudad|
-      next unless ciudad.comercios.count >= 100 # Solo para ciudades con 100 o más comercios
+      next unless ciudad.comercios.activos.count >= 100 # Solo para ciudades con 100 o más comercios
 
       fecha_hoy = Date.today.strftime('%Y-%m-%d')
       counter = 0
@@ -41,7 +41,7 @@ class GeneradorSitemap
           end
 
           # Nivel comercios
-          ciudad.comercios.where(persona_natural: 'FALSE').where.not(email: nil).where(activo: 1).where(bloqueado: 0).each do |comercio|
+          ciudad.comercios.activos.where(persona_natural: 'FALSE').where.not(email: nil).each do |comercio|
             xml.url do
               xml.loc "#{BASE_URL}/Bolivia/#{ciudad.ciudad.gsub(' ', '-')}/#{comercio.empresa.downcase.gsub(' ', '-')}"
               xml.changefreq "weekly"
