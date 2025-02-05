@@ -50,10 +50,9 @@ class CrawlInfo
     return log("Establecimientos no encontrados",id_seprec) if establecimientos_data.empty?
 
     id_est = establecimientos_data.dig("datos", "filas", 0, "id")
-
+    
     informacion_data = fetch_data("https://servicios.seprec.gob.bo/api/empresas/informacionBasicaEmpresa/#{id_seprec}/establecimiento/#{id_est}", id_seprec, true)
     activo = false unless informacion_data && informacion_data["mensaje"] != "No se encontró la empresa o esta inactiva."
-
     process_comercio(id_seprec, id_est, empresa_data, establecimientos_data, informacion_data, activo)
 
     # Actualizar la última fecha procesada
@@ -164,8 +163,10 @@ class CrawlInfo
     JSON.parse(response.body)
   rescue RestClient::ExceptionWithResponse => e
     log("Error llamando a #{url}: #{e.response}", id_seprec) if skip_error
-    {}
-  end
+    skip_error ? JSON.parse(e.response.body) : {}
+  rescue JSON::ParserError
+    skip_error ? e.response.body : {}
+  end  
 
   def load_config
     YAML.load_file(CONFIG_PATH)
