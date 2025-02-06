@@ -152,7 +152,8 @@ class CrawlInfo
     servicios = informacion_data.dig("datos", "objetos_sociales")
                                .map { |o| o["objetoSocial"] }
                                .join(", ")
-                               .upcase.gsub(',', ', ').gsub(/ {2,}/, " ")
+                               .upcase.gsub(',', ', ')
+                               .upcase.gsub(';', ', ').gsub(/ {2,}/, " ")
                             
                                # Truncar a 500 caracteres en el último espacio
     servicios.length > 500 ? servicios[0..499].rpartition(" ").first : servicios
