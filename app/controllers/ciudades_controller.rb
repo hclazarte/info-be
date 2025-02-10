@@ -79,6 +79,9 @@ class CiudadesController < ApplicationController
         zonas = zonas.where("LOWER(descripcion) LIKE ?", "%#{descripcion.downcase}%")
       end
 
+      # Ordenar las zonas alfabéticamente por descripción
+      zonas = zonas.order("LOWER(descripcion)")
+
       render json: zonas, status: :ok
     else
       render json: { error: 'Ciudad no encontrada' }, status: :not_found
