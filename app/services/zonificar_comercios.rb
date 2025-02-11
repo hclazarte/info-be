@@ -80,7 +80,7 @@ class ZonificarComercios
     ActiveRecord::Base.connection.execute(sql)
   end
 
-      def actualizar_total_zonas
+  def actualizar_total_zonas
     Zona.where(ciudad_id: @ciudad_id).find_each do |zona|
       total_comercios = Comercio.where(zona_id: zona.id).count
       zona.update!(total: total_comercios)
