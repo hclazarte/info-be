@@ -119,8 +119,17 @@ class CrawlInfo
   # Métodos Auxiliares
   
   def format_zona(empresa_data)
-    zona = empresa_data.dig("datos", "direccion", "nombreSubdivisionGeografica")&.gsub('.', '').gsub('-', '')&.strip
-    return nil if zona&.upcase == 'NO IDENTIFICADA' || zona&.upcase == 'S/Z'
+    zona = empresa_data.dig("datos", "direccion", "nombreSubdivisionGeografica")
+  
+    # Return nil immediately if zona is nil
+    return nil if zona.nil?
+  
+    # Apply transformations safely
+    zona = zona.gsub('.', '').gsub('-', '').strip.upcase
+    zona = zona.gsub(/\bBARRIO\b/, "").strip
+    zona = zona.gsub(/\bZONA\b/, "").strip if zona
+  
+    return nil if zona == 'NO IDENTIFICADA' || zona == 'S/Z' || zona == nil
   
     # Mapeo de combinaciones incorrectas a sus versiones correctas
     correcciones = {
@@ -136,13 +145,22 @@ class CrawlInfo
       /\bNORD\b/i => 'NORTE'
     }
   
+    # Normalización de "VILLA 1ERO DE MAYO", "VILLA 1RO DE MAYO", "VILLA 1° DE MAYO"
+    zona.gsub!(/\b1(?:ERO|RO|°)\b/, "1RO")
+  
+    # Reemplazo de "CENTRO" por "CENTRAL"
+    zona.gsub!(/\bCENTRO\b/, "CENTRAL")
+  
+    # Reemplazo de "VILLA NUEVO POTOSI" por "VILLA NUEVA POTOSI"
+    zona.gsub!(/\bVILLA NUEVO POTOSI\b/, "VILLA NUEVA POTOSI")
+  
     # Aplicar las correcciones en la zona
     correcciones.each do |incorrecto, correcto|
-      zona.gsub!(incorrecto, correcto) if zona&.match?(incorrecto)
+      zona.gsub!(incorrecto, correcto) if zona.match?(incorrecto)
     end
   
     zona
-  end   
+  end 
   
   def format_servicios(informacion_data)
     # Retornar `nil` si informacion_data no existe o no contiene "objetos_sociales"
