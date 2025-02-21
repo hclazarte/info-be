@@ -124,12 +124,14 @@ class CrawlInfo
     # Return nil immediately if zona is nil
     return nil if zona.nil?
   
+    return zona if zona == 'BARRIO LINDO'
+
     # Apply transformations safely
     zona = zona.gsub('.', '').gsub('-', '').strip.upcase
     zona = zona.gsub(/\bBARRIO\b/, "").strip
     zona = zona.gsub(/\bZONA\b/, "").strip if zona
   
-    return nil if zona == 'NO IDENTIFICADA' || zona == 'S/Z' || zona == nil
+    return nil if zona == 'NO IDENTIFICADA' || zona == 'S/Z' || zona.nil?
   
     # Mapeo de combinaciones incorrectas a sus versiones correctas
     correcciones = {
