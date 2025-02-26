@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_01_30_144713) do
+ActiveRecord::Schema[7.0].define(version: 2025_02_26_204547) do
   create_table "ciudades", force: :cascade do |t|
     t.string "ciudad", null: false
     t.string "cod_municipio"
@@ -66,6 +66,18 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_30_144713) do
 
 # Could not dump table "comercios_shape" because of following StandardError
 #   Unknown type 'PUBLIC.SDO_GEOMETRY' for column 'shape'
+
+  create_table "correos", force: :cascade do |t|
+    t.string "remitente", null: false
+    t.string "asunto", null: false
+    t.integer "tipo", precision: 38, null: false
+    t.text "cuerpo", null: false
+    t.integer "estado", precision: 38, default: 0
+    t.integer "intentos", precision: 38, default: 0
+    t.datetime "fecha"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "impresiones", force: :cascade do |t|
     t.datetime "fecha", null: false
@@ -141,11 +153,11 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_30_144713) do
 
   add_foreign_key "comercios", "ciudades", column: "ciudad_id"
   add_foreign_key "comercios", "zonas"
-  add_foreign_key "comercios_shape", "comercios", column: "id", name: "fk_comercios_shape"
+  add_foreign_key "comercios_shape", "comercios", column: "id", name: "fk_comercios_shape", on_delete: :cascade
   add_foreign_key "impresiones", "comercios"
   add_foreign_key "log_clics", "comercios"
   add_foreign_key "logs", "ciudades", column: "ciudad_id"
   add_foreign_key "logs", "zonas"
   add_foreign_key "zonas", "ciudades", column: "ciudad_id"
-  add_foreign_key "zonas_shape", "zonas", column: "id", name: "sys_c007701"
+  add_foreign_key "zonas_shape", "zonas", column: "id", name: "fk_zonas_shape", on_delete: :cascade
 end
