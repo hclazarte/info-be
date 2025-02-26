@@ -13,5 +13,8 @@ Rails.application.routes.draw do
 
     # Zonas
     get 'zonas/active', to: 'zonas#active', as: 'zonas_activas'
+
+    # Correos
+    post 'correos', to: 'correos#create', as: 'crear_correo'  
   end
 end
