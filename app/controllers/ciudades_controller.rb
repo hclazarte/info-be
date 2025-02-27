@@ -1,3 +1,5 @@
+require 'faraday'
+
 class CiudadesController < ApplicationController
   # GET /ciudades/:id
   def show
@@ -13,39 +15,43 @@ class CiudadesController < ApplicationController
   def by_client_ip
     remote_ip = request.remote_ip
     Rails.logger.info("Remote IP=#{remote_ip}")
-    ipinfodb_key = '20b33a1e56e6b765d318228c9e3ef34022692b9cff4ae0c46edfe6da6d6a4175'
+    ipinfodb_key = ENV['IPINFODB_KEY'] || 'default_fallback_key'
     ipinfodb_url = "http://api.ipinfodb.com/v3/ip-city/?key=#{ipinfodb_key}&ip=#{remote_ip}"
-
+  
     ciudad = nil
-
+  
     # Excluir IP locales específicas
     unless (remote_ip.include?('190.181.25.130') || 
            remote_ip.start_with?('192.168.0') || 
            remote_ip.include?('127.0.0.1') ||
            remote_ip.include?('::1'))
       begin
-        response = Net::HTTP.get(URI(ipinfodb_url))
-        ip_info = response.split(';')
-
-        # `ip_info[5]` es el campo de la ciudad según el API de ipinfodb
-        if ip_info[5].present?
-          ciudad_nombre = ip_info[5].upcase
-          ciudad = Ciudad.where("UPPER(ciudad) LIKE ?", "%#{ciudad_nombre}%").first
+        response = Faraday.get(ipinfodb_url)
+        
+        if response.status == 200
+          ip_info = response.body.split(';')
+  
+          if ip_info[5].present?
+            ciudad_nombre = ip_info[5].upcase
+            ciudad = Ciudad.where("UPPER(ciudad) LIKE ?", "%#{ciudad_nombre}%").first
+          end
+        else
+          Rails.logger.error "Error en la respuesta: #{response.status}"
         end
-      rescue => e
+  
+      rescue Faraday::Error => e
         Rails.logger.error "Error fetching IP info: #{e.message}"
       end
     end
-
-    # Si no se encontró ciudad, retornar la ciudad predeterminada
+  
     ciudad ||= Ciudad.by_name('La Paz')
-
+  
     if ciudad
       render json: ciudad
     else
       render json: { error: 'Ciudad no encontrada' }, status: :not_found
     end
-  end
+  end  
   # GET /ciudades
   def index
     # Filtrar por ciudad y país si se proporcionan en los parámetros
