@@ -73,3 +73,5 @@ group :test do
 end
 
 gem "faraday", "~> 2.12"
+
+gem "sidekiq", "~> 7.3"

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+</head>
+<body>
+  <p><strong>Nuevo mensaje en el buzón:</strong></p>
+
+  <ul>
+    <li><strong>Remitente:</strong> <%= @correo.remitente %></li>
+    <li><strong>Asunto:</strong> <%= @correo.asunto %></li>
+    <li><strong>Tipo:</strong> <%= @correo.tipo.capitalize %></li>
+    <li><strong>Cuerpo:</strong></li>
+  </ul>
+
+  <p><%= @correo.cuerpo %></p>
+
+  <hr>
+  <p>Este mensaje fue enviado automáticamente desde el portal de Infomóvil.</p>
+</body>
+</html>
