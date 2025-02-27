@@ -6,6 +6,7 @@ class BuzonMailer < ApplicationMailer
     destinatario = obtener_destinatario(correo.tipo)
 
     mail(
+      from: 'portal@infomovil.com.bo',
       to: destinatario,
       subject: correo.asunto
     )

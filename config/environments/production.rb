@@ -8,6 +8,8 @@ Rails.application.configure do
 
   # Production Server
   config.hosts << "infomovil.com.bo"
+  config.hosts << "mail.infomovil.com.bo"
+  config.hosts << "hyperion.infomovil.com.bo"
   config.hosts << "localhost"
 
   # Eager load code on boot. This eager loads most of Rails and

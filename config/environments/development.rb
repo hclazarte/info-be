@@ -10,6 +10,10 @@ Rails.application.configure do
 
   # dev server
   config.hosts << "dev.infomovil.com.bo"
+  config.hosts << "mail.infomovil.com.bo"
+  config.hosts << "hyperion.infomovil.com.bo"
+  config.hosts << "localhost"
+
   # Do not eager load code on boot.
   config.eager_load = false
 
