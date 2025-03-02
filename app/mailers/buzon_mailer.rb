@@ -8,8 +8,14 @@ class BuzonMailer < ApplicationMailer
     mail(
       from: 'portal@infomovil.com.bo',
       to: destinatario,
-      subject: correo.asunto
+      subject: correo.asunto,
+      body: correo.cuerpo
     )
+    # Actualizar estado después del envío
+    correo.update!(estado: 1)
+  rescue => e
+    correo.update!(estado: 2) # Fallido
+    Rails.logger.error "Error enviando correo: #{e.message}"
   end
 
   private
