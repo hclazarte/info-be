@@ -10,7 +10,10 @@ class BuzonMailer < ApplicationMailer
       to: destinatario,
       subject: correo.asunto,
       body: correo.cuerpo
-    )
+    ) do |format|
+      format.text { render plain: "De: #{correo.nombre.presence || 'Anónimo'}\n\n#{correo.cuerpo}" }
+      format.html { render html: "<p><strong>De:</strong> #{correo.nombre.presence || 'Anónimo'}</p><p>#{correo.cuerpo.gsub("\n", '<br>')}</p>".html_safe }
+    end
     # Actualizar estado después del envío
     correo.update!(estado: 1)
   rescue => e

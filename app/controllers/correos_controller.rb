@@ -17,7 +17,7 @@ class CorreosController < ApplicationController
   private
 
   def correo_params
-    params.require(:correo).permit(:remitente, :asunto, :tipo, :cuerpo)
+    params.require(:correo).permit(:nombre, :remitente, :asunto, :tipo, :cuerpo)
           .merge(estado: :pendiente, intentos: 0, fecha: Time.current)
   end
 

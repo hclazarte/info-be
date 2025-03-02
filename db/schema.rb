@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_02_26_204547) do
+ActiveRecord::Schema[7.0].define(version: 2025_03_02_213922) do
   create_table "ciudades", force: :cascade do |t|
     t.string "ciudad", null: false
     t.string "cod_municipio"
@@ -77,6 +77,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_02_26_204547) do
     t.datetime "fecha"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "nombre"
   end
 
   create_table "impresiones", force: :cascade do |t|
