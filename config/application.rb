@@ -48,9 +48,9 @@ end
 
 Sidekiq.configure_server do |config|
   redis_url = if Rails.env.production?
-                'redis://localhost:6379/0'  # Producción
+                'redis://redis:6379/0'  # Producción
               else
-                'redis://localhost:6380/0'  # Desarrollo
+                'redis://redis:6380/0'  # Desarrollo
               end
 
   config.redis = { url: redis_url }
