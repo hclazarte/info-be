@@ -5,4 +5,8 @@
 
 production:
   :redis:
+    :url: redis://redis:6379/0
+
+development:
+  :redis:
     :url: redis://redis:6380/0
