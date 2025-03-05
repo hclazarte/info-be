@@ -9,4 +9,4 @@ production:
 
 development:
   :redis:
-    :url: redis://redis:6380/0
+    :url: redis://redis:6379/0
