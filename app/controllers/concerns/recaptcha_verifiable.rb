@@ -4,7 +4,7 @@ module RecaptchaVerifiable
   extend ActiveSupport::Concern
 
   included do
-    before_action :verify_recaptcha, if: -> { Rails.env.development? && request.post? }
+    before_action :verify_recaptcha, if: -> { request.post? }
   end
 
   private
