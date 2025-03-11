@@ -16,6 +16,7 @@ class CrawlInfo
     @last_id = @config['last']
     @step = @config['records']
     @ultima_fecha = nil
+    @ultimo_id_exitoso = nil
   end
 
   def run
@@ -58,6 +59,7 @@ class CrawlInfo
     # Actualizar la última fecha procesada
     fecha_inscripcion = DateTime.parse(empresa_data.dig("datos", "fechaInscripcion")) rescue nil
     @ultima_fecha = fecha_inscripcion if fecha_inscripcion && (!@ultima_fecha || fecha_inscripcion > @ultima_fecha)
+    @ultimo_id_exitoso = id_seprec if fecha_inscripcion
   end
 
   def process_comercio(id_seprec, id_est, empresa_data, establecimientos_data, informacion_data, activo)
@@ -195,14 +197,7 @@ class CrawlInfo
 
   def save_config
     # Determinar el nuevo valor de `last`
-    @config['last'] = if @ultima_fecha && (DateTime.now - @ultima_fecha).to_i < 5
-                        0 # Reinicia a 0 si la última fecha procesada es menor a 5 días atrás
-                      elsif @stat_5 && (@stat_5 > @step * 0.8 && @step > 1000)
-                        0 # Reinicia a 0 si más del 80% son registros inexistentes y el paso es grande
-                      else
-                        @last_id # Mantiene el último ID procesado
-                      end
-  
+    @config['last'] = @ultimo_id_exitoso
     # Guardar el valor actualizado en el archivo YAML
     File.open(CONFIG_PATH, 'w') { |f| f.write(@config.to_yaml) }
     log("Configuración guardada: Último ID procesado actualizado a #{@config['last']}")
