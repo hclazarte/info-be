@@ -1,4 +1,4 @@
-### **README: Configuración del Entorno en Rails**
+### **README: Configuración del Entorno **
 
 Para establecer el entorno de ejecución en Rails, usa:
 
@@ -7,6 +7,16 @@ export RAILS_ENV=development   # Modo desarrollo
 export RAILS_ENV=test          # Modo pruebas
 export RAILS_ENV=production    # Modo producción
 ```
+
+# Migración de Datos desde SEPREC en DESARROLLO maquina local
+## Para ejecutar la migración de SEPREC desde RAKE
+```bash
+bundle exec rake crawl:info
+```
+
+<u>Nota.-</u> 
+1. Para configurar la migración editar el archivo crawl_info.yml
+2. El log de la migración de SEPREC está en crawl_info.log
 
 # ZonificarComercios
 
