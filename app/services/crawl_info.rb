@@ -197,7 +197,7 @@ class CrawlInfo
 
   def save_config
     # Determinar el nuevo valor de `last`
-    @config['last'] = @ultimo_id_exitoso
+    @config['last'] = @ultimo_id_exitoso unless @ultimo_id_exitoso.nil?
     # Guardar el valor actualizado en el archivo YAML
     File.open(CONFIG_PATH, 'w') { |f| f.write(@config.to_yaml) }
     log("Configuración guardada: Último ID procesado actualizado a #{@config['last']}")

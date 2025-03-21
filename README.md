@@ -1,4 +1,4 @@
-### **README: Configuración del Entorno del entorno de Desarrollo**
+### **README: Configuración del Entorno **
 
 Para establecer el entorno de ejecución en Rails, usa:
 
@@ -8,38 +8,10 @@ export RAILS_ENV=test          # Modo pruebas
 export RAILS_ENV=production    # Modo producción
 ```
 
-# Migración de Datos desde SEPREC
+# Migración de Datos desde SEPREC en DESARROLLO maquina local
 ## Para ejecutar la migración de SEPREC desde RAKE
 ```bash
 bundle exec rake crawl:info
-```
-
-## Para ejecutar la migración de SEPREC desde el worker de sidekiq 
-
-Agregar el host redis en local (archivo /etc/hosts) 
-
-```bash
-127.0.0.1    redis
-```
-
-Iniciar REDIS 
-```bash
-redis-server
-```
-
-Iniciar RAILS
-```bash
-rails server
-```
-
-Iniciar Sidekiq
-```bash
-bundle exec sidekiq
-```
-
-Migrar los datos de acuerdo al archivo de configuración
-```bash
-bundle exec rails runner "CrawlInfoWorker.perform_async"
 ```
 
 <u>Nota.-</u> 
