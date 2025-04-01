@@ -5,13 +5,13 @@ class GeneradorSitemap
   BASE_URL = Rails.env.production? ? "https://infomovil.com.bo" : "https://dev.infomovil.com.bo"
 
   def self.generar
-    # Asegurarse de que el directorio /public/sitemaps existe
     ruta_sitemaps = Rails.root.join("public", "sitemaps")
     Dir.mkdir(ruta_sitemaps) unless Dir.exist?(ruta_sitemaps)
+
     total = 0
-    # Generar sitemaps por ciudades
+
     Ciudad.includes(:zonas, :comercios).find_each do |ciudad|
-      next unless ciudad.comercios.activos.count >= 100 # Solo para ciudades con 100 o más comercios
+      next unless ciudad.comercios.activos.count >= 100
 
       fecha_hoy = Date.today.strftime('%Y-%m-%d')
       counter = 0
@@ -22,9 +22,10 @@ class GeneradorSitemap
         xml = Builder::XmlMarkup.new(target: file, indent: 2)
         xml.instruct! :xml, version: "1.0", encoding: "UTF-8"
         xml.urlset(xmlns: SITEMAP_NAMESPACE) do
+
           # Nivel ciudad
           xml.url do
-            xml.loc "#{BASE_URL}/Bolivia/#{ciudad.ciudad.gsub(' ', '-') }"
+            xml.loc "#{BASE_URL}/Bolivia/#{ciudad.ciudad.parameterize}"
             xml.changefreq "weekly"
             xml.lastmod fecha_hoy
           end
@@ -33,17 +34,22 @@ class GeneradorSitemap
           # Nivel zonas
           ciudad.zonas.each do |zona|
             xml.url do
-              xml.loc "#{BASE_URL}/Bolivia/#{ciudad.ciudad.gsub(' ', '-')}/#{zona.descripcion.gsub(' ', '-')}"
+              xml.loc "#{BASE_URL}/Bolivia/#{ciudad.ciudad.parameterize}/#{zona.descripcion.parameterize}"
               xml.changefreq "weekly"
               xml.lastmod fecha_hoy
             end
             counter += 1
           end
 
-          # Nivel comercios
-          ciudad.comercios.activos.where(persona_natural: 'FALSE').where.not(email: nil).each do |comercio|
+          # Nivel comercios (ordenados por ID descendente)
+          ciudad.comercios.activos
+            .where("persona_natural = 0 OR (persona_natural = 1 AND autorizado = 1)")
+            .where.not(email: nil)
+            .order(id: :desc)
+            .each do |comercio|
+
             xml.url do
-              xml.loc "#{BASE_URL}/Bolivia/#{ciudad.ciudad.gsub(' ', '-')}/#{comercio.empresa.downcase.gsub(' ', '-')}"
+              xml.loc "#{BASE_URL}/Bolivia/#{ciudad.ciudad.parameterize}/#{comercio.empresa.to_s.parameterize}"
               xml.changefreq "weekly"
               xml.lastmod fecha_hoy
             end
@@ -51,13 +57,12 @@ class GeneradorSitemap
           end
         end
       end
+
       total += counter
       puts "#{counter} Registro Generados"
       puts "Sitemap generado: #{ruta_archivo}"
     end
-  puts "#{total} TOTAL"
+
+    puts "#{total} TOTAL"
   end
 end
-
-# Ejecución del servicio
-# GeneradorSitemap.generar

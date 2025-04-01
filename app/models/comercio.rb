@@ -9,6 +9,10 @@ class Comercio < ApplicationRecord
     activo && !bloqueado
   end
 
+  def autorizado?
+    autorizado == 1
+  end
+
   # Ignorar campos no utilizados o redundantes
   self.ignored_columns = %w[com_descr]
 end

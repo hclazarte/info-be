@@ -18,6 +18,47 @@ bundle exec rake crawl:info
 1. Para configurar la migración editar el archivo crawl_info.yml
 2. El log de la migración de SEPREC está en crawl_info.log
 
+
+Perfecto, aquí tienes la sección que puedes añadir al `README.md` bajo un título como `# Generación de Sitemaps`, al mismo nivel que `ZonificarComercios`.
+
+---
+
+## Generación de Sitemaps
+
+`GeneradorSitemap` es un servicio que crea archivos XML para cada ciudad, estructurados según el estándar [Sitemaps.org](https://www.sitemaps.org/protocol.html), facilitando así la indexación por motores de búsqueda como Google.
+
+### ¿Qué hace este comando?
+
+1. Crea un sitemap por ciudad con más de 100 comercios activos.
+2. Incluye URLs para:
+   - Cada ciudad.
+   - Cada zona dentro de la ciudad.
+   - Cada comercio que:
+     - Tiene email.
+     - No es persona natural o ha autorizado su publicación.
+3. Ordena los comercios de forma descendente por `id`, priorizando los más recientes.
+
+### Comando para generar el sitemap
+
+```bash
+bundle exec rake sitemap:generate
+```
+
+Este comando crea archivos `.xml` en el directorio `public/sitemaps/`, uno por ciudad, listando las URLs que deben ser indexadas.
+
+### Consideraciones
+
+- El entorno (`RAILS_ENV`) debe estar configurado antes de ejecutar el rake.
+- Si estás en desarrollo:
+
+```bash
+export RAILS_ENV=development
+bundle exec rake sitemap:generate
+```
+
+- Si estás en producción, asegúrate de que el servidor web tenga acceso de escritura a `public/sitemaps/`.
+
+
 # ZonificarComercios
 
 ## Descripción

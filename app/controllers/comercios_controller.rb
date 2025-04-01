@@ -52,8 +52,8 @@ class ComerciosController < ApplicationController
       return render json: { error: 'Debe proporcionar al menos uno de los parámetros: ciudad_id, zona_id o text.' }, status: :bad_request
     end
   
-    # Agregar condición para excluir personas naturales no autorizadas
-    where_conditions += " AND (persona_natural = 'FALSE' OR (persona_natural = 'TRUE' AND autorizado = 'TRUE'))"
+    # Agregar condición para excluir personas naturales no autorizadas (autorizado = 1)
+    where_conditions += " AND (persona_natural = 0 OR (persona_natural = 1 AND autorizado = 1))"
   
     # Calcular el offset
     offset = (page - 1) * per_page
