@@ -45,48 +45,47 @@ class ComerciosController < ApplicationController
     # Parámetros de paginación
     page = params[:page].to_i > 0 ? params[:page].to_i : 1
     per_page = params[:per_page].to_i > 0 ? params[:per_page].to_i : 10
-
+  
     # Construcción de las condiciones WHERE
     where_conditions = build_where_conditions(params[:ciudad_id], params[:zona_id], params[:text])
     if where_conditions.blank?
       return render json: { error: 'Debe proporcionar al menos uno de los parámetros: ciudad_id, zona_id o text.' }, status: :bad_request
     end
-
+  
+    # Agregar condición para excluir personas naturales no autorizadas
+    where_conditions += " AND (persona_natural = 'FALSE' OR (persona_natural = 'TRUE' AND autorizado = 'TRUE'))"
+  
     # Calcular el offset
     offset = (page - 1) * per_page
-
+  
     # Query SQL para contar los registros totales
     count_sql = "SELECT COUNT(*) AS count FROM COMERCIOS WHERE #{where_conditions}"
     count_cursor = ActiveRecord::Base.connection.execute(count_sql)
     total_count = count_cursor.fetch[0].to_i
-
-    # Query SQL para obtener los comercios paginados
+  
+    # Query SQL con selección explícita de campos requeridos y orden descendente por id
     sql = <<~SQL
-      SELECT *
+      SELECT id, latitud, longitud, zona_nombre, calle_numero, empresa,
+             servicios, telefono1, telefono2, telefono3
       FROM COMERCIOS
       WHERE #{where_conditions}
+      ORDER BY id DESC
       OFFSET #{offset} ROWS
       FETCH NEXT #{per_page} ROWS ONLY
     SQL
-
-    # Usar find_by_sql para mapear los resultados al modelo Comercio
-    comercios = Comercio.find_by_sql(sql)
-
-    # Obviar los campos shape y com_descr
-    results = comercios.map do |comercio|
-      comercio.attributes.except("shape", "com_descr")
-    end
-
-    # Retornar los resultados en JSON
+  
+    # Ejecutar y retornar
+    results = ActiveRecord::Base.connection.exec_query(sql).to_a
+  
     render json: {
       page: page,
       per_page: per_page,
-      count: total_count, # Total de registros
+      count: total_count,
       results: results
     }, status: :ok
   rescue => e
     render json: { error: "Error ejecutando la consulta: #{e.message}" }, status: :internal_server_error
-  end
+  end  
 
   private
 
