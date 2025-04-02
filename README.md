@@ -1,4 +1,4 @@
-### **README: Configuración del Entorno **
+### README: Configuración del Entorno
 
 Para establecer el entorno de ejecución en Rails, usa:
 
@@ -18,8 +18,6 @@ bundle exec rake crawl:info
 1. Para configurar la migración editar el archivo crawl_info.yml
 2. El log de la migración de SEPREC está en crawl_info.log
 
-
-Perfecto, aquí tienes la sección que puedes añadir al `README.md` bajo un título como `# Generación de Sitemaps`, al mismo nivel que `ZonificarComercios`.
 
 ---
 
@@ -56,13 +54,11 @@ export RAILS_ENV=development
 bundle exec rake sitemap:generate
 ```
 
-- Si estás en producción, asegúrate de que el servidor web tenga acceso de escritura a `public/sitemaps/`.
-
 
 # ZonificarComercios
 
 ## Descripción
-`ZonificarComercios` es un servicio en Ruby on Rails que permite procesar y actualizar la información geoespacial de los comercios en una ciudad. Su función principal es identificar y zonificar los comercios según sus coordenadas geográficas, creando polígonos que representan las diferentes zonas comerciales dentro de una ciudad.
+`ZonificarComercios` es un servicio que permite básicamente 2 cosas procesar y actualizar las zonas de los comercios por su descripción y actualzia la información geoespacial de los comercios en una ciudad. Su función principal es identificar y zonificar los comercios según sus coordenadas geográficas, creando polígonos de las zonas a partir de las coordenadas de los comercios que tienen como descripción la misma zona, estos polígonosrepresentan las diferentes zonas dentro de una ciudad, el algoritmo que se utiliza es envolvente convexa (convex hull). En esta etapa se utiliza la descripción de la zona para clasificar los comercios en la interfaz y se graba en oracle una geometría que en el futuro puede servir para hacer consultas de comercios por aproximación geográfica.
 
 ## Comando Principal
 
@@ -105,5 +101,5 @@ El proceso generará logs informativos que podrás consultar para verificar el e
 
 ---
 
-Este comando es útil para mantener actualizada la información de zonas y comercios en sistemas que dependen de datos geoespaciales.
+Este comando es útil para mantener actualizada la información de zonas y comercios.
 
