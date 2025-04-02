@@ -17,4 +17,5 @@
 
 ActiveSupport::Inflector.inflections(:es) do |inflect|
   inflect.irregular 'ciudad', 'ciudades'
+  inflect.irregular 'solicitud', 'solicitudes'
 end

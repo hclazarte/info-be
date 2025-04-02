@@ -2,7 +2,7 @@ module RecaptchaVerifiable
   extend ActiveSupport::Concern
 
   included do
-    before_action :verify_recaptcha, only: [:lista]  # aplicar solo a la acción deseada
+    before_action :verify_recaptcha, only: [:lista] # aplicar solo a la acción deseada
   end
 
   private

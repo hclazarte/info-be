@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_04_01_222819) do
+ActiveRecord::Schema[7.0].define(version: 2025_04_02_182119) do
   create_table "ciudades", force: :cascade do |t|
     t.string "ciudad", null: false
     t.string "cod_municipio"
@@ -39,7 +39,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_04_01_222819) do
     t.string "telefono3", limit: 50
     t.string "horario", limit: 100
     t.string "observacion", limit: 200
-    t.string "empresa", limit: 200
+    t.string "empresa", limit: 200, null: false
     t.string "observacion2", limit: 200
     t.string "email", limit: 100
     t.string "pagina_web", limit: 200
@@ -140,6 +140,22 @@ ActiveRecord::Schema[7.0].define(version: 2025_04_01_222819) do
 
   add_context_index "padron", ["pad_descr"], name: "textindex_pad"
 
+  create_table "solicitudes", force: :cascade do |t|
+    t.string "email", null: false
+    t.integer "comercio_id", precision: 38
+    t.binary "nit_imagen"
+    t.binary "ci_imagen"
+    t.boolean "nit_ok", default: false
+    t.boolean "ci_ok", default: false
+    t.string "nombre"
+    t.integer "estado", precision: 38, default: 0
+    t.string "otp_token"
+    t.datetime "otp_expires_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["comercio_id"], name: "index_solicitudes_on_comercio_id"
+  end
+
   create_table "zonas", force: :cascade do |t|
     t.string "descripcion", limit: 50, null: false
     t.integer "total", precision: 38, default: 0
@@ -160,6 +176,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_04_01_222819) do
   add_foreign_key "log_clics", "comercios"
   add_foreign_key "logs", "ciudades", column: "ciudad_id"
   add_foreign_key "logs", "zonas"
+  add_foreign_key "solicitudes", "comercios"
   add_foreign_key "zonas", "ciudades", column: "ciudad_id"
   add_foreign_key "zonas_shape", "zonas", column: "id", name: "fk_zonas_shape", on_delete: :cascade
 end

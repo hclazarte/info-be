@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Registro de Comercio en Infomóvil</title>
+  </head>
+  <body style="font-family: sans-serif; background-color: #f9f9f9; padding: 20px;">
+    <div style="max-width: 600px; margin: auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.05);">
+      <h2 style="color: #2c3e50;">Bienvenido a Infomóvil</h2>
+
+      <% if @solicitud.comercio.present? %>
+<p>¡Gracias por su interés en registrar a <strong><%= @solicitud.comercio.empresa %></strong> en la plataforma!</p>
+<% else %>
+<p>¡Gracias por su interés en registrar su comercio en la plataforma!</p>
+<% end %>
+
+      <p>Para completar su solicitud, por favor siga el siguiente enlace o conteste el presente correo con la información detallada más abajo:</p>
+
+      <p style="margin: 20px 0;">
+        <a href="<%= ENV['FRONTEND_URL'] %>/app/registro-comercio?token=<%= @solicitud.otp_token %>"
+           style="background-color: #2d89ef; color: white; padding: 12px 20px; text-decoration: none; border-radius: 5px;">
+          <% if @solicitud.comercio.present? %>Continuar registro de <%= @solicitud.comercio.empresa %><% else %>Continuar Registro<% end %>
+        </a>
+      </p>
+
+      <h3>Documentos requeridos:</h3>
+      <ul>
+        <li>Fotografía o escaneo del <strong>NIT</strong>.</li>
+        <li>Fotografía o escaneo de su <strong>Cédula de Identidad</strong>.</li>
+        <li>Comprobante del pago realizado (talón o transferencia).</li>
+      </ul>
+
+      <h3>Opciones de registro:</h3>
+      <ul>
+        <li><strong>Opción gratuita:</strong> Puede actualizar su dirección y teléfonos de contacto.</li>
+        <li><strong>Opción de pago (Bs. 50 anuales):</strong> Publicación de email, georreferenciación, acceso directo a WhatsApp, vínculo con palabras clave de búsqueda y mucho más en camino.</li>
+      </ul>
+
+      <h3>Beneficios de estar en Infomóvil:</h3>
+      <ul>
+        <li>Visibilidad gratuita para miles de potenciales clientes.</li>
+        <li>Indexación en Google y constante monitoreo.</li>
+        <li>Posicionamiento geográfico de su comercio en el mapa, permitiendo que las sugerencias a los usuarios prioricen los negocios más cercanos a su ubicación.</li>
+        <li>Acceso a futuras campañas y promociones.</li>
+      </ul>
+
+      <p>Infomóvil está en la web hace más de 15 años. Tenemos millones de búsquedas y nos esforzamos por mantener la información actualizada y aportar valor a las empresas bolivianas.</p>
+
+      <p><strong>Si su negocio no cuenta con NIT</strong>, no se preocupe, aún puede registrarlo con la opción de pago y gozar de todos los beneficios anteriormente mencionados.</p>
+
+      <p>Este enlace expirará en <strong>30 minutos</strong>. Si necesita uno nuevo, vuelva a solicitarlo desde la plataforma.</p>
+
+      <p>Si usted no desea que su comercio aparezca en Infomóvil, puede darse de baja haciendo clic aquí:
+        <a href="<%= ENV['FRONTEND_URL'] %>/app/solicitud-remocion">No deseo aparecer</a>
+      </p>
+
+      <p style="font-family: 'Brush Script MT', cursive; font-size: 24px; color: #2c3e50; margin-top: 40px;">
+         Infomóvil
+      </p>
+    </div>
+  </body>
+</html>
