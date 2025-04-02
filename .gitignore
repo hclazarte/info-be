@@ -36,3 +36,6 @@
 /public/sitemaps
 /public/data
 
+#Redis db
+/dump.rdb
+
