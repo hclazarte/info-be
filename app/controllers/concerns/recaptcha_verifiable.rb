@@ -2,12 +2,13 @@ module RecaptchaVerifiable
   extend ActiveSupport::Concern
 
   included do
-    before_action :verify_recaptcha, only: [:lista] # aplicar solo a la acción deseada
+    before_action :verify_recaptcha, only: [:lista] # o las acciones que necesites
   end
 
   private
 
   def verify_recaptcha
+    return if !Rails.env.production?
     return if ip_whitelisted?
 
     token = params[:recaptcha_token]
@@ -30,10 +31,9 @@ module RecaptchaVerifiable
       '127.0.0.1', '::1', 
       '190.181.25.130', 
       '']
-
-    # Acepta cualquier IP del rango 192.168.0.x
+    
     return true if request.remote_ip.start_with?('192.168.0.')
-  
+
     trusted_ips.include?(request.remote_ip)
   end
 end

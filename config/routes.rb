@@ -23,6 +23,6 @@ Rails.application.routes.draw do
 
     # Solicitudes
     post 'solicitudes', to: 'solicitudes#create', as: 'crear_solicitud'
-
+    get 'solicitudes/buscar_por_token', to: 'solicitudes#buscar_por_token', as: 'buscar_solicitud_por_token'
   end
 end

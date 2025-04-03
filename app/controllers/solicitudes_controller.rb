@@ -1,6 +1,4 @@
 class SolicitudesController < ApplicationController
-  # Bypass del CSRF token en desarrollo o para llamadas tipo API
-  protect_from_forgery with: :null_session
   wrap_parameters false
   
   def create
@@ -27,6 +25,42 @@ class SolicitudesController < ApplicationController
       render json: { message: 'Solicitud creada exitosamente', token: otp_token }, status: :created
     else
       render json: { errors: solicitud.errors.full_messages }, status: :unprocessable_entity
+    end
+  end
+
+  def buscar_por_token
+    solicitud = Solicitud.includes(:comercio).find_by(otp_token: params[:token])
+
+    if solicitud
+      render json: {
+        solicitud: solicitud.as_json(only: [:id, :email, :nombre, :estado, :ci_ok, :nit_ok]),
+        comercio: solicitud.comercio&.as_json(only: [
+          :id,
+          :latitud,
+          :longitud,
+          :zona_nombre,
+          :calle_numero,
+          :planta,
+          :numero_local,
+          :telefono1,
+          :telefono2,
+          :telefono3,
+          :horario,
+          :empresa,
+          :email,
+          :pagina_web,
+          :servicios,
+          :contacto,
+          :ocultas,
+          :bloqueado,
+          :activo,
+          :nit,
+          :ciudad_id,
+          :zona_id
+        ])
+      }
+    else
+      render json: { error: 'Token inválido o expirado' }, status: :not_found
     end
   end
 end
