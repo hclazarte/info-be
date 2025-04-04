@@ -51,7 +51,7 @@ class SolicitudesController < ApplicationController
           :pagina_web,
           :servicios,
           :contacto,
-          :ocultas,
+          :palabras_clave,
           :bloqueado,
           :activo,
           :nit,

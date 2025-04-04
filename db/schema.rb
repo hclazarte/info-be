@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_04_02_182119) do
+ActiveRecord::Schema[7.0].define(version: 2025_04_04_185044) do
   create_table "ciudades", force: :cascade do |t|
     t.string "ciudad", null: false
     t.string "cod_municipio"
@@ -47,7 +47,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_04_02_182119) do
     t.string "ofertas", limit: 600
     t.binary "logo"
     t.string "contacto", limit: 100
-    t.string "ocultas", limit: 500
+    t.string "palabras_clave", limit: 500
     t.boolean "bloqueado", default: false, null: false
     t.boolean "activo", default: true, null: false
     t.integer "seprec", precision: 38
