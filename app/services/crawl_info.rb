@@ -33,9 +33,10 @@ class CrawlInfo
     end
     @last_id = @last_id + @step
 
-    save_config
+    save_config if @stat_5.zero?
     log("FIN DE SINCRONIZACIÓN")
     @log.close
+    return @stat_5.zero?
   end
 
   private

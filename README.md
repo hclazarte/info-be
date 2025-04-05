@@ -16,9 +16,17 @@ bundle exec rake crawl:info
 ```
 
 <u>Nota.-</u> 
-1. Para configurar la migración editar el archivo crawl_info.yml
-2. El log de la migración de SEPREC está en crawl_info.log
+1. Para configurar la migración editar el archivo: 
 
+```bash
+cat ./backend/info_be/config/crawl_info.yml
+```
+
+2. El log de la migración de SEPREC está en el archivo:
+
+```bash
+tail ./backend/info_be/log/crawl_info.log
+```
 ---
 
 # Generación de Sitemaps
