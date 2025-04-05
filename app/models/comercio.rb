@@ -13,6 +13,10 @@ class Comercio < ApplicationRecord
     autorizado == 1
   end
 
+  def documentos_validados?
+    documentos_validados == 1
+  end
+  
   # Ignorar campos no utilizados o redundantes
   self.ignored_columns = %w[com_descr]
 end

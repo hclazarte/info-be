@@ -14,6 +14,7 @@ Rails.application.routes.draw do
     get 'comercios/search', to: 'comercios#search', as: 'busca_comercios'
     get 'comercios/contar', to: 'comercios#contar', as: 'contar_comercios'
     get 'comercios/lista', to: 'comercios#lista', as: 'lista_comercios'
+    patch 'comercios/:id', to: 'comercios#update', as: 'actualizar_comercio'
 
     # Zonas
     get 'zonas/active', to: 'zonas#active', as: 'zonas_activas'
@@ -24,5 +25,6 @@ Rails.application.routes.draw do
     # Solicitudes
     post 'solicitudes', to: 'solicitudes#create', as: 'crear_solicitud'
     get 'solicitudes/buscar_por_token', to: 'solicitudes#buscar_por_token', as: 'buscar_solicitud_por_token'
+    patch 'solicitudes/:id', to: 'solicitudes#update', as: 'actualizar_solicitud'
   end
 end

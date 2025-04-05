@@ -1,4 +1,7 @@
 class ComerciosController < ApplicationController
+  include TokenAutenticable
+  before_action :autorizar_comercio_por_token, only: [:update]
+
   STOP_LIST = %w[
     A B C D E F G H I J K L M N Ñ O P Q R S T U V W X Y Z Á É Í Ó Ú
     SR SRA SRES STA ACÁ AHÍ AJENA AJENAS AJENO AJENOS AL ALGO ALGUNA ALGUNAS
@@ -85,6 +88,36 @@ class ComerciosController < ApplicationController
     }, status: :ok
   rescue => e
     render json: { error: "Error ejecutando la consulta: #{e.message}" }, status: :internal_server_error
+  end
+
+  def update
+    if @comercio.update(comercio_params)
+      render json: { message: 'Comercio actualizado correctamente' }
+    else
+      render json: { errors: @comercio.errors.full_messages }, status: :unprocessable_entity
+    end
+  end
+
+  def autorizar_comercio_por_token
+    token = params[:token] || request.headers['Authorization']&.split('Bearer ')&.last
+    solicitud = Solicitud.find_by(otp_token: token)
+  
+    @comercio = Comercio.find(params[:id])
+  
+    unless solicitud && solicitud.comercio_id == @comercio.id
+      render json: { error: 'No autorizado para modificar este comercio' }, status: :unauthorized
+    end
+  end
+  
+  private
+  
+  def comercio_params
+    params.require(:comercio).permit(
+      :telefono1, :telefono2, :telefono3, :email, :pagina_web, :servicios,
+      :contacto, :palabras_clave, :bloqueado, :activo, :horario, :latitud, :longitud,
+      :zona_nombre, :calle_numero, :planta, :numero_local, :nit, :ciudad_id, :zona_id, 
+      :autorizado, :documentos_validados
+    )
   end  
 
   private

@@ -1,4 +1,6 @@
 class SolicitudesController < ApplicationController
+  include TokenAutenticable
+  before_action :autorizar_por_token, only: [:update]
   wrap_parameters false
   
   def create
@@ -62,5 +64,19 @@ class SolicitudesController < ApplicationController
     else
       render json: { error: 'Token inválido o expirado' }, status: :not_found
     end
+  end
+
+  def update
+    if @solicitud.update(solicitud_params)
+      render json: { message: 'Solicitud actualizada correctamente' }
+    else
+      render json: { errors: @solicitud.errors.full_messages }, status: :unprocessable_entity
+    end
+  end
+
+  private
+  
+  def solicitud_params
+    params.require(:solicitud).permit(:nombre, :ci_ok, :nit_ok, :estado)
   end
 end
