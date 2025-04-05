@@ -163,6 +163,10 @@ class CrawlInfo
     correcciones.each do |incorrecto, correcto|
       zona.gsub!(incorrecto, correcto) if zona.match?(incorrecto)
     end
+
+    if zona.length > 60
+      zona = zona[0..54].rpartition(' ').first.presence || zona[0..54]
+    end
   
     zona
   end 
