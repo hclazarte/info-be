@@ -75,3 +75,7 @@ end
 gem "faraday", "~> 2.12"
 
 gem "sidekiq", "~> 7.3"
+
+# OCR y tratamiento de imágenes
+gem 'rtesseract'
+gem 'mini_magick'

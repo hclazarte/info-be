@@ -6,9 +6,8 @@ class Solicitud < ApplicationRecord
   enum estado: {
     pendiente_verificacion: 0,
     documentos_validados:   1,
-    pago_pendiente:         2,
-    pago_en_revision:       3,
-    comercio_habilitado:    4,
+    pago_validado:         2,
+    comercio_habilitado:    3,
     rechazada:              5
   }
 
