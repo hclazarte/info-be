@@ -21,11 +21,13 @@ class DocumentosController < ApplicationController
     razon_social = texto[/Contribuyente:\s*(.+?)\n/i, 1]&.strip
     representante = extraer_representante_legal(texto)
 
-    # puts "TEXTO EXTRAÍDO:\n#{texto}"
-    # puts "NIT extraído: #{nit_extraido}"
-    # puts "Razón social extraída: #{razon_social}"
-    # puts "Representante legal: #{representante}"
-    # puts "Empresa esperada: #{comercio.empresa}"
+    if Rails.env.development? || ENV['RAILS_LOG_LEVEL'] == 'debug'
+      Rails.logger.info "🧾 OCR NIT extraído:\n#{texto}"
+      Rails.logger.info "🔍 NIT extraído: #{nit_extraido}"
+      Rails.logger.info "🏢 Razón social: #{razon_social}"
+      Rails.logger.info "👤 Representante legal: #{representante}"
+      Rails.logger.info "🏬 Comercio: ID=#{comercio.id}, Empresa=#{comercio.empresa}"
+    end
 
     if comercio.nit.to_s != nit_extraido
       return render json: { validado: false, mensaje: "Lo siento, la información no pudo ser validada" }
@@ -75,6 +77,12 @@ class DocumentosController < ApplicationController
 
     nombre_extraido = texto[/([A-ZÁÉÍÓÚÑ ]{5,})\s+C[IL][:]?\s*\d+/i, 1]&.strip
 
+    if Rails.env.development?
+      Rails.logger.info "📄 OCR CI extraído:\n#{texto}"
+      Rails.logger.info "👤 Nombre extraído del CI: #{nombre_extraido}"
+      Rails.logger.info "📋 Contacto actual en comercio: #{comercio.contacto}"
+    end    
+
     if normalizar_texto(nombre_extraido) == normalizar_texto(comercio.contacto)
       solicitud.update!(ci_ok: true, estado: :documentos_validados)
 
@@ -106,10 +114,10 @@ class DocumentosController < ApplicationController
     return render json: { error: "Comercio no asociado a la solicitud" }, status: :not_found unless comercio
   
     texto = DocumentoOcrService.new(archivo).extraer_texto
-    puts "TEXTO EXTRAÍDO:"
-    puts texto
-    puts "Cuenta encontrada? #{texto.include?('10000022978528')}"
-    puts "Monto detectado: #{texto[/\\b\\d+[\\.,]?\\d*\\b/]}"
+    if Rails.env.development?
+      Rails.logger.info "📄 OCR Comprobante extraído:\n#{texto}"
+      Rails.logger.info "🏦 Cuenta encontrada? #{texto.include?("10000022978528")}"
+    end    
     
     cuenta_ok = texto.include?("10000022978528")
   
