@@ -56,6 +56,7 @@ class DocumentosController < ApplicationController
 
     render json: { validado: true }
   rescue => e
+    Rails.logger.error "❌ ERROR validar_nit: #{e.full_message}" if Rails.env.development?
     render json: { validado: false, mensaje: "Lo siento, la información no pudo ser validada" }, status: :unprocessable_entity
   end
 
@@ -96,6 +97,7 @@ class DocumentosController < ApplicationController
     end
 
   rescue => e
+    Rails.logger.error "❌ ERROR validar_ci: #{e.full_message}" if Rails.env.development?
     render json: { validado: false, mensaje: "Lo siento, la información no pudo ser validada" }, status: :unprocessable_entity
   end
 
@@ -128,6 +130,7 @@ class DocumentosController < ApplicationController
       render json: { validado: false, mensaje: "Lo siento, la información no pudo ser validada" }
     end
   rescue => e
+    Rails.logger.error "❌ ERROR validar_comprobante: #{e.full_message}" if Rails.env.development?
     render json: { validado: false, mensaje: "Lo siento, la información no pudo ser validada" }, status: :unprocessable_entity
   end  
   
