@@ -59,7 +59,8 @@ class SolicitudesController < ApplicationController
           :activo,
           :nit,
           :ciudad_id,
-          :zona_id
+          :zona_id,
+          :documentos_validados
         ])
       }
     else
