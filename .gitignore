@@ -39,3 +39,7 @@
 #Redis db
 /dump.rdb
 
+#Mac OS files
+.DS_Store
+public/.DS_Store
+

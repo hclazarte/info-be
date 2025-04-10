@@ -31,9 +31,10 @@ class SolicitudesController < ApplicationController
   end
 
   def buscar_por_token
-    solicitud = Solicitud.includes(:comercio).find_by(otp_token: params[:token])
-
-    if solicitud
+    solicitud = Solicitud.includes(:comercio)
+                         .find_by(otp_token: params[:token])
+  
+    if solicitud && solicitud.otp_expires_at && solicitud.otp_expires_at.future?
       render json: {
         solicitud: solicitud.as_json(only: [:id, :email, :nombre, :estado, :ci_ok, :nit_ok]),
         comercio: solicitud.comercio&.as_json(only: [
@@ -64,7 +65,7 @@ class SolicitudesController < ApplicationController
     else
       render json: { error: 'Token inválido o expirado' }, status: :not_found
     end
-  end
+  end  
 
   def update
     if @solicitud.update(solicitud_params)
