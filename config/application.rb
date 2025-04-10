@@ -37,7 +37,7 @@ end
 if Rails.env.development?
   Rails.application.config.middleware.insert_before 0, Rack::Cors do
     allow do
-      origins 'http://localhost:3001' # Dominio del cliente
+      origins 'http://localhost:3001', 'http://localhost:5173'
 
       resource '*', # Permitir todos los endpoints
         headers: :any,
