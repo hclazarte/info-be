@@ -77,15 +77,12 @@ class DocumentosController < ApplicationController
 
     texto = DocumentoOcrService.new(archivo).extraer_texto
 
-    nombre_extraido = texto[/([A-ZÁÉÍÓÚÑ ]{5,})\s+C[IL]:?\s*\d+/i, 1]&.strip
-
     if Rails.env.development?
       Rails.logger.info "OCR CI extraído:\n#{texto}"
-      Rails.logger.info "Nombre extraído del CI: #{nombre_extraido}"
       Rails.logger.info "Contacto actual en comercio: #{comercio.contacto}"
     end
 
-    if normalizar_texto(nombre_extraido) == normalizar_texto(comercio.contacto)
+    if nombre_coincide?(comercio.contacto, texto)
       solicitud.update!(ci_ok: true, estado: :documentos_validados)
 
       comercio.update!(
@@ -95,8 +92,9 @@ class DocumentosController < ApplicationController
 
       render json: { validado: true }
     else
-      render json: { validado: false, mensaje: 'Lo siento, la información no pudo ser validada' }
+      render json: { validado: false, mensaje: 'Nombre no coincide con el CI' }
     end
+    
   rescue StandardError => e
     Rails.logger.error "ERROR validar_ci: #{e.full_message}" if Rails.env.development?
     render json: { validado: false, mensaje: 'Lo siento, la información no pudo ser validada' },
@@ -153,4 +151,18 @@ class DocumentosController < ApplicationController
   def normalizar_texto(texto)
     I18n.transliterate(texto.to_s).downcase.gsub('.', '').gsub(',', '').strip
   end
+
+  def nombre_coincide?(nombre, texto_ocr)
+    return false if nombre.blank? || texto_ocr.blank?
+  
+    nombre_normalizado = normalizar_texto(nombre).upcase
+    texto_normalizado = normalizar_texto(texto_ocr).upcase
+  
+    palabras = nombre_normalizado.split
+    return false if palabras.empty?
+  
+    coincidencias = palabras.count { |palabra| texto_normalizado.include?(palabra) }
+  
+    coincidencias >= (palabras.size * 0.75).ceil
+  end  
 end
