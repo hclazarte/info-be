@@ -172,16 +172,20 @@ class DocumentosController < ApplicationController
   def fecha_valida?(texto)
     return false if texto.blank?
   
-    texto = texto.gsub(/[^\d\/\-]/, ' ') # limpieza rápida
-    posibles_fechas = texto.scan(/(\d{2}[\/\-]\d{2}[\/\-]\d{4})/).flatten
+    fechas_a_buscar = (0..6).map do |i|
+      fecha = Date.today - i
+      dia = fecha.day
+      mes = fecha.month
+      año = fecha.year
   
-    posibles_fechas.any? do |fecha_str|
-      begin
-        fecha = Date.strptime(fecha_str, '%d/%m/%Y') rescue Date.strptime(fecha_str, '%d-%m-%Y')
-        (Date.today - fecha).to_i <= 2
-      rescue ArgumentError
-        false
-      end
-    end
+      [
+        "#{dia}/#{mes}/#{año}",
+        "#{dia}-#{mes}-#{año}",
+        "#{format('%02d', dia)}/#{format('%02d', mes)}/#{año}",
+        "#{format('%02d', dia)}-#{format('%02d', mes)}-#{año}"
+      ]
+    end.flatten
+  
+    fechas_a_buscar.any? { |f| texto.include?(f) }
   end  
 end
