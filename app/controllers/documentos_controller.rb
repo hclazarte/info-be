@@ -128,7 +128,7 @@ class DocumentosController < ApplicationController
     banco_ok  = texto.upcase.include?('UNION')
     fecha_ok  = fecha_valida?(texto)
 
-    if cuenta_ok
+    if cuenta_ok && banco_ok && fecha_ok
       solicitud.update!(estado: :pago_validado)
       render json: { validado: true }
     else
