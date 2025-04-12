@@ -92,9 +92,9 @@ class DocumentosController < ApplicationController
 
       render json: { validado: true }
     else
-      render json: { validado: false, mensaje: 'Nombre no coincide con el CI' }
+      render json: { validado: false, mensaje: 'Lo siento, la información no pudo ser validada' }
     end
-    
+
   rescue StandardError => e
     Rails.logger.error "ERROR validar_ci: #{e.full_message}" if Rails.env.development?
     render json: { validado: false, mensaje: 'Lo siento, la información no pudo ser validada' },
@@ -155,7 +155,8 @@ class DocumentosController < ApplicationController
   def nombre_coincide?(nombre, texto_ocr)
     return false if nombre.blank? || texto_ocr.blank?
   
-    nombre_normalizado = normalizar_texto(nombre).upcase
+    nombre_completo = "#{nombre} CEDULA IDENTIDAD IDENTIFICACION FOTOGRAFIA FIRMA"
+    nombre_normalizado = normalizar_texto(nombre_completo).upcase
     texto_normalizado = normalizar_texto(texto_ocr).upcase
   
     palabras = nombre_normalizado.split
