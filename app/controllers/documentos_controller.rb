@@ -44,12 +44,12 @@ class DocumentosController < ApplicationController
       solicitud.update!(
         nit_ok: true
       )
+      comercio.update!(contacto: representante)
 
       unless comercio.documentos_validados
         comercio.update!(
-          contacto: representante,
-          email: solicitud.email,
-          documentos_validados: solicitud.nit_ok && solicitud.ci_ok
+          documentos_validados: solicitud.nit_ok && solicitud.ci_ok,
+          email: solicitud.email
         )
       end
     end
@@ -89,7 +89,8 @@ class DocumentosController < ApplicationController
       solicitud.update!(ci_ok: true, estado: :documentos_validados)
 
       comercio.update!(
-        documentos_validados: solicitud.nit_ok && solicitud.ci_ok
+        documentos_validados: solicitud.nit_ok && solicitud.ci_ok,
+        email: solicitud.email
       )
 
       render json: { validado: true }

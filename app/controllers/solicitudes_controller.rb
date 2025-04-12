@@ -34,7 +34,7 @@ class SolicitudesController < ApplicationController
 
     if solicitud&.otp_expires_at && solicitud.otp_expires_at.future?
       render json: {
-        solicitud: solicitud.as_json(only: %i[id email nombre estado ci_ok nit_ok]),
+        solicitud: solicitud.as_json(only: %i[id email nombre estado ci_ok nit_ok fecha_fin_servicio]),
         comercio: solicitud.comercio&.as_json(only: %i[
                                                 id
                                                 latitud
