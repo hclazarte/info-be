@@ -125,6 +125,8 @@ class DocumentosController < ApplicationController
     end
 
     cuenta_ok = texto.include?('10000022978528')
+    banco_ok  = texto.upcase.include?('UNION')
+    fecha_ok  = fecha_valida?(texto)
 
     if cuenta_ok
       solicitud.update!(estado: :pago_validado)
@@ -165,5 +167,21 @@ class DocumentosController < ApplicationController
     coincidencias = palabras.count { |palabra| texto_normalizado.include?(palabra) }
   
     coincidencias >= (palabras.size * 0.75).ceil
+  end
+
+  def fecha_valida?(texto)
+    return false if texto.blank?
+  
+    texto = texto.gsub(/[^\d\/\-]/, ' ') # limpieza rápida
+    posibles_fechas = texto.scan(/(\d{2}[\/\-]\d{2}[\/\-]\d{4})/).flatten
+  
+    posibles_fechas.any? do |fecha_str|
+      begin
+        fecha = Date.strptime(fecha_str, '%d/%m/%Y') rescue Date.strptime(fecha_str, '%d-%m-%Y')
+        (Date.today - fecha).to_i <= 2
+      rescue ArgumentError
+        false
+      end
+    end
   end  
 end
