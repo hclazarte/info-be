@@ -1,14 +1,14 @@
 class Solicitud < ApplicationRecord
-  self.table_name = "solicitudes"
-  
+  self.table_name = 'solicitudes'
+
   belongs_to :comercio, optional: true
 
   enum estado: {
     pendiente_verificacion: 0,
-    documentos_validados:   1,
-    pago_validado:         2,
-    comercio_habilitado:    3,
-    rechazada:              5
+    documentos_validados: 1,
+    pago_validado: 2,
+    comercio_habilitado: 3,
+    rechazada: 5
   }
 
   validates :email, presence: true

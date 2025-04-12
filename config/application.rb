@@ -1,18 +1,18 @@
-require_relative "boot"
+require_relative 'boot'
 
-require "rails"
+require 'rails'
 # Pick the frameworks you want:
-require "active_model/railtie"
-require "active_job/railtie"
-require "active_record/railtie"
+require 'active_model/railtie'
+require 'active_job/railtie'
+require 'active_record/railtie'
 # require "active_storage/engine"
-require "action_controller/railtie"
-require "action_mailer/railtie"
+require 'action_controller/railtie'
+require 'action_mailer/railtie'
 # require "action_mailbox/engine"
 # require "action_text/engine"
-require "action_view/railtie"
-require "action_cable/engine"
-require "rails/test_unit/railtie"
+require 'action_view/railtie'
+require 'action_cable/engine'
+require 'rails/test_unit/railtie'
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
@@ -40,18 +40,16 @@ if Rails.env.development?
       origins 'http://localhost:3001', 'http://localhost:5173'
 
       resource '*', # Permitir todos los endpoints
-        headers: :any,
-        methods: [:get, :post, :put, :patch, :delete, :options, :head]
+               headers: :any,
+               methods: %i[get post put patch delete options head]
     end
   end
 end
 
 Sidekiq.configure_server do |config|
-  redis_url = if Rails.env.production?
-                'redis://redis:6379/0'  # Producción
-              else
-                'redis://redis:6379/0'  # Desarrollo
-              end
+  if Rails.env.production?
+  end
+  redis_url = 'redis://redis:6379/0'
 
   config.redis = { url: redis_url }
 end

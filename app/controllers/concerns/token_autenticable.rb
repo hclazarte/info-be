@@ -16,9 +16,9 @@ module TokenAutenticable
     token = extraer_token
     @solicitud = Solicitud.find_by(otp_token: token)
 
-    unless @solicitud
-      render json: { error: 'Token inválido o expirado' }, status: :unauthorized
-    end
+    return if @solicitud
+
+    render json: { error: 'Token inválido o expirado' }, status: :unauthorized
   end
 
   def autorizar_comercio_por_token
@@ -26,8 +26,8 @@ module TokenAutenticable
     @comercio = Comercio.find(params[:id])
     solicitud = Solicitud.find_by(otp_token: token)
 
-    unless solicitud && solicitud.comercio_id == @comercio.id
-      render json: { error: 'No autorizado para modificar este comercio' }, status: :unauthorized
-    end
+    return if solicitud && solicitud.comercio_id == @comercio.id
+
+    render json: { error: 'No autorizado para modificar este comercio' }, status: :unauthorized
   end
 end

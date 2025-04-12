@@ -11,10 +11,10 @@ class DocumentoOcrService
   private
 
   def convertir_a_imagen_si_pdf(archivo)
-    return archivo.path if archivo.content_type.start_with?("image/")
+    return archivo.path if archivo.content_type.start_with?('image/')
 
     # Convertir primera página del PDF a PNG
-    imagen_temp = Tempfile.new(["ocr_page", ".png"])
+    imagen_temp = Tempfile.new(['ocr_page', '.png'])
     MiniMagick::Tool::Convert.new do |convert|
       convert.density(300)
       convert << "#{archivo.path}[0]"

@@ -3,4 +3,4 @@ class RenameOcultasToPalabrasClaveInComercios < ActiveRecord::Migration[7.0]
     rename_column :comercios, :ocultas, :palabras_clave
   end
 end
-rails db:migrate
+rails db: migrate

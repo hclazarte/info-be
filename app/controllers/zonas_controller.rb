@@ -1,4 +1,3 @@
 class ZonasController < ApplicationController
-  def active
-  end
+  def active; end
 end

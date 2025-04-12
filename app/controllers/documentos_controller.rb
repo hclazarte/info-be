@@ -4,15 +4,15 @@ class DocumentosController < ApplicationController
     archivo = params[:archivo]
     solicitud_id = params[:solicitud_id]
 
-    return render json: { error: "Faltan parámetros" }, status: :bad_request unless archivo && solicitud_id
+    return render json: { error: 'Faltan parámetros' }, status: :bad_request unless archivo && solicitud_id
 
     solicitud = Solicitud.find_by(id: solicitud_id)
-    return render json: { error: "Solicitud no encontrada" }, status: :not_found unless solicitud
+    return render json: { error: 'Solicitud no encontrada' }, status: :not_found unless solicitud
 
     solicitud.update(nit_imagen: archivo.read)
 
     comercio = solicitud.comercio
-    return render json: { error: "Comercio no asociado a la solicitud" }, status: :not_found unless comercio
+    return render json: { error: 'Comercio no asociado a la solicitud' }, status: :not_found unless comercio
 
     texto = DocumentoOcrService.new(archivo).extraer_texto
 
@@ -22,22 +22,22 @@ class DocumentosController < ApplicationController
     representante = extraer_representante_legal(texto)
 
     if Rails.env.development? || ENV['RAILS_LOG_LEVEL'] == 'debug'
-      Rails.logger.info "🧾 OCR NIT extraído:\n#{texto}"
-      Rails.logger.info "🔍 NIT extraído: #{nit_extraido}"
-      Rails.logger.info "🏢 Razón social: #{razon_social}"
-      Rails.logger.info "👤 Representante legal: #{representante}"
-      Rails.logger.info "🏬 Comercio: ID=#{comercio.id}, Empresa=#{comercio.empresa}"
+      Rails.logger.info "OCR NIT extraído:\n#{texto}"
+      Rails.logger.info "NIT extraído: #{nit_extraido}"
+      Rails.logger.info "Razón social: #{razon_social}"
+      Rails.logger.info "Representante legal: #{representante}"
+      Rails.logger.info "Comercio: ID=#{comercio.id}, Empresa=#{comercio.empresa}"
     end
 
     if comercio.nit.to_s != nit_extraido
-      return render json: { validado: false, mensaje: "Lo siento, la información no pudo ser validada" }
+      return render json: { validado: false, mensaje: 'Lo siento, la información no pudo ser validada' }
     end
 
     razon_social_normalizada = normalizar_texto(razon_social)
     empresa_normalizada = normalizar_texto(comercio.empresa)
 
     if razon_social && razon_social_normalizada != empresa_normalizada
-      return render json: { validado: false, mensaje: "Lo siento, la información no pudo ser validada" }
+      return render json: { validado: false, mensaje: 'Lo siento, la información no pudo ser validada' }
     end
 
     ActiveRecord::Base.transaction do
@@ -49,103 +49,106 @@ class DocumentosController < ApplicationController
         comercio.update!(
           contacto: representante,
           email: solicitud.email,
-          documentos_validados: (solicitud.nit_ok && solicitud.ci_ok)
+          documentos_validados: solicitud.nit_ok && solicitud.ci_ok
         )
-      end      
+      end
     end
 
     render json: { validado: true }
-  rescue => e
-    Rails.logger.error "❌ ERROR validar_nit: #{e.full_message}" if Rails.env.development?
-    render json: { validado: false, mensaje: "Lo siento, la información no pudo ser validada" }, status: :unprocessable_entity
+  rescue StandardError => e
+    Rails.logger.error "ERROR validar_nit: #{e.full_message}" if Rails.env.development?
+    render json: { validado: false, mensaje: 'Lo siento, la información no pudo ser validada' },
+           status: :unprocessable_entity
   end
 
   def validar_ci
     archivo = params[:archivo]
     solicitud_id = params[:solicitud_id]
 
-    return render json: { error: "Faltan parámetros" }, status: :bad_request unless archivo && solicitud_id
+    return render json: { error: 'Faltan parámetros' }, status: :bad_request unless archivo && solicitud_id
 
     solicitud = Solicitud.find_by(id: solicitud_id)
-    return render json: { error: "Solicitud no encontrada" }, status: :not_found unless solicitud
+    return render json: { error: 'Solicitud no encontrada' }, status: :not_found unless solicitud
 
     solicitud.update(ci_imagen: archivo.read)
 
     comercio = solicitud.comercio
-    return render json: { error: "Comercio no asociado a la solicitud" }, status: :not_found unless comercio
+    return render json: { error: 'Comercio no asociado a la solicitud' }, status: :not_found unless comercio
 
     texto = DocumentoOcrService.new(archivo).extraer_texto
 
-    nombre_extraido = texto[/([A-ZÁÉÍÓÚÑ ]{5,})\s+C[IL][:]?\s*\d+/i, 1]&.strip
+    nombre_extraido = texto[/([A-ZÁÉÍÓÚÑ ]{5,})\s+C[IL]:?\s*\d+/i, 1]&.strip
 
     if Rails.env.development?
-      Rails.logger.info "📄 OCR CI extraído:\n#{texto}"
-      Rails.logger.info "👤 Nombre extraído del CI: #{nombre_extraido}"
-      Rails.logger.info "📋 Contacto actual en comercio: #{comercio.contacto}"
-    end    
+      Rails.logger.info "OCR CI extraído:\n#{texto}"
+      Rails.logger.info "Nombre extraído del CI: #{nombre_extraido}"
+      Rails.logger.info "Contacto actual en comercio: #{comercio.contacto}"
+    end
 
     if normalizar_texto(nombre_extraido) == normalizar_texto(comercio.contacto)
       solicitud.update!(ci_ok: true, estado: :documentos_validados)
 
       comercio.update!(
-          documentos_validados: (solicitud.nit_ok && solicitud.ci_ok)
-        )
+        documentos_validados: solicitud.nit_ok && solicitud.ci_ok
+      )
 
       render json: { validado: true }
     else
-      render json: { validado: false, mensaje: "Lo siento, la información no pudo ser validada" }
+      render json: { validado: false, mensaje: 'Lo siento, la información no pudo ser validada' }
     end
-
-  rescue => e
-    Rails.logger.error "❌ ERROR validar_ci: #{e.full_message}" if Rails.env.development?
-    render json: { validado: false, mensaje: "Lo siento, la información no pudo ser validada" }, status: :unprocessable_entity
+  rescue StandardError => e
+    Rails.logger.error "ERROR validar_ci: #{e.full_message}" if Rails.env.development?
+    render json: { validado: false, mensaje: 'Lo siento, la información no pudo ser validada' },
+           status: :unprocessable_entity
   end
 
   def validar_comprobante
     archivo = params[:archivo]
     solicitud_id = params[:solicitud_id]
-  
-    return render json: { error: "Faltan parámetros" }, status: :bad_request unless archivo && solicitud_id
-  
+
+    return render json: { error: 'Faltan parámetros' }, status: :bad_request unless archivo && solicitud_id
+
     solicitud = Solicitud.find_by(id: solicitud_id)
-    return render json: { error: "Solicitud no encontrada" }, status: :not_found unless solicitud
-  
-    solicitud.update(comprobante_imagen: archivo.read)
-  
+    return render json: { error: 'Solicitud no encontrada' }, status: :not_found unless solicitud
+
+    solicitud.update(
+      comprobante_imagen: archivo.read,
+      fecha_fin_servicio: 1.year.from_now
+    )
+
     comercio = solicitud.comercio
-    return render json: { error: "Comercio no asociado a la solicitud" }, status: :not_found unless comercio
-  
+    return render json: { error: 'Comercio no asociado a la solicitud' }, status: :not_found unless comercio
+
     texto = DocumentoOcrService.new(archivo).extraer_texto
     if Rails.env.development?
-      Rails.logger.info "📄 OCR Comprobante extraído:\n#{texto}"
-      Rails.logger.info "🏦 Cuenta encontrada? #{texto.include?("10000022978528")}"
-    end    
-    
-    cuenta_ok = texto.include?("10000022978528")
-  
+      Rails.logger.info "OCR Comprobante extraído:\n#{texto}"
+      Rails.logger.info "Cuenta encontrada? #{texto.include?('10000022978528')}"
+    end
+
+    cuenta_ok = texto.include?('10000022978528')
+
     if cuenta_ok
       solicitud.update!(estado: :pago_validado)
       render json: { validado: true }
     else
-      render json: { validado: false, mensaje: "Lo siento, la información no pudo ser validada" }
+      render json: { validado: false, mensaje: 'Lo siento, la información no pudo ser validada' }
     end
-  rescue => e
-    Rails.logger.error "❌ ERROR validar_comprobante: #{e.full_message}" if Rails.env.development?
-    render json: { validado: false, mensaje: "Lo siento, la información no pudo ser validada" }, status: :unprocessable_entity
-  end  
-  
+  rescue StandardError => e
+    Rails.logger.error "ERROR validar_comprobante: #{e.full_message}" if Rails.env.development?
+    render json: { validado: false, mensaje: 'Lo siento, la información no pudo ser validada' },
+           status: :unprocessable_entity
+  end
+
   private
 
   def normalizar_texto(texto)
     I18n.transliterate(texto.to_s).downcase.gsub('.', '').gsub(',', '').strip
   end
 
-  private
-
   def extraer_representante_legal(texto)
-    representante = texto[/([A-ZÁÉÍÓÚÑ ]{5,})\s+C[IL][:]?\s*\d+/i, 1]&.strip
+    texto[/([A-ZÁÉÍÓÚÑ ]{5,})\s+C[IL]:?\s*\d+/i, 1]&.strip
   end
-  
+
   def normalizar_texto(texto)
     I18n.transliterate(texto.to_s).downcase.gsub('.', '').gsub(',', '').strip
   end

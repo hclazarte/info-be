@@ -2,7 +2,7 @@ require 'sidekiq/web'
 
 Rails.application.routes.draw do
   mount Sidekiq::Web => '/sidekiq' # Accede desde http://localhost:3000/sidekiq
-  
+
   scope '/api' do
     # Ciudades
     get 'ciudades/by_client_ip', to: 'ciudades#by_client_ip', as: 'recupera_ciudad_client_ip'

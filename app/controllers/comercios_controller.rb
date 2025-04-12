@@ -27,7 +27,8 @@ class ComerciosController < ApplicationController
     where_conditions = build_where_conditions(params[:ciudad_id], params[:zona_id], params[:text])
     Rails.logger.info(where_conditions)
     if where_conditions.blank?
-      render json: { error: 'Debe proporcionar al menos uno de los parámetros: ciudad_id, zona_id o text.' }, status: :bad_request
+      render json: { error: 'Debe proporcionar al menos uno de los parámetros: ciudad_id, zona_id o text.' },
+             status: :bad_request
       return
     end
 
@@ -37,35 +38,36 @@ class ComerciosController < ApplicationController
     # Obtener el resultado del cursor
     result = result_cursor.fetch
     count = result ? result[0] : 0
-    
+
     render json: { count: count }, status: :ok
-  rescue => e
+  rescue StandardError => e
     render json: { error: "Error ejecutando la consulta: #{e.message}" }, status: :internal_server_error
   end
 
   # GET /comercios
   def lista
     # Parámetros de paginación
-    page = params[:page].to_i > 0 ? params[:page].to_i : 1
-    per_page = params[:per_page].to_i > 0 ? params[:per_page].to_i : 10
-  
+    page = params[:page].to_i.positive? ? params[:page].to_i : 1
+    per_page = params[:per_page].to_i.positive? ? params[:per_page].to_i : 10
+
     # Construcción de las condiciones WHERE
     where_conditions = build_where_conditions(params[:ciudad_id], params[:zona_id], params[:text])
     if where_conditions.blank?
-      return render json: { error: 'Debe proporcionar al menos uno de los parámetros: ciudad_id, zona_id o text.' }, status: :bad_request
+      return render json: { error: 'Debe proporcionar al menos uno de los parámetros: ciudad_id, zona_id o text.' },
+                    status: :bad_request
     end
-  
+
     # Agregar condición para excluir personas naturales no autorizadas (autorizado = 1)
-    where_conditions += " AND (persona_natural = 0 OR (persona_natural = 1 AND autorizado = 1))"
-  
+    where_conditions += ' AND (persona_natural = 0 OR (persona_natural = 1 AND autorizado = 1))'
+
     # Calcular el offset
     offset = (page - 1) * per_page
-  
+
     # Query SQL para contar los registros totales
     count_sql = "SELECT COUNT(*) AS count FROM COMERCIOS WHERE #{where_conditions}"
     count_cursor = ActiveRecord::Base.connection.execute(count_sql)
     total_count = count_cursor.fetch[0].to_i
-  
+
     # Query SQL con selección explícita de campos requeridos y orden descendente por id
     sql = <<~SQL
       SELECT id, latitud, longitud, zona_nombre, calle_numero, empresa,
@@ -76,17 +78,17 @@ class ComerciosController < ApplicationController
       OFFSET #{offset} ROWS
       FETCH NEXT #{per_page} ROWS ONLY
     SQL
-  
+
     # Ejecutar y retornar
     results = ActiveRecord::Base.connection.exec_query(sql).to_a
-  
+
     render json: {
       page: page,
       per_page: per_page,
       count: total_count,
       results: results
     }, status: :ok
-  rescue => e
+  rescue StandardError => e
     render json: { error: "Error ejecutando la consulta: #{e.message}" }, status: :internal_server_error
   end
 
@@ -101,39 +103,37 @@ class ComerciosController < ApplicationController
   def autorizar_comercio_por_token
     token = params[:token] || request.headers['Authorization']&.split('Bearer ')&.last
     solicitud = Solicitud.find_by(otp_token: token)
-  
+
     @comercio = Comercio.find(params[:id])
-  
-    unless solicitud && solicitud.comercio_id == @comercio.id
-      render json: { error: 'No autorizado para modificar este comercio' }, status: :unauthorized
-    end
+
+    return if solicitud && solicitud.comercio_id == @comercio.id
+
+    render json: { error: 'No autorizado para modificar este comercio' }, status: :unauthorized
   end
-  
+
   private
-  
+
   def comercio_params
     params.require(:comercio).permit(
       :telefono1, :telefono2, :telefono3, :email, :pagina_web, :servicios,
       :contacto, :palabras_clave, :bloqueado, :activo, :horario, :latitud, :longitud,
-      :zona_nombre, :calle_numero, :planta, :numero_local, :nit, :ciudad_id, :zona_id, 
+      :zona_nombre, :calle_numero, :planta, :numero_local, :nit, :ciudad_id, :zona_id,
       :autorizado, :documentos_validados
     )
-  end  
-
-  private
+  end
 
   # Construir condiciones WHERE dinámicamente
   def build_where_conditions(ciudad_id, zona_id, text)
     conditions = []
-    
+
     # Obtener nombres de ciudad y zona si existen
     ciudad_nombre = get_ciudad_nombre(ciudad_id) if ciudad_id.present?
     zona_nombre = get_zona_nombre(zona_id) if zona_id.present?
 
     conditions << "CIUDAD_ID = #{ciudad_id.to_i}" if ciudad_id.present?
     conditions << "ZONA_ID = #{zona_id.to_i}" if zona_id.present?
-    conditions << "ACTIVO = 1"
-    conditions << "BLOQUEADO = 0"
+    conditions << 'ACTIVO = 1'
+    conditions << 'BLOQUEADO = 0'
 
     if text.present?
       clean_text = remove_city_and_zone(text, ciudad_nombre, zona_nombre)
@@ -162,7 +162,7 @@ class ComerciosController < ApplicationController
   def get_ciudad_nombre(ciudad_id)
     ciudad_id = ciudad_id.to_i
     return nil if ciudad_id.zero?
-  
+
     begin
       ciudad = Ciudad.find_by(id: ciudad_id)
       if ciudad.nil?
@@ -170,16 +170,16 @@ class ComerciosController < ApplicationController
         return nil
       end
       ciudad.nombre
-    rescue => e
+    rescue StandardError => e
       Rails.logger.error "Error al obtener la ciudad: #{e.message}"
       nil
     end
-  end  
+  end
 
   def get_zona_nombre(zona_id)
     zona_id = zona_id.to_i
     return nil if zona_id.zero?
-  
+
     begin
       zona = Zona.find_by(id: zona_id)
       if zona.nil?
@@ -187,9 +187,9 @@ class ComerciosController < ApplicationController
         return nil
       end
       zona.zona # Asegúrate de usar el nombre correcto de la columna
-    rescue => e
+    rescue StandardError => e
       Rails.logger.error "Error al obtener la zona: #{e.message}"
       nil
     end
-  end  
+  end
 end

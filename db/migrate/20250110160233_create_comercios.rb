@@ -5,9 +5,9 @@ class CreateComercios < ActiveRecord::Migration[7.0]
       t.decimal :longitud, precision: 10, scale: 6  # Longitud
       t.date :fecha_registro, null: false           # Fecha de registro
       t.date :fecha_encuesta, null: false           # Fecha de encuesta
-      t.string :zona, limit: 60                    # Zona
+      t.string :zona, limit: 60 # Zona
       t.string :fundempresa, limit: 10, unique: true # Código único (UK_FORMULARIO)
-      t.integer :numero_comercio, null: false       # Número de comercio
+      t.integer :numero_comercio, null: false # Número de comercio
       t.string :calle_numero, limit: 200, null: false # Dirección
       t.string :planta, limit: 30                  # Planta
       t.string :numero_local, limit: 20            # Número local

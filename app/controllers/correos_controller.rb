@@ -1,18 +1,17 @@
 class CorreosController < ApplicationController
   skip_before_action :verify_authenticity_token, only: [:create]
   before_action :validate_params, only: [:create]
-  
+
   def create
     correo = Correo.new(correo_params)
-  
+
     if correo.save
-      BuzonMailer.enviar_mensaje_portal(correo).deliver_later  # <-- Asegura que es deliver_later
-      render json: { message: "Mensaje recibido correctamente", id: correo.id }, status: :created
+      BuzonMailer.enviar_mensaje_portal(correo).deliver_later # <-- Asegura que es deliver_later
+      render json: { message: 'Mensaje recibido correctamente', id: correo.id }, status: :created
     else
       render json: { error: correo.errors.full_messages }, status: :unprocessable_entity
     end
   end
-  
 
   private
 
@@ -22,8 +21,8 @@ class CorreosController < ApplicationController
   end
 
   def validate_params
-    unless params[:correo].present?
-      render json: { error: "Se requiere el objeto 'correo'" }, status: :bad_request
-    end
+    return if params[:correo].present?
+
+    render json: { error: "Se requiere el objeto 'correo'" }, status: :bad_request
   end
 end

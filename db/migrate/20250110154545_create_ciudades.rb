@@ -6,7 +6,7 @@ class CreateCiudades < ActiveRecord::Migration[7.0]
       t.string :pais                # País
       t.string :cod_pais            # Código País
       t.binary :imagen              # Imagen (antes CLOB)
-      
+
       t.timestamps
     end
   end
