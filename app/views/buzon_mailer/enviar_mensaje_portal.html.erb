@@ -1,21 +1,47 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
-</head>
-<body>
-  <p><strong>Nuevo mensaje en el buzón:</strong></p>
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        color: #333;
+        background-color: #fff;
+        line-height: 1.5;
+      }
+      .contenido {
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        background-color: #f9f9f9;
+      }
+      .etiqueta {
+        font-weight: bold;
+        color: #222;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="contenido">
+      <p class="etiqueta">Remitente:</p>
+      <p><%= @correo.nombre.presence || 'Anónimo' %></p>
 
-  <ul>
-    <li><strong>Remitente:</strong> <%= @correo.remitente %></li>
-    <li><strong>Asunto:</strong> <%= @correo.asunto %></li>
-    <li><strong>Tipo:</strong> <%= @correo.tipo.capitalize %></li>
-    <li><strong>Cuerpo:</strong></li>
-  </ul>
+      <p class="etiqueta">Correo Electrónico:</p>
+      <p><%= @correo.remitente %></p>
 
-  <p><%= @correo.cuerpo %></p>
+      <p class="etiqueta">Categoría:</p>
+      <p><%= @correo.tipo.capitalize %></p>
 
-  <hr>
-  <p>Este mensaje fue enviado automáticamente desde el portal de Infomóvil.</p>
-</body>
+      <p class="etiqueta">Asunto:</p>
+      <p><%= @correo.asunto %></p>
+
+      <p class="etiqueta">Mensaje:</p>
+      <p><%= simple_format(@correo.cuerpo) %></p>
+
+      <p style="font-family: 'Brush Script MT', cursive; font-size: 24px; color: #2c3e50; margin-top: 40px;">
+        Infomóvil
+      </p>
+    </div>
+  </body>
 </html>
