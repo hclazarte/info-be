@@ -1,7 +1,7 @@
 require 'active_support/core_ext/integer/time'
 
 Rails.application.configure do
-  Rails.application.config.base_url = 'https://dev.infomovil.com.bo'
+  config.base_url = 'https://dev.infomovil.com.bo'
   # Settings specified here will take precedence over those in config/application.rb.
 
   # In the development environment your application's code is reloaded any time
