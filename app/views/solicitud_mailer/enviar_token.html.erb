@@ -14,12 +14,12 @@
 <p>¡Gracias por su interés en registrar su comercio en la plataforma!</p>
 <% end %>
 
-      <p>Para completar su solicitud, por favor siga el siguiente enlace o conteste el presente correo con la información detallada más abajo:</p>
+      <p>Para completar su solicitud, por favor siga el siguiente enlace:</p>
 
       <p style="margin: 20px 0;">
-        <a href="<%= ENV['FRONTEND_URL'] %>/app/registro-comercio?token=<%= @solicitud.otp_token %>"
+        <a href="<%= ENV['BASE_URL'] %>/app/registro-comercio?token=<%= @solicitud.otp_token %>"
            style="background-color: #2d89ef; color: white; padding: 12px 20px; text-decoration: none; border-radius: 5px;">
-          <% if @solicitud.comercio.present? %>Continuar registro de <%= @solicitud.comercio.empresa %><% else %>Continuar Registro<% end %>
+          Continuar
         </a>
       </p>
 
@@ -32,8 +32,8 @@
 
       <h3>Opciones de registro:</h3>
       <ul>
-        <li><strong>Opción gratuita:</strong> Puede actualizar su dirección y teléfonos de contacto.</li>
-        <li><strong>Opción de pago (Bs. 50 anuales):</strong> Publicación de email, georreferenciación, acceso directo a WhatsApp, vínculo con palabras clave de búsqueda y mucho más en camino.</li>
+        <li><strong>Opción gratuita:</strong> Puede actualizar su vínculo con palabras clave de búsqueda, su dirección y teléfonos de contacto.</li>
+        <li><strong>Opción de pago (Bs. 50 anuales):</strong> Publicación de email, acceso directo a WhatsApp y mucho más en camino.</li>
       </ul>
 
       <h3>Beneficios de estar en Infomóvil:</h3>
@@ -50,9 +50,9 @@
 
       <p>Este enlace expirará en <strong>30 minutos</strong>. Si necesita uno nuevo, vuelva a solicitarlo desde la plataforma.</p>
 
-      <p>Si usted no desea que su comercio aparezca en Infomóvil, puede darse de baja haciendo clic aquí:
-        <a href="<%= ENV['FRONTEND_URL'] %>/app/solicitud-remocion">No deseo aparecer</a>
-      </p>
+      <%# <p>Si usted no desea que su comercio aparezca en Infomóvil, puede darse de baja haciendo clic aquí:
+        <a href="<%= ENV['BASE_URL'] %>/app/solicitud-remocion">No deseo aparecer</a>
+      </p> %>
 
       <p style="font-family: 'Brush Script MT', cursive; font-size: 24px; color: #2c3e50; margin-top: 40px;">
          Infomóvil
