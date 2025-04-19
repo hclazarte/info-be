@@ -1,6 +1,7 @@
 require 'active_support/core_ext/integer/time'
 
 Rails.application.configure do
+  Rails.application.config.base_url = 'https://infomovil.com.bo'
   # Settings specified here will take precedence over those in config/application.rb.
 
   # Code is not reloaded between requests.

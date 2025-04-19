@@ -3,7 +3,7 @@ class BuzonMailer < ApplicationMailer
 
   def enviar_mensaje_portal(correo)
     @correo = correo
-    @base_url = ENV['BASE_URL']
+    @base_url = Rails.configuration.base_url
     destinatario = obtener_destinatario(correo.tipo)
 
     mail(
