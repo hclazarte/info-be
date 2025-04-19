@@ -3,6 +3,7 @@ class SolicitudMailer < ApplicationMailer
 
   def enviar_token(solicitud)
     @solicitud = solicitud
+    @base_url = Rails.configuration.base_url
 
     asunto = if @solicitud.comercio.present?
                "Registro de #{@solicitud.comercio.empresa} en Infomóvil"
