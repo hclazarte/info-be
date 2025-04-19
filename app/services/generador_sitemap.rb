@@ -2,7 +2,7 @@ require 'builder'
 
 class GeneradorSitemap
   SITEMAP_NAMESPACE = 'http://www.sitemaps.org/schemas/sitemap/0.9'.freeze
-  BASE_URL = Rails.env.production? ? 'https://infomovil.com.bo' : 'https://dev.infomovil.com.bo'
+  BASE_URL = Rails.configuration.base_url
 
   def self.generar
     ruta_sitemaps = Rails.root.join('public', 'sitemaps')

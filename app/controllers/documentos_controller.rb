@@ -157,7 +157,7 @@ class DocumentosController < ApplicationController
   def nombre_coincide?(nombre, texto_ocr)
     return false if nombre.blank? || texto_ocr.blank?
   
-    nombre_completo = "#{nombre} CEDULA IDENTIDAD IDENTIFICACION SERIE SECCION"
+    nombre_completo = "#{nombre} CEDULA IDENTIDAD IDENTIFICACION"
     nombre_normalizado = normalizar_texto(nombre_completo).upcase
     texto_normalizado = normalizar_texto(texto_ocr).upcase
   
