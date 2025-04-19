@@ -3,6 +3,7 @@ class BuzonMailer < ApplicationMailer
 
   def enviar_mensaje_portal(correo)
     @correo = correo
+    @base_url = ENV['BASE_URL']
     destinatario = obtener_destinatario(correo.tipo)
 
     mail(

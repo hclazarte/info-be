@@ -17,7 +17,7 @@
       <p>Para completar su solicitud, por favor siga el siguiente enlace:</p>
 
       <p style="margin: 20px 0;">
-        <a href="<%= ENV['BASE_URL'] %>/app/registro-comercio?token=<%= @solicitud.otp_token %>"
+        <a href="<%= @base_url %>/app/registro-comercio?token=<%= @solicitud.otp_token %>"
            style="background-color: #2d89ef; color: white; padding: 12px 20px; text-decoration: none; border-radius: 5px;">
           Continuar
         </a>
@@ -51,7 +51,7 @@
       <p>Este enlace expirará en <strong>30 minutos</strong>. Si necesita uno nuevo, vuelva a solicitarlo desde la plataforma.</p>
 
       <%# <p>Si usted no desea que su comercio aparezca en Infomóvil, puede darse de baja haciendo clic aquí:
-        <a href="<%= ENV['BASE_URL'] %>/app/solicitud-remocion">No deseo aparecer</a>
+        <a href="<%= @base_url %>/app/solicitud-remocion">No deseo aparecer</a>
       </p> %>
 
       <p style="font-family: 'Brush Script MT', cursive; font-size: 24px; color: #2c3e50; margin-top: 40px;">
