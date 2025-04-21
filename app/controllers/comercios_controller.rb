@@ -102,7 +102,7 @@ class ComerciosController < ApplicationController
           render json: { errors: ['No se encontró una solicitud válida para habilitar el comercio.'] }, status: :unprocessable_entity and return
         end
   
-        solicitud.estado = 3 # comercio_habilitado
+        solicitud.estado = :comercio_habilitado
         solicitud.save
       end
   
