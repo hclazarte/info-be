@@ -93,12 +93,24 @@ class ComerciosController < ApplicationController
   end
 
   def update
+    was_not_authorized = @comercio.autorizado == 0
+  
     if @comercio.update(comercio_params)
+      if @comercio.autorizado == 1 && was_not_authorized
+        solicitud = Solicitud.where(comercio_id: @comercio.id, email: @comercio.email).order(created_at: :desc).first
+        unless solicitud
+          render json: { errors: ['No se encontró una solicitud válida para habilitar el comercio.'] }, status: :unprocessable_entity and return
+        end
+  
+        solicitud.estado = 3 # comercio_habilitado
+        solicitud.save
+      end
+  
       render json: { message: 'Comercio actualizado correctamente' }
     else
       render json: { errors: @comercio.errors.full_messages }, status: :unprocessable_entity
     end
-  end
+  end  
 
   def autorizar_comercio_por_token
     token = params[:token] || request.headers['Authorization']&.split('Bearer ')&.last

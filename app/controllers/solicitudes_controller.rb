@@ -6,27 +6,38 @@ class SolicitudesController < ApplicationController
   def create
     email = params[:email]
     id_comercio = params[:id_comercio]
-
+  
     return render json: { error: 'Email es obligatorio' }, status: :unprocessable_entity unless email.present?
-
-    otp_token = SecureRandom.hex(10)
-    otp_expires_at = 30.minutes.from_now
-
+  
+    # Buscar solicitud activa (no finalizada) para el mismo comercio y email
+    solicitud_existente = Solicitud.where(comercio_id: id_comercio, email: email).where.not(estado: 5).order(created_at: :desc).first
+  
+    if solicitud_existente
+      # Si existe una solicitud no finalizada del mismo email, se reutiliza
+      solicitud_existente.update(
+        otp_token: SecureRandom.hex(10),
+        otp_expires_at: 30.minutes.from_now
+      )
+      EnviarTokenJob.perform_async(solicitud_existente.id)
+      return render json: { message: 'Solicitud existente actualizada', token: solicitud_existente.otp_token }, status: :ok
+    end
+  
+    # Si no existe una solicitud válida, se crea una nueva
     solicitud = Solicitud.new(
       email: email,
       comercio_id: id_comercio,
-      otp_token: otp_token,
-      otp_expires_at: otp_expires_at,
+      otp_token: SecureRandom.hex(10),
+      otp_expires_at: 30.minutes.from_now,
       estado: :pendiente_verificacion
     )
-
+  
     if solicitud.save
       EnviarTokenJob.perform_async(solicitud.id)
-      render json: { message: 'Solicitud creada exitosamente', token: otp_token }, status: :created
+      render json: { message: 'Solicitud creada exitosamente', token: solicitud.otp_token }, status: :created
     else
       render json: { errors: solicitud.errors.full_messages }, status: :unprocessable_entity
     end
-  end
+  end  
 
   def buscar_por_token
     solicitud = Solicitud.includes(:comercio)

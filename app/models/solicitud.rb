@@ -12,4 +12,5 @@ class Solicitud < ApplicationRecord
   }
 
   validates :email, presence: true
+  validates :email, uniqueness: { scope: :comercio_id, message: "ya existe una solicitud para este comercio con este email" }
 end

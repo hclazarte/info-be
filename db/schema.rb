@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_04_12_132147) do
+ActiveRecord::Schema[7.0].define(version: 2025_04_21_193716) do
   create_table "ciudades", force: :cascade do |t|
     t.string "ciudad", null: false
     t.string "cod_municipio"
@@ -157,6 +157,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_04_12_132147) do
     t.binary "comprobante_imagen"
     t.datetime "fecha_fin_servicio"
     t.index ["comercio_id"], name: "index_solicitudes_on_comercio_id"
+    t.index ["email", "comercio_id"], name: "index_solicitudes_on_email_and_comercio_id_unique", unique: true
   end
 
   create_table "zonas", force: :cascade do |t|
