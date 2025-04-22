@@ -71,7 +71,7 @@ class ComerciosController < ApplicationController
     # Query SQL con selección explícita de campos requeridos y orden descendente por id
     sql = <<~SQL
       SELECT id, latitud, longitud, zona_nombre, calle_numero, empresa,
-             servicios, telefono1, telefono2, telefono3
+             servicios, telefono1, telefono2, telefono3, autorizado
       FROM COMERCIOS
       WHERE #{where_conditions}
       ORDER BY id DESC

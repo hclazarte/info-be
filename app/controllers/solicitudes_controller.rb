@@ -70,6 +70,7 @@ class SolicitudesController < ApplicationController
                                                 ciudad_id
                                                 zona_id
                                                 documentos_validados
+                                                autorizado
                                               ])
       }
     else
