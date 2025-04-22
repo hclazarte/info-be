@@ -122,6 +122,8 @@ class DocumentosController < ApplicationController
     if Rails.env.development?
       Rails.logger.info "OCR Comprobante extraído:\n#{texto}"
       Rails.logger.info "Cuenta encontrada? #{texto.include?('10000022978528')}"
+      Rails.logger.info "Banco encontrado? #{texto.upcase.include?('UNION')}"
+      Rails.logger.info "Fecha valida? #{fecha_valida?(texto)}"
     end
 
     cuenta_ok = texto.include?('10000022978528')
