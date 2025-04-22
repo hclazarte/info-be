@@ -130,7 +130,7 @@ class ComerciosController < ApplicationController
       :telefono1, :telefono2, :telefono3, :email, :pagina_web, :servicios,
       :contacto, :palabras_clave, :bloqueado, :activo, :horario, :latitud, :longitud,
       :zona_nombre, :calle_numero, :planta, :numero_local, :nit, :ciudad_id, :zona_id,
-      :autorizado, :documentos_validados
+      :autorizado, :documentos_validados, :autorizado
     )
   end
 
