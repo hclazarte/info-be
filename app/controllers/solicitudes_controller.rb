@@ -56,7 +56,7 @@ class SolicitudesController < ApplicationController
                                                 numero_local
                                                 telefono1
                                                 telefono2
-                                                telefono3
+                                                telefono_whatsapp
                                                 horario
                                                 empresa
                                                 email

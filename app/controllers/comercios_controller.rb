@@ -71,7 +71,7 @@ class ComerciosController < ApplicationController
     # Query SQL con selección explícita de campos requeridos y orden descendente por id
     sql = <<~SQL
       SELECT id, latitud, longitud, zona_nombre, calle_numero, empresa,
-             servicios, telefono1, telefono2, telefono3, autorizado
+             servicios, telefono1, telefono2, telefono_whatsapp, autorizado
       FROM COMERCIOS
       WHERE #{where_conditions}
       ORDER BY id DESC
@@ -127,7 +127,7 @@ class ComerciosController < ApplicationController
 
   def comercio_params
     params.require(:comercio).permit(
-      :telefono1, :telefono2, :telefono3, :email, :pagina_web, :servicios,
+      :telefono1, :telefono2, :telefono_whatsapp, :email, :pagina_web, :servicios,
       :contacto, :palabras_clave, :bloqueado, :activo, :horario, :latitud, :longitud,
       :zona_nombre, :calle_numero, :planta, :numero_local, :nit, :ciudad_id, :zona_id,
       :autorizado, :documentos_validados, :autorizado

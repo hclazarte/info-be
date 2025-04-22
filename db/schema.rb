@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_04_21_193716) do
+ActiveRecord::Schema[7.0].define(version: 2025_04_22_210825) do
   create_table "ciudades", force: :cascade do |t|
     t.string "ciudad", null: false
     t.string "cod_municipio"
@@ -36,7 +36,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_04_21_193716) do
     t.string "numero_local", limit: 20
     t.string "telefono1", limit: 50
     t.string "telefono2", limit: 50
-    t.string "telefono3", limit: 50
+    t.string "telefono_whatsapp", limit: 50
     t.string "horario", limit: 100
     t.string "observacion", limit: 200
     t.string "empresa", limit: 200, null: false
