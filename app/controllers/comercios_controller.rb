@@ -123,6 +123,21 @@ class ComerciosController < ApplicationController
     render json: { error: 'No autorizado para modificar este comercio' }, status: :unauthorized
   end
 
+  def por_email
+    email = params[:email].to_s.strip.downcase
+  
+    if email.blank?
+      return render json: { error: 'Debe proporcionar un correo electrónico' }, status: :bad_request
+    end
+  
+    verificados = Comercio.where(email_verificado: email)
+    no_verificados = Comercio.where(email: email, email_verificado: nil)
+  
+    comercios = verificados.or(no_verificados)
+  
+    render json: comercios.as_json(only: [:id, :empresa])
+  end
+
   private
 
   def comercio_params
@@ -204,4 +219,5 @@ class ComerciosController < ApplicationController
       nil
     end
   end
+
 end

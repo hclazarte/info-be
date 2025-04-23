@@ -14,6 +14,7 @@ Rails.application.routes.draw do
     get 'comercios/search', to: 'comercios#search', as: 'busca_comercios'
     get 'comercios/contar', to: 'comercios#contar', as: 'contar_comercios'
     get 'comercios/lista', to: 'comercios#lista', as: 'lista_comercios'
+    get 'comercios/por_email', to: 'comercios#por_email'
     patch 'comercios/:id', to: 'comercios#update', as: 'actualizar_comercio'
 
     # Zonas
