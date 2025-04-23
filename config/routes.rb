@@ -15,6 +15,7 @@ Rails.application.routes.draw do
     get 'comercios/contar', to: 'comercios#contar', as: 'contar_comercios'
     get 'comercios/lista', to: 'comercios#lista', as: 'lista_comercios'
     get 'comercios/por_email', to: 'comercios#por_email'
+    post 'comercios/no_seprec', to: 'comercios#crear_no_seprec'
     patch 'comercios/:id', to: 'comercios#update', as: 'actualizar_comercio'
 
     # Zonas

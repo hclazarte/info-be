@@ -138,6 +138,63 @@ class ComerciosController < ApplicationController
     render json: comercios.as_json(only: [:id, :empresa])
   end
 
+  def crear_no_seprec
+    empresa = params[:empresa].to_s.strip
+    email = params[:email].to_s.strip.downcase
+    nit = params[:nit].to_s.strip.presence
+    calle_numero = params[:calle_numero].to_s.strip
+    ciudad_id = params[:ciudad_id]
+  
+    if empresa.blank? || email.blank? || calle_numero.blank? || ciudad_id.blank?
+      return render json: { error: 'Empresa, correo electrónico, calle y ciudad son obligatorios' }, status: :bad_request
+    end
+  
+    if Comercio.where('LOWER(empresa) = ?', empresa.downcase).exists?
+      return render json: { error: 'Ya existe un comercio con ese nombre' }, status: :conflict
+    end
+  
+    ActiveRecord::Base.transaction do
+      comercio = Comercio.create!(
+        empresa: empresa,
+        nit: nit,
+        email: email,
+        email_verificado: nil,
+        fecha_registro: Date.today,
+        fecha_encuesta: Date.today,
+        observacion: 'PLATAFORMA',
+        calle_numero: calle_numero,
+        ciudad_id: ciudad_id
+      )
+  
+      # Reutilizamos lógica de creación de solicitud
+      solicitud_existente = Solicitud.where(comercio_id: comercio.id, email: email).where.not(estado: 5).order(created_at: :desc).first
+  
+      if solicitud_existente
+        solicitud_existente.update!(
+          otp_token: SecureRandom.hex(10),
+          otp_expires_at: 30.minutes.from_now
+        )
+        EnviarTokenJob.perform_async(solicitud_existente.id)
+        return render json: { message: 'Solicitud existente actualizada', token: solicitud_existente.otp_token }, status: :ok
+      end
+  
+      solicitud = Solicitud.create!(
+        comercio: comercio,
+        email: email,
+        otp_token: SecureRandom.hex(10),
+        otp_expires_at: 30.minutes.from_now,
+        estado: :documentos_validados,
+        nit_ok: 1,
+        ci_ok: 1,
+      )
+  
+      EnviarTokenJob.perform_async(solicitud.id)
+      render json: { message: 'Solicitud creada exitosamente', token: solicitud.otp_token }, status: :created
+    end
+  rescue ActiveRecord::RecordInvalid => e
+    render json: { error: e.record.errors.full_messages.join(', ') }, status: :unprocessable_entity
+  end   
+
   private
 
   def comercio_params
