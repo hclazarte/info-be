@@ -163,7 +163,8 @@ class ComerciosController < ApplicationController
         fecha_encuesta: Date.today,
         observacion: 'PLATAFORMA',
         calle_numero: calle_numero,
-        ciudad_id: ciudad_id
+        ciudad_id: ciudad_id,
+        documentos_validados: 1
       )
   
       # Reutilizamos lógica de creación de solicitud
