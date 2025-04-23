@@ -71,7 +71,7 @@ class SolicitudesController < ApplicationController
                                                 zona_id
                                                 documentos_validados
                                                 autorizado
-                                              ])
+                                              ]).merge(seprec: solicitud.comercio.seprec?)
       }
     else
       render json: { error: 'Token inválido o expirado' }, status: :not_found
