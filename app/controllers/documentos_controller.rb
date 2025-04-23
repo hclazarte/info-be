@@ -87,7 +87,7 @@ class DocumentosController < ApplicationController
 
       comercio.update!(
         documentos_validados: solicitud.nit_ok && solicitud.ci_ok,
-        email: solicitud.email
+        email_verificado: solicitud.email
       )
 
       render json: { validado: true }
