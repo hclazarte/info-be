@@ -42,7 +42,8 @@ class DocumentosController < ApplicationController
 
     ActiveRecord::Base.transaction do
       solicitud.update!(
-        nit_ok: true
+        nit_ok: true,
+        nombre: representante
       )
       comercio.update!(contacto: representante)
 

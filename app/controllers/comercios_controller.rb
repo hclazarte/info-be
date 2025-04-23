@@ -97,7 +97,7 @@ class ComerciosController < ApplicationController
   
     if @comercio.update(comercio_params)
       if @comercio.autorizado == 1 && was_not_authorized
-        solicitud = Solicitud.where(comercio_id: @comercio.id, email: @comercio.email).order(created_at: :desc).first
+        solicitud = Solicitud.where(comercio_id: @comercio.id, email: @comercio.email_verificado).order(created_at: :desc).first
         unless solicitud
           render json: { errors: ['No se encontró una solicitud válida para habilitar el comercio.'] }, status: :unprocessable_entity and return
         end
