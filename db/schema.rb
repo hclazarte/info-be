@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_04_22_210825) do
+ActiveRecord::Schema[7.0].define(version: 2025_04_23_165249) do
   create_table "ciudades", force: :cascade do |t|
     t.string "ciudad", null: false
     t.string "cod_municipio"
@@ -61,6 +61,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_04_22_210825) do
     t.integer "autorizado", precision: 38, default: 0, null: false
     t.integer "persona_natural", precision: 38, default: 0, null: false
     t.integer "documentos_validados", precision: 38, default: 0, null: false
+    t.string "email_verificado"
     t.index ["ciudad_id"], name: "index_comercios_on_ciudad_id"
   end
 

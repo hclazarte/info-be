@@ -49,7 +49,7 @@ class DocumentosController < ApplicationController
       unless comercio.documentos_validados
         comercio.update!(
           documentos_validados: solicitud.nit_ok && solicitud.ci_ok,
-          email: solicitud.email
+          email_verificado: solicitud.email
         )
       end
     end
