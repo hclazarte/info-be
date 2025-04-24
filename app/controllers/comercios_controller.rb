@@ -135,7 +135,7 @@ class ComerciosController < ApplicationController
   
     comercios = verificados.or(no_verificados)
   
-    render json: comercios.as_json(only: [:id, :empresa])
+    render json: comercios.as_json(only: [:id, :empresa, :calle_numero, :ciudad_id, :nit])
   end
 
   def crear_no_seprec
