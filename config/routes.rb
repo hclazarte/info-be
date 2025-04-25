@@ -12,7 +12,6 @@ Rails.application.routes.draw do
 
     # Comercios
     get 'comercios/search', to: 'comercios#search', as: 'busca_comercios'
-    get 'comercios/contar', to: 'comercios#contar', as: 'contar_comercios'
     get 'comercios/lista', to: 'comercios#lista', as: 'lista_comercios'
     get 'comercios/por_email', to: 'comercios#por_email'
     post 'comercios/no_seprec', to: 'comercios#crear_no_seprec'

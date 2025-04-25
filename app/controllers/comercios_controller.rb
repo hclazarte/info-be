@@ -22,28 +22,6 @@ class ComerciosController < ApplicationController
     VUESTRA VUESTRAS VUESTRO VUESTROS Y YO ÉL
   ].map(&:downcase).freeze
 
-  # GET /comercios/contar
-  def contar
-    where_conditions = build_where_conditions(params[:ciudad_id], params[:zona_id], params[:text])
-    Rails.logger.info(where_conditions)
-    if where_conditions.blank?
-      render json: { error: 'Debe proporcionar al menos uno de los parámetros: ciudad_id, zona_id o text.' },
-             status: :bad_request
-      return
-    end
-
-    sql = "SELECT COUNT(*) AS count FROM COMERCIOS WHERE #{where_conditions}"
-    result_cursor = ActiveRecord::Base.connection.execute(sql)
-
-    # Obtener el resultado del cursor
-    result = result_cursor.fetch
-    count = result ? result[0] : 0
-
-    render json: { count: count }, status: :ok
-  rescue StandardError => e
-    render json: { error: "Error ejecutando la consulta: #{e.message}" }, status: :internal_server_error
-  end
-
   # GET /comercios
   def lista
     # Parámetros de paginación
@@ -52,6 +30,8 @@ class ComerciosController < ApplicationController
 
     # Construcción de las condiciones WHERE
     where_conditions = build_where_conditions(params[:ciudad_id], params[:zona_id], params[:text])
+    where_conditions += ' AND (seprec IS NOT NULL OR autorizado = 1)'
+
     if where_conditions.blank?
       return render json: { error: 'Debe proporcionar al menos uno de los parámetros: ciudad_id, zona_id o text.' },
                     status: :bad_request
