@@ -111,43 +111,71 @@ http://localhost:3000/sidekiq
 
 ---
 # Ciclo de Vida de una Solicitud en Infomóvil
-
 ![Flujo de Solicitud](doc/assets/images/CicloVidaSolicitud.png)
+Las solicitudes en Infomóvil transitan por un conjunto de estados definidos, pero lo más relevante es comprender las **transiciones** entre estos estados, ya que implican acciones concretas a través de endpoints y cambios en los datos tanto de la solicitud como del comercio.
 
-Una solicitud en el sistema Infomóvil atraviesa un conjunto de etapas secuenciales hasta habilitar el comercio en la plataforma. A continuación se describe el ciclo de vida completo:
+---
 
-## Etapas de la Solicitud
+## Transiciones y Acciones
 
-### Estado 0: `pendiente_verificacion`
-La solicitud inicia en este estado cuando se requiere verificar la identidad del propietario del comercio. Se espera la carga y validación del documento de identidad (CI).
+Las transiciones entre estados no son automáticas, sino que se activan mediante acciones explícitas que afectan tanto a la solicitud como al comercio. Estas acciones se ejecutan a través de endpoints definidos en el backend:
 
-- Transición: **Validar Identidad** → pasa al estado 1.
+### 1. Transición de `pendiente_verificacion` a `documentos_validados` — **Validar Identidad**
 
-### Estado 1: `documentos_validados`
-En este punto, la identidad del propietario ha sido verificada correctamente. Se espera que el solicitante cargue el comprobante de pago correspondiente.
+- Endpoints involucrados:
+  - `POST /api/documentos/ci`
+  - `POST /api/documentos/nit`
 
-- Transición: **Validar Pago** → pasa al estado 2.
+- Acciones:
+  - Se cargan y validan los documentos NIT y CI.
+  - Si el NIT es válido:
+    - Se extrae la Razón Social, el Repreentante y el NIT
+    - Se graba en nombre al representante
+    - Se graba `solicitud.nit_ok = true`.
+  - Si el CI es válido:
+    - Se extrae el nombre y se compara `solicitud.nombre`.
+    - Se actualiza `comercio.contacto` con el nombre extraído.
+    - Se marca `solicitud.ci_ok = true`.
+    - Se actualiza `comercio.email_verificado`.
+  - Una vez ambos están correctamente validados:
+    - Se marca `comercio.documentos_validados = true`.
+    - Se cambia `solicitud.estado = 1` (`documentos_validados`).
 
-### Estado 2: `pago_validado`
-El pago ha sido validado y se encuentra todo listo para la aprobación final por parte del equipo de autorización.
+### 2. Transición de `documentos_validados` a `pago_validado` — **Validar Pago**
 
-- Transición: **Autorizar** → pasa al estado 3.
+- Endpoint: `POST /api/documentos/comprobante`
 
-### Estado 3: `comercio_habilitado`
-El comercio ha sido aprobado y habilitado para aparecer públicamente en la plataforma. La habilitación tiene una duración de **un año** a partir de esta fecha.
+- Acciones:
+  - Se verifica el comprobante de pago.
+  - Se valida que el número de cuenta destino sea correcto.
+  - Si es válido:
+    - Se marca `solicitud.pago_validado = 2`.
+    - Se cambia `solicitud.estado = 2` (`pago_validado`).
+    - Se actualiza `solicitud.fecha_fin_servicio`.
+
+### 3. Transición de `pago_validado` a `comercio_habilitado` — **Autorizar**
+
+- Endpoints involucrados:
+  - `PATCH /api/solicitudes/:id`
+  - `PATCH /api/comercios/:id`
+
+- Proceso:
+  - Se actualiza manualmente `solicitud.estado = 3` (`comercio_habilitado`).
+  - Se actualiza `comercio.autorizado = true`.
+  - Se marca la fecha de inicio de habilitación del comercio.
+  - A partir de este momento, el comercio queda visible públicamente durante **un año**.
 
 ---
 
 ## Excepciones del flujo
 
 ### Comercios no SEPREC
-Para comercios registrados manualmente (no provenientes del padrón oficial de SEPREC), **se omite la verificación de identidad**. Estos comercios inician directamente en el estado `documentos_validados`.
+Para comercios registrados manualmente (no provenientes del padrón oficial SEPREC), **se omite la verificación de identidad**. Estas solicitudes comienzan directamente en el estado `documentos_validados` (`estado = 1`), sin pasar por la carga de CI o NIT.
 
 ### Solicitudes gratuitas
-En el caso de solicitudes para un registro gratuito (promociones, convenios, o plan gratuito), **se omite la validación de pago**. En estos casos, una vez validados los documentos, se puede autorizar directamente el comercio.
+En el caso de solicitudes sujetas a convenios, promociones u otros criterios para exoneración de pago, **se omite la validación del comprobante**. Estas solicitudes pueden pasar directamente de `documentos_validados` a `comercio_habilitado`.
 
 ---
 
-## Estado 5: `rechazada`
-Si en cualquier punto del proceso la solicitud no cumple con los criterios, puede ser marcada como rechazada. Este es un estado terminal, y requiere crear una nueva solicitud para reiniciar el proceso.
-
+## Estado `rechazada`
+En cualquier punto del proceso, si la solicitud no cumple con los requisitos mínimos o la documentación es inválida, puede ser marcada como `rechazada` (`estado = 5`). En ese caso, el proceso se detiene y será necesario crear una nueva solicitud para reiniciar el flujo.
