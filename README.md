@@ -108,3 +108,46 @@ rails server
 ```
 
 http://localhost:3000/sidekiq
+
+---
+# Ciclo de Vida de una Solicitud en Infomóvil
+
+![Flujo de Solicitud](doc/assets/images/CicloVidaSolicitud.png)
+
+Una solicitud en el sistema Infomóvil atraviesa un conjunto de etapas secuenciales hasta habilitar el comercio en la plataforma. A continuación se describe el ciclo de vida completo:
+
+## Etapas de la Solicitud
+
+### Estado 0: `pendiente_verificacion`
+La solicitud inicia en este estado cuando se requiere verificar la identidad del propietario del comercio. Se espera la carga y validación del documento de identidad (CI).
+
+- Transición: **Validar Identidad** → pasa al estado 1.
+
+### Estado 1: `documentos_validados`
+En este punto, la identidad del propietario ha sido verificada correctamente. Se espera que el solicitante cargue el comprobante de pago correspondiente.
+
+- Transición: **Validar Pago** → pasa al estado 2.
+
+### Estado 2: `pago_validado`
+El pago ha sido validado y se encuentra todo listo para la aprobación final por parte del equipo de autorización.
+
+- Transición: **Autorizar** → pasa al estado 3.
+
+### Estado 3: `comercio_habilitado`
+El comercio ha sido aprobado y habilitado para aparecer públicamente en la plataforma. La habilitación tiene una duración de **un año** a partir de esta fecha.
+
+---
+
+## Excepciones del flujo
+
+### Comercios no SEPREC
+Para comercios registrados manualmente (no provenientes del padrón oficial de SEPREC), **se omite la verificación de identidad**. Estos comercios inician directamente en el estado `documentos_validados`.
+
+### Solicitudes gratuitas
+En el caso de solicitudes para un registro gratuito (promociones, convenios, o plan gratuito), **se omite la validación de pago**. En estos casos, una vez validados los documentos, se puede autorizar directamente el comercio.
+
+---
+
+## Estado 5: `rechazada`
+Si en cualquier punto del proceso la solicitud no cumple con los criterios, puede ser marcada como rechazada. Este es un estado terminal, y requiere crear una nueva solicitud para reiniciar el proceso.
+
