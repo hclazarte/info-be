@@ -211,7 +211,7 @@ class ComerciosController < ApplicationController
   # Procesar palabras y excluir las de la stop list
   def process_words(input)
     input.to_s.downcase.split.reject { |word| STOP_LIST.include?(word) }.map do |word|
-      "TEXTO_OK(ID, '#{word}') = 'TRUE'"
+      "CONTAINS(COM_DESCR, BUSQUEDA('#{word}')) > 0"
     end
   end
 

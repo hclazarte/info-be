@@ -8,7 +8,7 @@ module RecaptchaVerifiable
   private
 
   def verify_recaptcha
-    return true if Rails.env.production? && token == 'test'
+    return unless Rails.env.production?
     return if ip_whitelisted?
 
     token = params[:recaptcha_token]
