@@ -27,3 +27,6 @@ production:
   database: INFO_PROD
   username: info
   password: info
+  pool: 10
+  timeout: 5000
+  reconnect: true
