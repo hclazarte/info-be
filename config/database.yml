@@ -9,6 +9,9 @@ default: &default
   database: INFO_DEV
   username: info
   password: info
+  pool: 10
+  timeout: 5000
+  reconnect: true
 
 development:
   <<: *default
