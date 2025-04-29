@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Promocione su Negocio en Infomóvil</title>
+  </head>
+  <body style="font-family: sans-serif; background-color: #f9f9f9; padding: 20px;">
+    <div style="max-width: 600px; margin: auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.05);">
+      <h2 style="color: #2c3e50;">¡Promocione su Negocio en Infomóvil!</h2>
+
+      <% if @comercio.present? %>
+        <p><strong><%= @comercio.empresa %></strong> es un registro importante en nuestra plataforma. Nos gustaría invitarle a actualizar sus datos y mejorar su presencia en línea.</p>
+      <% else %>
+        <p>Hemos encontrado su comercio en nuestra plataforma.</p>
+      <% end %>
+
+      <p>Puede verlo ahora mismo en el siguiente enlace:</p>
+
+      <p style="margin: 20px 0;">
+        <a href="<%= @base_url %>/Bolivia/<%= @ciudad_slug %>/<%= @comercio_slug %>"
+           style="background-color: #2d89ef; color: white; padding: 12px 20px; text-decoration: none; border-radius: 5px;">
+          Ver mi Comercio
+        </a>
+      </p>
+
+      <h3>¿Cómo mejorar su presencia?</h3>
+      <ul>
+        <li><strong>Plan gratuito:</strong> Actualice datos como dirección, teléfonos y palabras clave de búsqueda.</li>
+        <li><strong>Plan de pago (Bs. 50 anuales):</strong> Además de lo anterior, publique su correo electrónico, WhatsApp y acceda a promociones destacadas.</li>
+      </ul>
+
+      <h3>¿Por qué estar en Infomóvil?</h3>
+      <ul>
+        <li>Visibilidad frente a miles de potenciales clientes.</li>
+        <li>Presencia destacada en Google.</li>
+        <li>Ubicación en el mapa, priorizando negocios cercanos a los usuarios.</li>
+        <li>Acceso a campañas de promoción exclusivas.</li>
+      </ul>
+
+      <p>Infomóvil es un directorio boliviano con más de 15 años de trayectoria ayudando a negocios como el suyo a crecer.</p>
+
+      <p><strong>¡Reclame la propiedad y cambie sus datos para que los clientes tengan siempre su información actualizada!</strong></p>
+
+      <p style="font-family: 'Brush Script MT', cursive; font-size: 24px; color: #2c3e50; margin-top: 40px;">
+         Infomóvil
+      </p>
+    </div>
+  </body>
+</html>

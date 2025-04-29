@@ -6,6 +6,25 @@ class CampaniaSeleccionadorWorker
   def perform
     seleccionados = CampaniaSeleccionador.seleccionar_comercios
 
-    return if seleccionados.blank?
+    puts "CampaniaSeleccionadorWorker: seleccionados #{seleccionados.size} comercios."
+
+    # ⚠️ CÓDIGO DE PRUEBA - ENVÍA SOLO A 2-3 REGISTROS, REDIRIGIENDO EL CORREO A hectorlazarte@yahoo.com.mx
+    seleccionados.first(3).each_with_index do |comercio, index|
+      original_email = comercio.email
+      puts "Preparando comercio ##{index + 1} ID: #{comercio.id} - Email original: #{original_email}"
+
+      comercio.email = "hectorlazarte@yahoo.com.mx" # <- REDIRIGE SIN PERSISTIR
+      puts "Enviando correo de prueba a #{comercio.email}"
+
+      CampaniaMailer.promocion_comercio(comercio).deliver_now
+    end
+
+    puts "CampaniaSeleccionadorWorker: envío de correos de prueba finalizado."
+
+    # ✅ PRODUCCIÓN:
+    # Para producción, usar esto en lugar del bloque de prueba:
+    # seleccionados.each do |comercio|
+    #   CampaniaMailer.promocion_comercio(comercio).deliver_later
+    # end
   end
 end

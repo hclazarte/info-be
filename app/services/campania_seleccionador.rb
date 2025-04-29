@@ -38,7 +38,7 @@ class CampaniaSeleccionador
 
       while suma_peso < ponderacion_max && intentos < 20
         offset_random = rand(total_registros)
-        comercio = comercio_scope.select(:id, :email, :fecha_encuesta).offset(offset_random).limit(1).first
+        comercio = comercio_scope.select(:id, :email, :fecha_encuesta, :ciudad_id, :empresa).offset(offset_random).limit(1).first
 
         break unless comercio
 
