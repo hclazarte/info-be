@@ -10,7 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_04_23_165249) do
+ActiveRecord::Schema[7.0].define(version: 2025_04_28_195201) do
+  create_table "campania_propietarios_emails", force: :cascade do |t|
+    t.integer "id_comercio", limit: 19, precision: 19, null: false
+    t.string "email", null: false
+    t.boolean "enviado", default: false, null: false
+    t.boolean "clic", default: false, null: false
+    t.integer "intentos_envio", precision: 38, default: 0, null: false
+    t.datetime "ultima_fecha_envio"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["id_comercio"], name: "index_campania_propietarios_emails_on_id_comercio", unique: true
+  end
+
   create_table "ciudades", force: :cascade do |t|
     t.string "ciudad", null: false
     t.string "cod_municipio"
@@ -62,6 +74,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_04_23_165249) do
     t.integer "persona_natural", precision: 38, default: 0, null: false
     t.integer "documentos_validados", precision: 38, default: 0, null: false
     t.string "email_verificado"
+    t.integer "campania_iniciada", precision: 38, default: 0, null: false
     t.index ["ciudad_id"], name: "index_comercios_on_ciudad_id"
   end
 
