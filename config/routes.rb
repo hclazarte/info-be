@@ -5,7 +5,6 @@ Rails.application.routes.draw do
 
   scope '/api' do
     # Ciudades
-    get 'ciudades/by_client_ip', to: 'ciudades#by_client_ip', as: 'recupera_ciudad_client_ip'
     get 'ciudades/:id', to: 'ciudades#show', as: 'recupera_ciudad'
     get 'ciudades', to: 'ciudades#index', as: 'recupera_todas_ciudades'
     get 'ciudades/:id/zonas', to: 'ciudades#zonas_por_ciudad', as: 'zonas_por_ciudad'
@@ -32,5 +31,8 @@ Rails.application.routes.draw do
     post 'documentos/nit',         to: 'documentos#validar_nit'
     post 'documentos/ci',          to: 'documentos#validar_ci'
     post 'documentos/comprobante', to: 'documentos#validar_comprobante'
+
+    # Inicio
+    get 'inicio/objetos', to: 'inicio#objetos'
   end
 end
