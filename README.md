@@ -165,8 +165,6 @@ Las transiciones entre estados no son automáticas, sino que se activan mediante
   - Se marca la fecha de inicio de habilitación del comercio.
   - A partir de este momento, el comercio queda visible públicamente durante **un año**.
 
----
-
 ## Excepciones del flujo
 
 ### Comercios no SEPREC
@@ -175,7 +173,23 @@ Para comercios registrados manualmente (no provenientes del padrón oficial SEPR
 ### Solicitudes gratuitas
 En el caso de solicitudes sujetas a convenios, promociones u otros criterios para exoneración de pago, **se omite la validación del comprobante**. Estas solicitudes pueden pasar directamente de `documentos_validados` a `comercio_habilitado`.
 
----
-
 ## Estado `rechazada`
 En cualquier punto del proceso, si la solicitud no cumple con los requisitos mínimos o la documentación es inválida, puede ser marcada como `rechazada` (`estado = 5`). En ese caso, el proceso se detiene y será necesario crear una nueva solicitud para reiniciar el flujo.
+
+---
+# Envío de Correos de Campaña a Propietarios – Infomóvil
+
+El comando:
+
+```bash
+rake campania:seleccionar
+```
+
+realiza lo siguiente:
+
+1. **Selecciona 50 comercios** elegibles para la campaña, usando un algoritmo de ponderación logarítmica que prioriza comercios más nuevos.
+2. **Marca esos comercios** con `campania_iniciada = 1` para no volver a seleccionarlos.
+3. **Crea registros en la tabla `campania_propietarios_emails`**, asociando el comercio, su email, y datos de seguimiento (`enviado`, `clic`, `intentos_envio`, `ultima_fecha_envio`).
+4. **Envía los correos** usando `CampaniaMailer.promocion_comercio` con `deliver_later`.
+5. **Actualiza los campos** `intentos_envio` e `ultima_fecha_envio` en la tabla `campania_propietarios_emails`.
+
