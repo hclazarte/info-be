@@ -4,25 +4,31 @@ class CampaniaSeleccionadorWorker
   sidekiq_options queue: :default, retry: 2
 
   def perform
-    seleccionados = CampaniaSeleccionador.seleccionar_comercios
+    campanias = CampaniaSeleccionador.seleccionar_comercios
 
-    # puts "CampaniaSeleccionadorWorker: seleccionados #{seleccionados.size} comercios."
     # # CÓDIGO DE PRUEBA - ENVÍA SOLO A 2-3 REGISTROS, REDIRIGIENDO EL CORREO A hectorlazarte@yahoo.com.mx
-    # seleccionados.first(3).each_with_index do |comercio, index|
-    #   original_email = comercio.email
-    #   puts "Preparando comercio ##{index + 1} ID: #{comercio.id} - Email original: #{original_email}"
+    # campanias.first(2).each_with_index do |registro, index|
+    #   original_email = registro.email
+    #   puts "Preparando comercio ##{index + 1} Intentos: #{registro.class.name} - Email original: #{original_email}"
 
-    #   comercio.email = "hectorlazarte@yahoo.com.mx" # <- REDIRIGE SIN PERSISTIR
-    #   puts "Enviando correo de prueba a #{comercio.email}"
+    #   registro.email = "hectorlazarte@yahoo.com.mx" # <- REDIRIGE SIN PERSISTIR
+    #   puts "Enviando correo de prueba a #{registro.email}"
 
-    #   CampaniaMailer.promocion_comercio(comercio).deliver_now
+    #   CampaniaMailer.promocion_comercio(registro).deliver_now
+
+    #   # Actualiza los campos de seguimiento
+    #   registro.increment!(:intentos_envio)
+    #   registro.update(ultima_fecha_envio: Time.current)
     # end
     # puts "CampaniaSeleccionadorWorker: envío de correos de prueba finalizado."
 
     # PRODUCCIÓN:
-    seleccionados.each do |comercio|
-      CampaniaMailer.promocion_comercio(comercio).deliver_later
-      puts "Enviando correo de prueba a #{comercio.email}"
+    campanias.each do |registro|
+      CampaniaMailer.promocion_comercio(registro).deliver_later
+      puts "Enviando correo a #{registro.email}"
+
+      registro.increment!(:intentos_envio)
+      registro.update(ultima_fecha_envio: Time.current)
     end
     puts "CampaniaSeleccionadorWorker: envío de correos de prueba finalizada."
   end

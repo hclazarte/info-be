@@ -64,7 +64,7 @@ class CampaniaSeleccionador
     if seleccionados.any?
       Comercio.where(id: seleccionados.map(&:id)).update_all(campania_iniciada: 1)
 
-      seleccionados.each do |comercio|
+      campanias_creadas = seleccionados.map do |comercio|
         CampaniaPropietariosEmail.create!(
           id_comercio: comercio.id,
           email: comercio.email,
@@ -73,8 +73,11 @@ class CampaniaSeleccionador
           intentos_envio: 0
         )
       end
+
+      return campanias_creadas
     else
       puts "No se seleccionaron comercios en esta ejecución."
+      []
     end
   end
 end

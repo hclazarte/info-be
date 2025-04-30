@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_04_28_195201) do
+ActiveRecord::Schema[7.0].define(version: 2025_04_30_133404) do
   create_table "campania_propietarios_emails", force: :cascade do |t|
     t.integer "id_comercio", limit: 19, precision: 19, null: false
     t.string "email", null: false
@@ -20,6 +20,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_04_28_195201) do
     t.datetime "ultima_fecha_envio"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "email_rebotado", precision: 38, default: 0, null: false
     t.index ["id_comercio"], name: "index_campania_propietarios_emails_on_id_comercio", unique: true
   end
 

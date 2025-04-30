@@ -1,8 +1,9 @@
 class CampaniaMailer < ApplicationMailer
   default from: 'promociones@infomovil.com.bo'
 
-  def promocion_comercio(comercio)
-    @comercio = comercio
+  def promocion_comercio(campania)
+    @campania = campania
+    @comercio = Comercio.find(campania.id_comercio)
     @base_url = Rails.configuration.base_url
     @ciudad_nombre = @comercio.ciudad&.ciudad
 
