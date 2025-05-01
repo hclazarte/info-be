@@ -15,19 +15,21 @@ class CiudadesController < ApplicationController
   # GET /ciudades
   def index
     if params[:ciudad].blank? && params[:pais].blank?
-      # Usar caché si no hay filtros
-      ciudades = Rails.cache.fetch('ciudades_filtradas_total>10', expires_in: 24.hours) do
-        Ciudad.order(:ciudad).where('total > 10').to_a
+      ciudades = Rails.cache.fetch('ciudades_priorizadas', expires_in: 24.hours) do
+        grupo_a = Ciudad.where('total > 1000').order(:ciudad).pluck(:id, :ciudad)
+        grupo_b = Ciudad.where('total <= 1000 AND total > 10').order(:ciudad).pluck(:id, :ciudad)
+  
+        (grupo_a + grupo_b).map { |id, nombre| { id: id, ciudad: nombre } }
       end
     else
-      # Búsqueda normal con filtros
       ciudades = Ciudad.order(:ciudad).where('total > 10')
       ciudades = ciudades.where('LOWER(ciudad) LIKE ?', "%#{params[:ciudad].downcase}%") if params[:ciudad].present?
       ciudades = ciudades.where('LOWER(pais) LIKE ?', "%#{params[:pais].downcase}%") if params[:pais].present?
-    end
+      ciudades = ciudades.as_json(only: [:id, :ciudad])
+    end  
 
     if ciudades.any?
-      render json: ciudades, status: :ok
+      render json: ciudades.as_json(only: [:id, :ciudad]), status: :ok
     else
       render json: { error: 'No hay ciudades disponibles' }, status: :no_content
     end
