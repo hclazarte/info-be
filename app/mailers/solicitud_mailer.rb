@@ -13,6 +13,7 @@ class SolicitudMailer < ApplicationMailer
 
     mail(
       to: @solicitud.email,
+      bcc: 'administracion@infomovil.com.bo',
       subject: asunto, &:html
     )
   end
