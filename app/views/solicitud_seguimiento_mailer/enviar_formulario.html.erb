@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Formulario de Inscripción - Infomóvil</title>
+  </head>
+  <body style="font-family: sans-serif; background-color: #f9f9f9; padding: 20px;">
+    <div style="max-width: 600px; margin: auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.05);">
+      <h2 style="color: #2c3e50;">Bienvenido a Infomóvil</h2>
+
+      <p>Aún no hemos completado el proceso de registro en Infomóvil. Quizá podamos continuarlo juntos.</p>
+
+      <% if @solicitud.comercio.present? %>
+        <p>Adjuntamos el formulario de inscripción personalizado para el comercio <strong><%= @solicitud.comercio.empresa %></strong>.</p>
+      <% else %>
+        <p>Adjuntamos el formulario de inscripción personalizado para su comercio.</p>
+      <% end %>
+
+      <p>Por favor imprima el documento, complételo a mano y respóndanos a este mismo correo adjuntando:</p>
+      <ul>
+        <li>Este formulario llenado</li>
+        <li>Escaneo del <strong>NIT</strong></li>
+        <li>Escaneo de la <strong>Cédula de Identidad</strong> del responsable</li>
+        <li><strong>Comprobante de depósito bancario</strong> (solo si seleccionó la opción de pago)</li>
+      </ul>
+
+      <p>La suscripción tiene una duración de <strong>un (1) año</strong>. Podrá solicitar acceso a la plataforma utilizando el mismo correo electrónico y, en caso necesario, modificar los datos de su comercio.</p>
+
+      <p>Infomóvil está en la web desde hace más de <strong>15 años</strong>. Recibimos millones de búsquedas cada año y nos comprometemos a mantener la información actualizada y útil para las empresas bolivianas.</p>
+
+      <p><strong>Gracias por confiar en nosotros.</strong> ¡Esperamos crecer juntos!</p>
+
+      <p style="font-family: 'Brush Script MT', cursive; font-size: 24px; color: #2c3e50; margin-top: 40px;">
+         Infomóvil
+      </p>
+    </div>
+  </body>
+</html>
