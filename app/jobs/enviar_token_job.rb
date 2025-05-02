@@ -5,8 +5,6 @@ class EnviarTokenJob
     solicitud = Solicitud.find_by(id: solicitud_id)
     return unless solicitud
 
-    # TODO crear un pdf
-
     SolicitudMailer.enviar_token(solicitud).deliver_now
   end
 end
