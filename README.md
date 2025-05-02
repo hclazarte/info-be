@@ -193,3 +193,29 @@ realiza lo siguiente:
 4. **Envía los correos** usando `CampaniaMailer.promocion_comercio` con `deliver_later`.
 5. **Actualiza los campos** `intentos_envio` e `ultima_fecha_envio` en la tabla `campania_propietarios_emails`.
 
+---
+### Seguimiento de Solicitudes Pendientes en Infomóvil
+
+#### Plantilla
+* PDF de plantilla en `app/assets/pdf/Inscripcion.pdf`
+
+#### Criterios de selección
+
+Se envía seguimiento solo a solicitudes que cumplan **todas** estas condiciones:
+
+* `updated_at` mayor a 72 horas atrás
+* `estado` menor a 2
+* `intentos` menor a 3
+* `email_rebotado` igual a 0
+
+#### Qué hace la tarea
+
+1. Genera el PDF personalizado usando `FormularioInscripcionPdf`
+2. Envía el correo con el PDF como adjunto mediante `SolicitudSeguimientoMailer`
+3. Incrementa el contador `intentos` para evitar repeticiones
+
+#### Comando de ejecución
+
+```bash
+rake solicitudes:seguimiento
+```
