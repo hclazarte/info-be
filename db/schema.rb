@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_04_30_133404) do
+ActiveRecord::Schema[7.0].define(version: 2025_05_02_193359) do
   create_table "campania_propietarios_emails", force: :cascade do |t|
     t.integer "id_comercio", limit: 19, precision: 19, null: false
     t.string "email", null: false
@@ -171,6 +171,8 @@ ActiveRecord::Schema[7.0].define(version: 2025_04_30_133404) do
     t.datetime "updated_at", null: false
     t.binary "comprobante_imagen"
     t.datetime "fecha_fin_servicio"
+    t.integer "email_rebotado", precision: 38, default: 0
+    t.integer "intentos", precision: 38, default: 0
     t.index ["comercio_id"], name: "index_solicitudes_on_comercio_id"
     t.index ["email", "comercio_id"], name: "index_solicitudes_on_email_and_comercio_id_unique", unique: true
   end
