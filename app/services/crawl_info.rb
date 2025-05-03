@@ -104,7 +104,6 @@ class CrawlInfo
     comercio.telefono1 = contacto_telefono.dig('descripcion', 0, 'numero') if contacto_telefono
     # comercio.horario
     comercio.observacion = "SEPREC:#{activo ? ' ACTIVANDO' : ' DESACTIVANDO'}"
-    comercio.empresa = # antes:
     # comercio.empresa    
     comercio.empresa = TextFormatter.normalizar_razon_social(empresa_data.dig('datos', 'razonSocial'))
     # comercio.observacion2
