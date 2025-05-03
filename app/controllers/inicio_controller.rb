@@ -41,14 +41,17 @@ class InicioController < ApplicationController
         zonas_ini = Zona.where('ciudad_id = ?', ciudad_ini.id)
       end
     end
+    ciudades_ini = CiudadesCacheService.priorizadas
 
     render json: {
+      ciudades_ini: ciudad_ini, 
       ciudad_ini: ciudad_ini,
       zonas_ini: zonas_ini,
       zona_ini: zona_ini,
       text_ini: text_ini
     }
   end
+  
 
   private
 
