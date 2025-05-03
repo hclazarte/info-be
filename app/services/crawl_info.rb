@@ -104,7 +104,9 @@ class CrawlInfo
     comercio.telefono1 = contacto_telefono.dig('descripcion', 0, 'numero') if contacto_telefono
     # comercio.horario
     comercio.observacion = "SEPREC:#{activo ? ' ACTIVANDO' : ' DESACTIVANDO'}"
-    comercio.empresa = format_razon_social(empresa_data.dig('datos', 'razonSocial'))
+    comercio.empresa = # antes:
+    # comercio.empresa    
+    comercio.empresa = TextFormatter.normalizar_razon_social(empresa_data.dig('datos', 'razonSocial'))
     # comercio.observacion2
     contacto_correo = informacion_data&.dig('datos', 'contactos')&.find { |c| c['tipoContacto'] == 'CORREO' } || nil
     comercio.email = contacto_correo.dig('descripcion', 0, 'correo') if contacto_correo

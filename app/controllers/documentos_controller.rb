@@ -18,7 +18,7 @@ class DocumentosController < ApplicationController
 
     # Extraer NIT, razón social (contribuyente)
     nit_extraido = texto[/\b(\d{6,})\b/, 1]
-    razon_social = texto[/Contribuyente:\s*(.+?)\n/i, 1]&.strip
+    razon_social = TextFormatter.normalizar_razon_social(texto[/Contribuyente:\s*(.+?)\n/i, 1]&.strip)
     representante = extraer_representante_legal(texto)
 
     if Rails.env.development? || ENV['RAILS_LOG_LEVEL'] == 'debug'
