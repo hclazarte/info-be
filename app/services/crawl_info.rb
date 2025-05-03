@@ -20,21 +20,27 @@ class CrawlInfo
   end
 
   def run
-    log('INICIO DE SINCRONIZACIÓN')
-    @stat_5 = 0
+    log 'INICIO DE SINCRONIZACIÓN'
 
-    (@last_id + 1).upto(@last_id + @step) do |id|
-      process_id(id)
+    # Límite superior calculado una sola vez
+    objetivo = @last_id + @step
+
+    begin
+      while (@last_id + 1) <= objetivo
+        id = @last_id + 1
+        process_id(id)                  # ← levanta si ocurre OCIError u otra excepción
+        @last_id = id                   # ← se actualiza **solo tras éxito**
+        save_config                     # ← persiste checkpoint en cada avance seguro
+      end
+
+      log 'FIN DE SINCRONIZACIÓN'
+      true                              # ← todo OK, devolverá exit 0
     rescue StandardError => e
-      log("Error procesando #{e.message}", id)
-      @stat_5 += 1
+      log "ABORTADO: #{e.class}: #{e.message}" # mensaje completo en el log
+      false                             # ← devolverá exit 1
+    ensure
+      @log&.close
     end
-    @last_id += @step
-
-    save_config if @stat_5.zero?
-    log('FIN DE SINCRONIZACIÓN')
-    @log.close
-    @stat_5.zero?
   end
 
   private
