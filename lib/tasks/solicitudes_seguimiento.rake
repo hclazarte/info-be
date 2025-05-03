@@ -14,8 +14,7 @@ namespace :solicitudes do
         pdf_data = FormularioInscripcionPdf.new(comercio).generar
         SolicitudSeguimientoMailer.enviar_formulario(solicitud, pdf_data).deliver_now
 
-        solicitud.increment!(:intentos)
-
+        solicitud.increment!(:intentos, 1, touch: true)
         puts "Enviado a #{solicitud.email} (Solicitud ##{solicitud.id})"
       rescue => e
         puts "Error en solicitud ##{solicitud.id}: #{e.message}"

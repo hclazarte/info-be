@@ -27,9 +27,9 @@ class CampaniaSeleccionadorWorker
       CampaniaMailer.promocion_comercio(registro).deliver_later
       puts "Enviando correo a #{registro.email}"
 
-      registro.increment!(:intentos_envio)
+      registro.increment!(:intentos_envio, 1, touch: true)
       registro.update(ultima_fecha_envio: Time.current)
     end
-    puts "CampaniaSeleccionadorWorker: envío de correos de prueba finalizada."
+    puts "CampaniaSeleccionadorWorker: envío de correos finalizada."
   end
 end
