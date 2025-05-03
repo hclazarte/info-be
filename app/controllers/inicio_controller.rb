@@ -44,7 +44,7 @@ class InicioController < ApplicationController
     ciudades_ini = CiudadesCacheService.priorizadas
 
     render json: {
-      ciudades_ini: ciudad_ini, 
+      ciudades_ini: ciudades_ini, 
       ciudad_ini: ciudad_ini,
       zonas_ini: zonas_ini,
       zona_ini: zona_ini,
