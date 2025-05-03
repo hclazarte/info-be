@@ -24,53 +24,33 @@ class ComerciosController < ApplicationController
 
   # GET /comercios
   def lista
-    # Parámetros de paginación
-    page = params[:page].to_i.positive? ? params[:page].to_i : 1
+    page     = params[:page].to_i.positive?     ? params[:page].to_i     : 1
     per_page = params[:per_page].to_i.positive? ? params[:per_page].to_i : 10
-
-    # Construcción de las condiciones WHERE
-    where_conditions = build_where_conditions(params[:ciudad_id], params[:zona_id], params[:text])
-    where_conditions += ' AND (seprec IS NOT NULL OR autorizado = 1)'
-
-    if where_conditions.blank?
-      return render json: { error: 'Debe proporcionar al menos uno de los parámetros: ciudad_id, zona_id o text.' },
-                    status: :bad_request
-    end
-
-    # Agregar condición para excluir personas naturales no autorizadas (autorizado = 1)
-    where_conditions += ' AND (persona_natural = 0 OR (persona_natural = 1 AND autorizado = 1))'
-
-    # Calcular el offset
-    offset = (page - 1) * per_page
-
-    # Query SQL para contar los registros totales
-    count_sql = "SELECT COUNT(*) AS count FROM COMERCIOS WHERE #{where_conditions}"
-    count_cursor = ActiveRecord::Base.connection.execute(count_sql)
-    total_count = count_cursor.fetch[0].to_i
-
-    # Query SQL con selección explícita de campos requeridos y orden descendente por id
-    sql = <<~SQL
-      SELECT id, latitud, longitud, zona_nombre, calle_numero, empresa,
-             servicios, telefono1, telefono2, telefono_whatsapp, autorizado
-      FROM COMERCIOS
-      WHERE #{where_conditions}
-      ORDER BY id DESC
-      OFFSET #{offset} ROWS
-      FETCH NEXT #{per_page} ROWS ONLY
-    SQL
-
-    # Ejecutar y retornar
-    results = ActiveRecord::Base.connection.exec_query(sql).to_a
-
+    offset   = (page - 1) * per_page
+  
+    base_scope = ComercioFilterService
+                   .new(ciudad_id: params[:ciudad_id],
+                        zona_id:   params[:zona_id],
+                        text:      params[:text])
+                   .call
+  
+    total_count = base_scope.count
+  
+    resultados  = base_scope
+                    .select(:id, :latitud, :longitud, :zona_nombre, :calle_numero,
+                            :empresa, :servicios, :telefono1, :telefono2,
+                            :telefono_whatsapp, :autorizado)
+                    .offset(offset)
+                    .limit(per_page)
+                    .to_a
+  
     render json: {
       page: page,
       per_page: per_page,
       count: total_count,
-      results: results
+      results: resultados
     }, status: :ok
-  rescue StandardError => e
-    render json: { error: "Error ejecutando la consulta: #{e.message}" }, status: :internal_server_error
-  end
+  end 
 
   def update
     was_not_authorized = @comercio.autorizado == 0

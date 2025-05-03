@@ -41,11 +41,10 @@ class GeneradorSitemap
           end
 
           # Nivel comercios (ordenados por ID descendente)
-          ciudad.comercios.activos
-                .where('persona_natural = 0 OR (persona_natural = 1 AND autorizado = 1)')
-                .where.not(email: nil)
-                .order(id: :desc)
-                .each do |comercio|
+          comercios_publicables = ComercioFilterService
+              .new(ciudad_id: ciudad.id) # zona y texto no se aplican aquí
+              .call
+              .each do |comercio|
             xml.url do
               xml.loc "#{BASE_URL}/Bolivia/#{ciudad.ciudad.parameterize}/#{comercio.empresa.to_s.parameterize}"
               xml.changefreq 'weekly'
