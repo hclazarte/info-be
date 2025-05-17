@@ -4,13 +4,14 @@ class CampaniaMailerTestWorker
   sidekiq_options queue: :default, retry: 0
 
   def perform
-    comercio = OpenStruct.new(
+    campania = OpenStruct.new(
       id: 999999,
-      email: "hclazarte@gmail.com",
       empresa: "GEOSOFT INTERNACIONAL SRL",
-      ciudad: OpenStruct.new(nombre: "La Paz")
+      email: "hclazarte@hotmail.com"
+      ciudad: OpenStruct.new(nombre: "La Paz"),
+      id_comercio: 53257
     )
 
-    CampaniaMailer.promocion_comercio(comercio).deliver_now
+    CampaniaMailer.promocion_comercio(campania).deliver_now
   end
 end

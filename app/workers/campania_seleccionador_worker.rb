@@ -6,29 +6,39 @@ class CampaniaSeleccionadorWorker
   def perform
     campanias = CampaniaSeleccionador.seleccionar_comercios
 
-    # CÓDIGO DE PRUEBA - ENVÍA SOLO A 2-3 REGISTROS, REDIRIGIENDO EL CORREO A hectorlazarte@yahoo.com.mx
-    campanias.first(2).each_with_index do |registro, index|
-      original_email = registro.email
-      puts "Preparando comercio ##{index + 1} Intentos: #{registro.class.name} - Email original: #{original_email}"
+    # CÓDIGO DE PRUEBA - ENVÍA SOLO A 2-3 REGISTROS, REDIRIGIENDO EL CORREO A geosoft.internacional@gmail.com
+    campanias.first(2).each_with_index do |campania, index|
+      original_email = campania.email
+      comercio = Comercio.find(campania.id_comercio)
+      puts "Preparando comercio ##{index + 1} Intentos: #{campania.class.name} - Comercio: #{comercio.empresa}"
 
-      registro.email = "geosoft.internacional@gmail.com" # <- REDIRIGE SIN PERSISTIR
-      puts "Enviando correo de prueba a #{registro.email}"
+      campania.email = "geosoft.internacional@gmail.com" if index == 0
+      campania.email = "hclazarte@hotmail.com" if index == 1
+      puts "Enviando correo de prueba a #{campania.email}"
 
-      EmailProtegido.deliver_now(CampaniaMailer, :promocion_comercio, registro)
+      begin
+        EmailProtegido.deliver_now(CampaniaMailer, :promocion_comercio, campania)
+      rescue EmailProtegido::EmailBloqueadoError => e
+        puts e.message         # “Envío bloqueado: …”
+      end
 
       # Actualiza los campos de seguimiento
-      registro.increment!(:intentos_envio)
-      registro.update(ultima_fecha_envio: Time.current)
+      campania.increment!(:intentos_envio)
+      campania.update(ultima_fecha_envio: Time.current)
     end
     puts "CampaniaSeleccionadorWorker: envío de correos de prueba finalizado."
 
     # # PRODUCCIÓN:
-    # campanias.each do |registro|
-    #   EmailProtegido.deliver_later(CampaniaMailer, :promocion_comercio, registro)
-    #   puts "Enviando correo a #{registro.email}"
+    # campanias.each do |campania|
+    #   begin
+    #     EmailProtegido.deliver_later(CampaniaMailer, :promocion_comercio, campania)
+    #   puts "Enviando correo a #{campania.email}"
+    #   rescue EmailProtegido::EmailBloqueadoError => e
+    #     puts e.message         # “Envío bloqueado: …”
+    #   end
 
-    #   registro.increment!(:intentos_envio, 1, touch: true)
-    #   registro.update(ultima_fecha_envio: Time.current)
+    #   campania.increment!(:intentos_envio, 1, touch: true)
+    #   campania.update(ultima_fecha_envio: Time.current)
     # end
     # puts "CampaniaSeleccionadorWorker: envío de correos finalizada."
   end

@@ -11,7 +11,7 @@ class CampaniaMailer < ApplicationMailer
     @comercio_slug = @comercio.empresa.to_s.parameterize
 
     mail(
-      to: @comercio.email,
+      to: @campania.email,
       subject: "Registre a #{@comercio.empresa} en Infomóvil"
     )
   end
