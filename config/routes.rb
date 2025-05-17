@@ -34,5 +34,9 @@ Rails.application.routes.draw do
 
     # Inicio
     get 'inicio/objetos', to: 'inicio#objetos'
+
+    # Bloqueo de Correos
+    resources :emails_bloqueados, only: [:create]
+    delete 'emails_bloqueados/:email', to: 'emails_bloqueados#destroy', constraints: { email: /[^\/]+/ }
   end
 end

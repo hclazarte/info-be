@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_05_02_193359) do
+ActiveRecord::Schema[7.0].define(version: 2025_05_17_154047) do
   create_table "campania_propietarios_emails", force: :cascade do |t|
     t.integer "id_comercio", limit: 19, precision: 19, null: false
     t.string "email", null: false
@@ -95,6 +95,14 @@ ActiveRecord::Schema[7.0].define(version: 2025_05_02_193359) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "nombre"
+  end
+
+  create_table "emails_bloqueados", force: :cascade do |t|
+    t.string "email", null: false
+    t.text "motivo"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_emails_bloqueados_on_email", unique: true
   end
 
   create_table "impresiones", force: :cascade do |t|
