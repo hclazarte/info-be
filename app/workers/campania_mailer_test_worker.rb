@@ -9,7 +9,7 @@ class CampaniaMailerTestWorker
       empresa: "GEOSOFT INTERNACIONAL SRL",
       email: "hclazarte@hotmail.com"
       ciudad: OpenStruct.new(nombre: "La Paz"),
-      id_comercio: 53257
+      comercio_id: 53257
     )
 
     CampaniaMailer.promocion_comercio(campania).deliver_now

@@ -5,18 +5,18 @@ class SolicitudesController < ApplicationController
 
   def create
     email       = params[:email]
-    id_comercio = params[:id_comercio]
+    comercio_id = params[:comercio_id]
   
     return render json: { error: 'Email es obligatorio' },
                   status: :unprocessable_entity unless email.present?
   
-    comercio = Comercio.find(id_comercio)
+    comercio = Comercio.find(comercio_id)
     return render json: { error: 'Comercio no encontrado' },
                   status: :not_found unless comercio
   
     ActiveRecord::Base.transaction do
       if comercio.email == email
-        solicitud = Solicitud.where(comercio_id: id_comercio, email: email)
+        solicitud = Solicitud.where(comercio_id: comercio_id, email: email)
                              .where.not(estado: :rechazada)
                              .order(created_at: :desc)
                              .first_or_initialize
@@ -43,7 +43,7 @@ class SolicitudesController < ApplicationController
       # ─────────────────────────────────────────────
       # 3. Flujo original (no coincide el email)
       # ─────────────────────────────────────────────
-      solicitud_existente = Solicitud.where(comercio_id: id_comercio, email: email)
+      solicitud_existente = Solicitud.where(comercio_id: comercio_id, email: email)
                                      .where.not(estado: 5)
                                      .order(created_at: :desc)
                                      .first
@@ -62,7 +62,7 @@ class SolicitudesController < ApplicationController
       # Si no existe una solicitud válida, se crea una nueva
       solicitud = Solicitud.create!(
         email:          email,
-        comercio_id:    id_comercio,
+        comercio_id:    comercio_id,
         otp_token:      SecureRandom.hex(10),
         otp_expires_at: 30.minutes.from_now,
         estado:         :pendiente_verificacion                         # enum = 0

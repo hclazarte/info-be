@@ -66,7 +66,7 @@ class CampaniaSeleccionador
 
       campanias_creadas = seleccionados.map do |comercio|
         CampaniaPropietariosEmail.create!(
-          id_comercio: comercio.id,
+          comercio_id: comercio.id,
           email: comercio.email,
           enviado: false,
           clic: false,

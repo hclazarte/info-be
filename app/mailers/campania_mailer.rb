@@ -3,7 +3,7 @@ class CampaniaMailer < ApplicationMailer
 
   def promocion_comercio(campania)
     @campania = campania
-    @comercio = Comercio.find(campania.id_comercio)
+    @comercio = Comercio.find(campania.comercio_id)
     @base_url = Rails.configuration.base_url
     @ciudad_nombre = @comercio.ciudad&.ciudad
 

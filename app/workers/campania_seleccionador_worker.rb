@@ -9,7 +9,7 @@ class CampaniaSeleccionadorWorker
     # CÓDIGO DE PRUEBA - ENVÍA SOLO A 2-3 REGISTROS, REDIRIGIENDO EL CORREO A geosoft.internacional@gmail.com
     campanias.first(2).each_with_index do |campania, index|
       original_email = campania.email
-      comercio = Comercio.find(campania.id_comercio)
+      comercio = Comercio.find(campania.comercio_id)
       puts "Preparando comercio ##{index + 1} Intentos: #{campania.class.name} - Comercio: #{comercio.empresa}"
 
       campania.email = "geosoft.internacional@gmail.com" if index == 0
@@ -32,11 +32,10 @@ class CampaniaSeleccionadorWorker
     # campanias.each do |campania|
     #   begin
     #     EmailProtegido.deliver_later(CampaniaMailer, :promocion_comercio, campania)
-    #   puts "Enviando correo a #{campania.email}"
+    #     puts "Enviando correo a #{campania.email}"
     #   rescue EmailProtegido::EmailBloqueadoError => e
     #     puts e.message         # “Envío bloqueado: …”
     #   end
-
     #   campania.increment!(:intentos_envio, 1, touch: true)
     #   campania.update(ultima_fecha_envio: Time.current)
     # end
