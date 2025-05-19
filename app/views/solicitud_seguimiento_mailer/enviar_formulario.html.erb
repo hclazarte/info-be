@@ -31,7 +31,15 @@
       <p><strong>Gracias por confiar en nosotros.</strong> ¡Esperamos crecer juntos!</p>
 
       <p style="font-family: 'Brush Script MT', cursive; font-size: 24px; color: #2c3e50; margin-top: 40px;">
-         Infomóvil
+        Infomóvil
+      </p>
+
+      <!-- Enlace para cancelar suscripción -->
+      <p style="font-size: 12px; color: #777; margin-top: 30px;">
+        ¿No deseas recibir más correos? 
+        <a href="<%= unsubscribe_url(@solicitud.email) %>" style="color: #555;">
+          Haz clic aquí para cancelar la suscripción
+        </a>.
       </p>
     </div>
   </body>

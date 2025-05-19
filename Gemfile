@@ -84,4 +84,6 @@ gem 'sidekiq', '~> 7.3'
 gem 'mini_magick'
 gem 'rtesseract'
 
+gem 'jwt'
+
 gem 'rubocop', '~> 1.75', group: :development
