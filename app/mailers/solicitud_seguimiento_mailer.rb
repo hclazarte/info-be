@@ -1,4 +1,5 @@
 class SolicitudSeguimientoMailer < ApplicationMailer
+  helper :unsub
   default from: 'solicitudes@infomovil.com.bo'
 
   def enviar_formulario(solicitud, pdf_data)

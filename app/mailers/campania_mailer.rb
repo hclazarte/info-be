@@ -1,4 +1,5 @@
 class CampaniaMailer < ApplicationMailer
+  helper :unsub
   default from: 'promociones@infomovil.com.bo'
 
   def promocion_comercio(campania)
