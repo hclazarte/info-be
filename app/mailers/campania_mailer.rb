@@ -18,9 +18,6 @@ class CampaniaMailer < ApplicationMailer
     mail(to: @campania.email,
          subject: "Registre a #{@comercio.empresa} en Infomóvil") do |format|
 
-      # parte TEXTO — Rails la deja en quoted-printable
-      format.text
-
       # parte HTML en base64 con UTF-8
       format.html do
         render layout: 'mailer',  # tu layout normal
