@@ -7,7 +7,7 @@ class CampaniaMailerTestWorker
     campania = OpenStruct.new(
       id: 999999,
       empresa: "GEOSOFT INTERNACIONAL SRL",
-      email: "hclazarte@hotmail.com"
+      email: "hclazarte@hotmail.com",
       ciudad: OpenStruct.new(nombre: "La Paz"),
       comercio_id: 53257
     )
