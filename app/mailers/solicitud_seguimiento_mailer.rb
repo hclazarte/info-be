@@ -16,11 +16,16 @@ class SolicitudSeguimientoMailer < ApplicationMailer
 
     mail(
       to: @solicitud.email,
-      subject: 'Formulario de inscripción para completar su registro en Infomóvil',
-      content_transfer_encoding: 'base64',
-      content_type: 'text/html; charset=UTF-8'
+      subject: 'Formulario de inscripción para completar su registro en Infomóvil'
     ) do |format|
-      format.html
+      format.html do
+        render html: render_to_string(
+          template: 'solicitud_seguimiento_mailer/enviar_formulario',
+          layout: 'mailer'
+        ).html_safe, 
+        content_type: 'text/html; charset=UTF-8; format=flowed',
+        content_transfer_encoding: 'base64'
+      end
     end
   end
 end
