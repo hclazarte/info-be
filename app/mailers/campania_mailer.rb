@@ -15,16 +15,13 @@ class CampaniaMailer < ApplicationMailer
     headers['List-Unsubscribe'] =
       "<#{unsubscribe_link}>, <mailto:promociones@infomovil.com.bo?subject=unsubscribe>"
 
-    mail(to: @campania.email,
-         subject: "Registre a #{@comercio.empresa} en Infomóvil") do |format|
-
-      # parte HTML en base64 con UTF-8
-      format.html do
-        render layout: 'mailer',  # tu layout normal
-               locals: {},        # si necesitas pasar algo extra
-               content_type: 'text/html; charset=UTF-8',
-               content_transfer_encoding: 'base64'
-      end
+    mail(
+      to: @solicitud.email,
+      subject: 'Formulario de inscripción para completar su registro en Infomóvil',
+      content_transfer_encoding: 'base64',
+      content_type: 'text/html; charset=UTF-8'
+    ) do |format|
+      format.html
     end
   end
 end
