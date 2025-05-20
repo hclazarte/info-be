@@ -6,6 +6,7 @@ class SolicitudSeguimientoMailer < ApplicationMailer
     @solicitud = solicitud
     @comercio = solicitud.comercio
 
+    headers['Content-Transfer-Encoding'] = 'base64'
     attachments["formulario_inscripcion_#{@comercio.id}.pdf"] = pdf_data
 
     mail(
