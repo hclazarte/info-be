@@ -11,7 +11,7 @@ class CampaniaMailer < ApplicationMailer
     @comercio_slug = @comercio.empresa.to_s.parameterize
 
     # enlace HTTPS firmado
-    unsubscribe_link = unsubscribe_url(@campania.email)
+    unsubscribe_link = helpers.unsubscribe_url(@campania.email)
 
     # cabecera List-Unsubscribe: incluye https y mailto
     headers['List-Unsubscribe'] =

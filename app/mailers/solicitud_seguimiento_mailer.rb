@@ -7,7 +7,7 @@ class SolicitudSeguimientoMailer < ApplicationMailer
     @comercio = solicitud.comercio
 
     # enlace HTTPS firmado
-    unsubscribe_link = unsubscribe_url(@campania.email)
+    unsubscribe_link = helpers.unsubscribe_url(@campania.email)
 
     # cabecera List-Unsubscribe: incluye https y mailto
     headers['List-Unsubscribe'] =
