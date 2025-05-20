@@ -12,7 +12,7 @@ class CampaniaSeleccionadorWorker
       comercio = Comercio.find(campania.comercio_id)
       puts "Preparando comercio ##{index + 1} Intentos: #{campania.class.name} - Comercio: #{comercio.empresa}"
 
-      campania.email = "geosoft.internacional@gmail.com" if index == 0
+      campania.email = "test-m499zy4k9@srv1.mail-tester.com" if index == 0
       campania.email = "hclazarte@hotmail.com" if index == 1
       puts "Enviando correo de prueba a #{campania.email}"
 
