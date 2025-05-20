@@ -6,12 +6,20 @@ class SolicitudSeguimientoMailer < ApplicationMailer
     @solicitud = solicitud
     @comercio = solicitud.comercio
 
-    headers['Content-Transfer-Encoding'] = 'base64'
+    # enlace HTTPS firmado
+    unsubscribe_link = unsubscribe_url(@campania.email)
+
+    # cabecera List-Unsubscribe: incluye https y mailto
+    headers['List-Unsubscribe'] =
+      "<#{unsubscribe_link}>, <mailto:promociones@infomovil.com.bo?subject=unsubscribe>"
+
     attachments["formulario_inscripcion_#{@comercio.id}.pdf"] = pdf_data
 
     mail(
       to: @solicitud.email,
-      subject: 'Formulario de inscripción para completar su registro en Infomóvil'
+      subject: 'Formulario de inscripción para completar su registro en Infomóvil',
+      content_transfer_encoding: 'base64',
+      charset: 'UTF-8'
     ) do |format|
       format.html
     end
