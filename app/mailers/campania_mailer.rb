@@ -16,7 +16,7 @@ class CampaniaMailer < ApplicationMailer
       "<#{unsubscribe_link}>, <mailto:promociones@infomovil.com.bo?subject=unsubscribe>"
 
     mail(
-      to: @solicitud.email,
+      to: @campania.email,
       subject: 'Formulario de inscripción para completar su registro en Infomóvil',
       content_transfer_encoding: 'base64',
       content_type: 'text/html; charset=UTF-8'
