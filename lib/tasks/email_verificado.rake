@@ -6,7 +6,7 @@ namespace :propietarios do
     umbral_fecha = 2.days.ago.to_date
 
     puts "[#{Time.now}] Iniciando actualización de email_verificado..."
-    puts "Buscando correos enviados antes del #{umbral_fecha}, sin rebote y con email_verificado = 0..."
+    puts "Buscando correos enviados antes del #{umbral_fecha}, sin rebote y con email_verificado = NUll"
 
     emails_candidatos = CampaniaPropietariosEmail
       .where("ultima_fecha_envio <= ?", umbral_fecha)

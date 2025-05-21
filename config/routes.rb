@@ -39,5 +39,8 @@ Rails.application.routes.draw do
     resources :emails_bloqueados, only: [:create]
     delete 'emails_bloqueados/:email', to: 'emails_bloqueados#destroy', constraints: { email: /[^\/]+/ }
     post '/app/cancelar-suscripcion', to: 'unsubs#confirm'
+
+    # Correos Usuarios
+    resources :correos_usuarios, only: [:create]
   end
 end

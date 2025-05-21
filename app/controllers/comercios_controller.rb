@@ -27,30 +27,37 @@ class ComerciosController < ApplicationController
     page     = params[:page].to_i.positive?     ? params[:page].to_i     : 1
     per_page = params[:per_page].to_i.positive? ? params[:per_page].to_i : 10
     offset   = (page - 1) * per_page
-  
+
     base_scope = ComercioFilterService
-                   .new(ciudad_id: params[:ciudad_id],
+                  .new(ciudad_id: params[:ciudad_id],
                         zona_id:   params[:zona_id],
                         text:      params[:text])
-                   .call
-  
+                  .call
+
     total_count = base_scope.count
-  
-    resultados  = base_scope
-                    .select(:id, :latitud, :longitud, :zona_nombre, :calle_numero,
-                            :empresa, :servicios, :telefono1, :telefono2,
-                            :telefono_whatsapp, :autorizado)
-                    .offset(offset)
-                    .limit(per_page)
-                    .to_a
-  
+
+    resultados = base_scope
+                  .select(:id, :latitud, :longitud, :zona_nombre, :calle_numero,
+                          :empresa, :servicios, :telefono1, :telefono2,
+                          :telefono_whatsapp, :autorizado, :email_verificado)
+                  .offset(offset)
+                  .limit(per_page)
+                  .map do |comercio|
+                    comercio.as_json(only: [:id, :latitud, :longitud, :zona_nombre,
+                                            :calle_numero, :empresa, :servicios,
+                                            :telefono1, :telefono2, :telefono_whatsapp,
+                                            :autorizado]).merge(
+                      email_verificado: comercio.email_verificado.present?
+                    )
+                  end
+
     render json: {
       page: page,
       per_page: per_page,
       count: total_count,
       results: resultados
     }, status: :ok
-  end 
+  end
 
   def update
     was_not_authorized = @comercio.autorizado == 0

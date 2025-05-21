@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_05_18_001758) do
+ActiveRecord::Schema[7.0].define(version: 2025_05_21_201841) do
   create_table "campania_propietarios_emails", force: :cascade do |t|
     t.integer "comercio_id", limit: 19, precision: 19, null: false
     t.string "email", null: false
@@ -95,6 +95,21 @@ ActiveRecord::Schema[7.0].define(version: 2025_05_18_001758) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "nombre"
+  end
+
+  create_table "correos_usuarios", force: :cascade do |t|
+    t.string "remitente", null: false
+    t.string "destinatario", null: false
+    t.string "asunto", null: false
+    t.text "cuerpo", null: false
+    t.integer "estado", precision: 38, default: 0, null: false
+    t.integer "intentos", precision: 38, default: 0, null: false
+    t.datetime "fecha"
+    t.string "nombre"
+    t.integer "comercio_id", precision: 38
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["comercio_id"], name: "index_correos_usuarios_on_comercio_id"
   end
 
   create_table "emails_bloqueados", force: :cascade do |t|
@@ -201,6 +216,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_05_18_001758) do
   add_foreign_key "comercios", "ciudades", column: "ciudad_id"
   add_foreign_key "comercios", "zonas"
   add_foreign_key "comercios_shape", "comercios", column: "id", name: "fk_comercios_shape", on_delete: :cascade
+  add_foreign_key "correos_usuarios", "comercios"
   add_foreign_key "impresiones", "comercios"
   add_foreign_key "log_clics", "comercios"
   add_foreign_key "logs", "ciudades", column: "ciudad_id"
