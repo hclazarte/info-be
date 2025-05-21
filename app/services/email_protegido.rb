@@ -2,18 +2,24 @@ class EmailProtegido
   class EmailBloqueadoError < StandardError; end
 
   def self.deliver_now(mailer_class, method_name, *args)
-    verificar_destinatarios!(mail.to)
-    mail = mailer_class.public_send(method_name, *args)
-    mail.deliver_now
+    destinatario = extraer_email(args.first)
+    verificar_destinatarios!([destinatario])
+
+    mailer_class.public_send(method_name, *args).deliver_now
   end
 
   def self.deliver_later(mailer_class, method_name, *args)
-    verificar_destinatarios!(mail.to)
-    mail = mailer_class.public_send(method_name, *args)
-    mail.deliver_later
+    destinatario = extraer_email(args.first)
+    verificar_destinatarios!([destinatario])
+
+    mailer_class.public_send(method_name, *args).deliver_later
   end
 
   private
+
+  def self.extraer_email(obj)
+    obj.respond_to?(:email) ? obj.email.to_s.strip.downcase : nil
+  end
 
   def self.verificar_destinatarios!(destinatarios)
     return if destinatarios.blank?
