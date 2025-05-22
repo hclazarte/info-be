@@ -219,3 +219,17 @@ Se envía seguimiento solo a solicitudes que cumplan **todas** estas condiciones
 ```bash
 rake solicitudes:seguimiento
 ```
+---
+# Tarea Rake: Actualización de email_verificado
+
+Este script actualiza el campo `email_verificado` en la tabla `comercios`, asignándole el valor del email, siempre que:
+
+- El correo fue enviado hace más de 48 horas (`ultima_fecha_envio`).
+- No ha rebotado (`email_rebotado = 0`).
+- El correo no pertenece a un tramitador (no está asociado a más de 5 comercios).
+- El campo `email_verificado` está en `NULL`.
+
+### Ejecución
+
+```bash
+bundle exec rake propietarios:actualizar_email_verificado
