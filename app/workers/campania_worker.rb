@@ -15,7 +15,6 @@ class CampaniaWorker
       end
       campanias = CampaniaPropietariosEmail
                     .where("TRUNC(created_at) = TO_DATE(?, 'YYYY-MM-DD')", fecha_parseada.to_s)
-                    .where(job_enviado: [false, nil])
       puts "[CampaniaWorker] Reintentando envío para campaña con fecha: #{fecha_parseada} (#{campanias.count} registros)"
     end
 
