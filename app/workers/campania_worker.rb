@@ -1,10 +1,23 @@
-class CampaniaSeleccionadorWorker
+class CampaniaWorker
   include Sidekiq::Worker
 
   sidekiq_options queue: :default, retry: 2
 
-  def perform
-    campanias = CampaniaSeleccionador.seleccionar_comercios
+  def perform (fecha = nil)
+    if fecha.nil?
+      campanias = CampaniaSeleccionador.seleccionar_comercios
+      puts "[CampaniaWorker] Ejecutando nueva campaña."
+    else
+      fecha_parseada = Date.parse(fecha) rescue nil
+      unless fecha_parseada
+        puts "[CampaniaWorker] Fecha inválida: #{fecha}"
+        return
+      end
+      campanias = CampaniaPropietariosEmail
+                    .where("DATE(updated_at) = ?", fecha_parseada)
+                    .where(job_enviado: [false, nil])
+      puts "[CampaniaWorker] Reintentando envío para campaña con fecha: #{fecha_parseada} (#{campanias.count} registros)"
+    end
 
     # # CÓDIGO DE PRUEBA - ENVÍA SOLO A 2-3 REGISTROS, REDIRIGIENDO EL CORREO A geosoft.internacional@gmail.com
     # campanias.first(2).each_with_index do |campania, index|
@@ -26,7 +39,7 @@ class CampaniaSeleccionadorWorker
     #   campania.increment!(:intentos_envio)
     #   campania.update(ultima_fecha_envio: Time.current)
     # end
-    # puts "CampaniaSeleccionadorWorker: envío de correos de prueba finalizado."
+    # puts "CampaniaWorker: envío de correos de prueba finalizado."
 
     # PRODUCCIÓN:
     campanias.each do |campania|
@@ -39,6 +52,6 @@ class CampaniaSeleccionadorWorker
       campania.increment!(:intentos_envio, 1, touch: true)
       campania.update(ultima_fecha_envio: Time.current)
     end
-    puts "CampaniaSeleccionadorWorker: envío de correos finalizada."
+    puts "CampaniaWorker: envío de correos finalizada."
   end
 end

@@ -176,13 +176,16 @@ En el caso de solicitudes sujetas a convenios, promociones u otros criterios par
 ## Estado `rechazada`
 En cualquier punto del proceso, si la solicitud no cumple con los requisitos mínimos o la documentación es inválida, puede ser marcada como `rechazada` (`estado = 5`). En ese caso, el proceso se detiene y será necesario crear una nueva solicitud para reiniciar el flujo.
 
+Claro, aquí tienes la documentación actualizada incluyendo el parámetro de fecha opcional y el nuevo comportamiento de reintento:
+
 ---
-# Envío de Correos de Campaña a Propietarios – Infomóvil
+
+## Envío de Correos de Campaña a Propietarios – Infomóvil
 
 El comando:
 
 ```bash
-rake campania:seleccionar
+rake campania:ejecutar
 ```
 
 realiza lo siguiente:
@@ -192,6 +195,25 @@ realiza lo siguiente:
 3. **Crea registros en la tabla `campania_propietarios_emails`**, asociando el comercio, su email, y datos de seguimiento (`enviado`, `clic`, `intentos_envio`, `ultima_fecha_envio`).
 4. **Envía los correos** usando `CampaniaMailer.promocion_comercio` con `deliver_later`.
 5. **Actualiza los campos** `intentos_envio` e `ultima_fecha_envio` en la tabla `campania_propietarios_emails`.
+
+---
+
+## Reintento de campañas anteriores
+
+También puedes reintentar una campaña anterior para una fecha específica ejecutando:
+
+```bash
+rake campania:ejecutar[YYYY-MM-DD]
+```
+
+Donde `YYYY-MM-DD` es la fecha de la campaña que deseas reintentar.
+
+Este modo realiza lo siguiente:
+
+1. **Busca registros existentes en `campania_propietarios_emails`** cuya `ultima_fecha_envio` coincida con la fecha proporcionada y que **no hayan sido encolados correctamente** (`job_enviado = false` o `nil`).
+2. **Reintenta el envío de correos** pendientes con `deliver_later`.
+3. **Incrementa el campo `intentos_envio`** y actualiza `ultima_fecha_envio` para cada intento reenviado.
+4. **Evita duplicados**, ya que solo reintenta los registros incompletos.
 
 ---
 ### Seguimiento de Solicitudes Pendientes en Infomóvil
