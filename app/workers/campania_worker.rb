@@ -42,6 +42,7 @@ class CampaniaWorker
     # puts "CampaniaWorker: envío de correos de prueba finalizado."
 
     # PRODUCCIÓN:
+    AdministracionMailer.notificacion("Campaña Propietarios email iniciada").deliver_later
     campanias.each do |campania|
       begin
         EmailProtegido.deliver_later(CampaniaMailer, :promocion_comercio, campania)
