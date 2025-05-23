@@ -176,10 +176,6 @@ En el caso de solicitudes sujetas a convenios, promociones u otros criterios par
 ## Estado `rechazada`
 En cualquier punto del proceso, si la solicitud no cumple con los requisitos mínimos o la documentación es inválida, puede ser marcada como `rechazada` (`estado = 5`). En ese caso, el proceso se detiene y será necesario crear una nueva solicitud para reiniciar el flujo.
 
-Claro, aquí tienes la documentación actualizada incluyendo el parámetro de fecha opcional y el nuevo comportamiento de reintento:
-
----
-
 ## Envío de Correos de Campaña a Propietarios – Infomóvil
 
 El comando:
