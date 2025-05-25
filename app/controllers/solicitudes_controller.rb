@@ -28,7 +28,7 @@ class SolicitudesController < ApplicationController
         )
   
         comercio.update!(
-          email_verificado:     true,
+          email_verificado:     email,
           documentos_validados: true
         )
   
