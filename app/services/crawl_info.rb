@@ -94,26 +94,29 @@ class CrawlInfo
     comercio.fecha_encuesta = DateTime.parse(empresa_data.dig('datos', 'fechaInscripcion'))
     comercio.zona_nombre = format_zona(empresa_data)
     comercio.fundempresa = empresa_data.dig('datos', 'matriculaAnterior')
-    # comercio.numero_comercio
     comercio.calle_numero = "#{empresa_data.dig('datos', 'direccion', 'nombreVia')} Nº #{format_numero(empresa_data)}"
-    # comercio.planta = empresa_data.dig("datos", "direccion", "piso")
-    # comercio.numero_local = empresa_data.dig("datos", "direccion", "numeroNombreAmbiente")
+    
     contacto_telefono = informacion_data&.dig('datos', 'contactos')&.find do |c|
       c['tipoContacto'] == 'TELEFONO'
-    end || nil
-    comercio.telefono1 = contacto_telefono.dig('descripcion', 0, 'numero') if contacto_telefono
-    # comercio.horario
+    end
+    if contacto_telefono
+      telefono = contacto_telefono.dig('descripcion', 0, 'numero')
+      comercio.telefono1 = telefono
+
+      # Lógica para definir el teléfono de WhatsApp
+      if telefono.present? && telefono.length == 8 && !%w[2 3 4].include?(telefono[0])
+        comercio.telefono_whatsapp = "591#{telefono}"
+      end
+    end
+
     comercio.observacion = "SEPREC:#{activo ? ' ACTIVANDO' : ' DESACTIVANDO'}"
-    # comercio.empresa    
     comercio.empresa = TextFormatter.normalizar_razon_social(empresa_data.dig('datos', 'razonSocial'))
-    # comercio.observacion2
-    contacto_correo = informacion_data&.dig('datos', 'contactos')&.find { |c| c['tipoContacto'] == 'CORREO' } || nil
+
+    contacto_correo = informacion_data&.dig('datos', 'contactos')&.find { |c| c['tipoContacto'] == 'CORREO' }
     comercio.email = contacto_correo.dig('descripcion', 0, 'correo') if contacto_correo
-    # comercio.pagina_web
+
     comercio.servicios = format_servicios(informacion_data)
-    # activo
     comercio.activo = activo
-    # comercio.ofertas
     comercio.nit = empresa_data.dig('datos', 'nit')
 
     # Paso 3: Asociar la ciudad, crearla si no existe
@@ -122,10 +125,12 @@ class CrawlInfo
       cod_municipio: cod_municipio,
       cod_pais: 'BO' # País fijo como "Bolivia"
     ) do |new_ciudad|
-      # Solo se ejecuta si se crea una nueva ciudad
       new_ciudad.ciudad = capitalize_words(empresa_data.dig('datos', 'direccion', 'municipio', 'descripcion'))
       new_ciudad.pais = 'Bolivia'
     end
+
+    comercio.ciudad = ciudad
+  end
 
     comercio.ciudad = ciudad
 
