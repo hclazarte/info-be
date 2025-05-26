@@ -132,18 +132,6 @@ class CrawlInfo
     comercio.ciudad = ciudad
   end
 
-    comercio.ciudad = ciudad
-
-    # Paso 4: Guardar el comercio
-    if comercio.save
-      log("Comercio procesado: #{comercio.empresa}", id_seprec)
-    else
-      log("Error guardando comercio: #{comercio.errors.full_messages.join(', ')}", id_seprec)
-    end
-  rescue StandardError => e
-    log("Error procesando comercio: #{e.message}", id_seprec)
-  end
-
   # Métodos Auxiliares
 
   def format_zona(empresa_data)
