@@ -100,15 +100,14 @@ class CrawlInfo
     # comercio.numero_local = empresa_data.dig("datos", "direccion", "numeroNombreAmbiente")
     contacto_telefono = informacion_data&.dig('datos', 'contactos')&.find do |c|
       c['tipoContacto'] == 'TELEFONO'
-    end || nil
-    comercio.telefono1 = contacto_telefono.dig('descripcion', 0, 'numero') if contacto_telefono
+    end
     if contacto_telefono
       telefono = contacto_telefono.dig('descripcion', 0, 'numero')
-      comercio.telefono1 = telefono
 
-      # Lógica para definir el teléfono de WhatsApp
       if telefono.present? && telefono.length == 8 && !%w[2 3 4].include?(telefono[0])
         comercio.telefono_whatsapp = "591#{telefono}"
+      else
+        comercio.telefono1 = telefono
       end
     end
     # comercio.horario
