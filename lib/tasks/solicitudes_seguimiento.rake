@@ -12,7 +12,7 @@ namespace :solicitudes do
       begin
         comercio = solicitud.comercio
         pdf_data = FormularioInscripcionPdf.new(comercio).generar
-        EmailProtegido.deliver_now(SolicitudSeguimientoMailer, :enviar_formulario, solicitud, pdf_data)
+        EmailProtegido.deliver_later(SolicitudSeguimientoMailer, :enviar_formulario, solicitud, pdf_data)
 
         solicitud.increment!(:intentos, 1, touch: true)
         puts "Enviado a #{solicitud.email} (Solicitud ##{solicitud.id})"
