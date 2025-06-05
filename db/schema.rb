@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_05_21_201841) do
+ActiveRecord::Schema[7.0].define(version: 2025_06_05_152327) do
   create_table "campania_propietarios_emails", force: :cascade do |t|
     t.integer "comercio_id", limit: 19, precision: 19, null: false
     t.string "email", null: false
@@ -200,6 +200,24 @@ ActiveRecord::Schema[7.0].define(version: 2025_05_21_201841) do
     t.index ["email", "comercio_id"], name: "index_solicitudes_on_email_and_comercio_id_unique", unique: true
   end
 
+  create_table "whatsapp_chats", force: :cascade do |t|
+    t.integer "comercio_id", precision: 38, null: false
+    t.string "nombre"
+    t.string "celular", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["comercio_id"], name: "index_whatsapp_chats_on_comercio_id"
+  end
+
+  create_table "whatsapp_mensajes", force: :cascade do |t|
+    t.integer "whatsapp_chat_id", precision: 38, null: false
+    t.text "cuerpo", null: false
+    t.integer "remitente", precision: 38, default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["whatsapp_chat_id"], name: "index_whatsapp_mensajes_on_whatsapp_chat_id"
+  end
+
   create_table "zonas", force: :cascade do |t|
     t.string "descripcion", limit: 50, null: false
     t.integer "total", precision: 38, default: 0
@@ -222,6 +240,8 @@ ActiveRecord::Schema[7.0].define(version: 2025_05_21_201841) do
   add_foreign_key "logs", "ciudades", column: "ciudad_id"
   add_foreign_key "logs", "zonas"
   add_foreign_key "solicitudes", "comercios"
+  add_foreign_key "whatsapp_chats", "comercios"
+  add_foreign_key "whatsapp_mensajes", "whatsapp_chats"
   add_foreign_key "zonas", "ciudades", column: "ciudad_id"
   add_foreign_key "zonas_shape", "zonas", column: "id", name: "fk_zonas_shape", on_delete: :cascade
 end

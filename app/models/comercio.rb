@@ -3,7 +3,7 @@ class Comercio < ApplicationRecord
   belongs_to :zona, optional: true
   belongs_to :ciudad
   has_many :solicitudes, class_name: 'Solicitud', foreign_key: :comercio_id
-
+  has_many :whatsapp_chats, dependent: :destroy
 
   scope :activos, -> { where(activo: true, bloqueado: false) }
 
