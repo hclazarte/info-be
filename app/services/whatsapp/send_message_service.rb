@@ -33,7 +33,13 @@ module Whatsapp
           components: [
             {
               type: 'body',
-              parameters: @template_variables.map { |var| { type: 'text', text: var } }
+              parameters: @template_variables.map do |var|
+                {
+                  type: 'text',
+                  parameter_name: var[:parameter_name],
+                  text: var[:text]
+                }
+              end
             }
           ]
         }

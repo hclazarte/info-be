@@ -32,7 +32,6 @@ module Whatsapp
         template_language: 'es',
         template_variables: [
           {
-            type: 'text',
             parameter_name: 'customer_name',
             text: empresa
           }
