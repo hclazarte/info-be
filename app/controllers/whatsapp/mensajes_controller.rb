@@ -6,7 +6,7 @@ module Whatsapp
       comercio_id = params[:comercio_id]
       celular = params[:celular]
       nombre = params[:nombre]
-      cuerpo = params[:mensaje]
+      cuerpo = params[:cuerpo]
 
       if comercio_id.blank? || celular.blank? || cuerpo.blank?
         return render json: { error: 'Parámetros requeridos: comercio_id, celular, mensaje' }, status: :unprocessable_entity
@@ -22,6 +22,14 @@ module Whatsapp
         cuerpo: cuerpo,
         remitente: :usuario
       )
+
+      # Enviar plantilla al usuario
+      Whatsapp::SendMessageService.new(
+        to: celular,
+        template_name: 'infomovil_usuario_informacion',
+        template_language: 'es',
+        template_variables: []
+      ).call
 
       render json: { id: mensaje.id }, status: :created
     rescue ActiveRecord::RecordInvalid => e
