@@ -26,12 +26,17 @@ module Whatsapp
         remitente: :usuario
       )
 
-      # Enviar plantilla al usuario
       Whatsapp::SendMessageService.new(
         to: celular,
         template_name: 'infomovil_usuario_informacion',
         template_language: 'es',
-        template_variables: [empresa]
+        template_variables: [
+          {
+            type: 'text',
+            parameter_name: 'customer_name',
+            text: empresa
+          }
+        ]
       ).call
 
       render json: { id: mensaje.id }, status: :created
