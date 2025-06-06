@@ -12,6 +12,9 @@ module Whatsapp
         return render json: { error: 'Parámetros requeridos: comercio_id, celular, mensaje' }, status: :unprocessable_entity
       end
 
+      comercio = Comercio.find(comercio_id)
+      empresa = comercio.empresa
+
       # Busca o crea el chat sin insertar mensaje inicial
       chat = WhatsappChat.find_or_create_by!(comercio_id: comercio_id, celular: celular) do |nuevo_chat|
         nuevo_chat.nombre = nombre
@@ -28,7 +31,7 @@ module Whatsapp
         to: celular,
         template_name: 'infomovil_usuario_informacion',
         template_language: 'es',
-        template_variables: []
+        template_variables: [empresa]
       ).call
 
       render json: { id: mensaje.id }, status: :created
