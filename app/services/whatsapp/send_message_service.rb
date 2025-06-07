@@ -45,6 +45,9 @@ module Whatsapp
         }
       }
 
+      # Imprimir el JSON generado (para comparar con el curl)
+      Rails.logger.info "WhatsApp API request body:\n#{JSON.pretty_generate(body)}"
+
       http = Net::HTTP.new(uri.host, uri.port)
       http.use_ssl = true
 
