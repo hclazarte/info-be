@@ -42,5 +42,12 @@ Rails.application.routes.draw do
 
     # Correos Usuarios
     resources :correos_usuarios, only: [:create]
+
+    # Webhook para WhatsApp
+    get  'webhooks/whatsapp', to: 'webhooks/whatsapp#verify'
+    post 'webhooks/whatsapp', to: 'webhooks/whatsapp#receive'
+    namespace :whatsapp do
+      resources :mensajes, only: [:create]
+    end
   end
 end
