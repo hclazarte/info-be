@@ -15,7 +15,7 @@ module Whatsapp
       @phone_number_id = ENV['WHATSAPP_PHONE_NUMBER_ID'] # debes definirlo también (te explico abajo)
     end
 
-    def call
+    def send_template_message
       body = {
         messaging_product: 'whatsapp',
         to: @to,

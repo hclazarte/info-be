@@ -36,8 +36,13 @@ module Whatsapp
             text: empresa
           }
         ]
-      ).call
-
+      ).send_template_message
+      WhatsappMensaje.create!(
+        whatsapp_chat_id: chat.id,
+        cuerpo: 'infomovil_usuario_informacion',
+        remitente: :plataforma,
+        destinatario: :usuario
+      )
       render json: { id: mensaje.id }, status: :created
     rescue ActiveRecord::RecordInvalid => e
       render json: { error: e.record.errors.full_messages }, status: :unprocessable_entity

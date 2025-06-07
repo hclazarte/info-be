@@ -25,46 +25,57 @@ module Webhooks
         from = message['from']                             # número en formato internacional (ej. '59171234567')
         text = message.dig('text', 'body') || '(sin texto)'
 
-        # Busca la conversación activa con ese celular
+        # Primero buscamos si el número corresponde a un chat (usuario)
         chat = WhatsappChat.find_by(celular: from)
 
         if chat
           chat.whatsapp_mensajes.create!(
             cuerpo: text,
-            remitente: :comercio
+            remitente: :usuario,
+            destinatario: :plataforma # ← Es un mensaje que va hacia Infomóvil (backend)
           )
-          Rails.logger.info("Mensaje registrado en chat ##{chat.id} desde #{from}")
+          Rails.logger.info("Mensaje del usuario registrado en chat ##{chat.id} desde #{from}")
 
           # Validación del canal de usuario
           unless chat.whatsapp_verificado
             chat.update(whatsapp_verificado: true)
             Rails.logger.info("Canal de usuario verificado para chat ##{chat.id} (#{from})")
-            
+
             # Paso 4: contactar comercio
             contactar_comercio(chat)
           end
+
         else
-          # Verificamos si el mensaje corresponde a un comercio
+          # Si no es un usuario, verificamos si es un comercio
           comercio = Comercio.find_by(telefono_whatsapp: from)
 
           if comercio
-            # Guardamos el mensaje en log (si quieres aquí luego puedes registrar el mensaje en otra tabla si quieres)
             Rails.logger.info("Mensaje recibido del comercio ID=#{comercio.id} (#{from}): '#{text}'")
 
-            # Validación del canal del comercio
+            # Normalizamos la respuesta
             texto_normalizado = TextFormatter.normalizar_mensaje_recibido(text)
 
-            # Lista de respuestas que invalidan el canal
             respuestas_negativas = ['equivocado', 'no soy yo', 'error', 'incorrecto']
 
+            # Buscamos si hay un chat abierto para este comercio y celular
+            chat = WhatsappChat.find_by(comercio_id: comercio.id, celular: from)
+
+            if chat
+              chat.whatsapp_mensajes.create!(
+                cuerpo: text,
+                remitente: :comercio,
+                destinatario: :plataforma
+              )
+              Rails.logger.info("Mensaje del comercio registrado en chat ##{chat.id} desde #{from}")
+            end
+
+            # Validación del canal del comercio
             if respuestas_negativas.include?(texto_normalizado)
               comercio.update(whatsapp_verificado: false)
               Rails.logger.info("Canal de comercio ID=#{comercio.id} marcado como NO VERIFICADO (#{from})")
             else
               Rails.logger.info("Comercio ID=#{comercio.id} ha aceptado la conversación")
 
-              # Aquí es donde llamas a enviar_consulta_al_comercio:
-              chat = WhatsappChat.find_by(comercio_id: comercio.id, celular: from)
               if chat
                 enviar_consulta_al_comercio(chat)
                 notificar_usuario_confirmacion(chat)
@@ -72,12 +83,17 @@ module Webhooks
                 Rails.logger.warn("No se encontró chat para comercio ID=#{comercio.id} y número #{from}")
               end
             end
+
+          else
+            # Si no es ni usuario ni comercio
+            Rails.logger.warn("Mensaje recibido de número desconocido #{from}")
           end
         end
       end
 
       head :ok
     end
+
 
     private
 
@@ -112,7 +128,13 @@ module Webhooks
             text: empresa
           }
         ]
-      ).call
+      ).send_template_message
+      WhatsappMensaje.create!(
+        whatsapp_chat_id: chat.id,
+        cuerpo: 'infomovil_contacto_comercios',
+        remitente: :plataforma,
+        destinatario: :comercio
+      )
     end
 
     def enviar_consulta_al_comercio(chat)
@@ -170,6 +192,12 @@ module Webhooks
         template_language: nil,
         template_variables: []
       ).send_text_message(cuerpo_mensaje)
+      WhatsappMensaje.create!(
+        whatsapp_chat_id: chat.id,
+        cuerpo: cuerpo_mensaje,
+        remitente: :plataforma,
+        destinatario: :comercio
+      )
     end
 
     def notificar_usuario_confirmacion(chat)
@@ -209,6 +237,12 @@ module Webhooks
         template_language: nil,
         template_variables: []
       ).send_text_message(cuerpo_usuario)
+      WhatsappMensaje.create!(
+        whatsapp_chat_id: chat.id,
+        cuerpo: cuerpo_usuario,
+        remitente: :plataforma,
+        destinatario: :usuario
+      )
     end
   end
 end
