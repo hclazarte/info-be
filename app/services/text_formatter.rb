@@ -19,6 +19,20 @@ class TextFormatter
         .upcase                        # todo a mayúsculas
     end
 
+    # Normaliza un texto recibido en mensaje:
+    # - Elimina tildes
+    # - Un solo espacio
+    # - Quita espacios extremos
+    # - Convierte a minúsculas (ideal para comparar respuestas)
+    def normalizar_mensaje_recibido(texto)
+      return '' if texto.blank?
+
+      I18n.transliterate(texto.to_s)
+        .gsub(/\s+/, ' ')
+        .strip
+        .downcase
+    end
+
     # Futuras normalizaciones irán aquí...
     # def normalizar_direccion(...)
     # end
