@@ -25,26 +25,24 @@ module Webhooks
         from = message['from']                             # número en formato internacional (ej. '59171234567')
         text = message.dig('text', 'body') || '(sin texto)'
 
-        # Primero buscamos si el número corresponde a un chat (usuario)
-        chat = WhatsappChat.find_by(celular: from)
+        # Primero buscamos si el número corresponde a un chat de usuario
+        chat_usuario = WhatsappChat.find_by(celular: from)
 
-        if chat
-          chat.whatsapp_mensajes.create!(
+        if chat_usuario
+          chat_usuario.whatsapp_mensajes.create!(
             cuerpo: text,
             remitente: :usuario,
-            destinatario: :plataforma # ← Es un mensaje que va hacia Infomóvil (backend)
+            destinatario: :plataforma
           )
-          Rails.logger.info("Mensaje del usuario registrado en chat ##{chat.id} desde #{from}")
+          Rails.logger.info("Mensaje del usuario registrado en chat ##{chat_usuario.id} desde #{from}")
 
           # Validación del canal de usuario
-          unless chat.whatsapp_verificado
-            chat.update(whatsapp_verificado: true)
-            Rails.logger.info("Canal de usuario verificado para chat ##{chat.id} (#{from})")
-
-            # Paso 4: contactar comercio
-            contactar_comercio(chat)
+          unless chat_usuario.whatsapp_verificado
+            chat_usuario.update(whatsapp_verificado: true)
+            Rails.logger.info("Canal de usuario verificado para chat ##{chat_usuario.id} (#{from})")
           end
 
+          contactar_comercio(chat_usuario)
         else
           # Si no es un usuario, verificamos si es un comercio
           comercio = Comercio.find_by(telefono_whatsapp: from)
@@ -58,15 +56,15 @@ module Webhooks
             respuestas_negativas = ['equivocado', 'no soy yo', 'error', 'incorrecto']
 
             # Buscamos si hay un chat abierto para este comercio y celular
-            chat = WhatsappChat.find_by(comercio_id: comercio.id, celular: from)
+            chat_comercio = WhatsappChat.find_by(comercio_id: comercio.id, celular: from)
 
-            if chat
-              chat.whatsapp_mensajes.create!(
+            if chat_comercio
+              chat_comercio.whatsapp_mensajes.create!(
                 cuerpo: text,
                 remitente: :comercio,
                 destinatario: :plataforma
               )
-              Rails.logger.info("Mensaje del comercio registrado en chat ##{chat.id} desde #{from}")
+              Rails.logger.info("Mensaje del comercio registrado en chat ##{chat_comercio.id} desde #{from}")
             end
 
             # Validación del canal del comercio
@@ -76,9 +74,9 @@ module Webhooks
             else
               Rails.logger.info("Comercio ID=#{comercio.id} ha aceptado la conversación")
 
-              if chat
-                enviar_consulta_al_comercio(chat)
-                notificar_usuario_confirmacion(chat)
+              if chat_comercio
+                enviar_consulta_al_comercio(chat_comercio)
+                notificar_usuario_confirmacion(chat_comercio)
               else
                 Rails.logger.warn("No se encontró chat para comercio ID=#{comercio.id} y número #{from}")
               end
@@ -93,7 +91,6 @@ module Webhooks
 
       head :ok
     end
-
 
     private
 
