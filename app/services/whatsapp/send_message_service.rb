@@ -16,13 +16,6 @@ module Whatsapp
     end
 
     def call
-      uri = URI.parse("#{API_URL}/#{@phone_number_id}/messages")
-
-      header = {
-        'Content-Type': 'application/json',
-        'Authorization': "Bearer #{@access_token}"
-      }
-
       body = {
         messaging_product: 'whatsapp',
         to: @to,
@@ -48,19 +41,51 @@ module Whatsapp
       # Imprimir el JSON generado (para comparar con el curl)
       Rails.logger.info "WhatsApp API request body:\n#{JSON.pretty_generate(body)}"
 
-      http = Net::HTTP.new(uri.host, uri.port)
-      http.use_ssl = true
+      conn = Faraday.new(url: API_URL) do |f|
+        f.request :json
+        f.response :logger, Rails.logger, bodies: true # opcional: log de request/response
+        f.adapter Faraday.default_adapter
+      end
 
-      request = Net::HTTP::Post.new(uri.request_uri, header)
-      request.body = body.to_json
+      response = conn.post("#{@phone_number_id}/messages") do |req|
+        req.headers['Authorization'] = "Bearer #{@access_token}"
+        req.headers['Content-Type'] = 'application/json'
+        req.body = body
+      end
 
-      response = http.request(request)
+      Rails.logger.info "WhatsApp API response: #{response.status} - #{response.body}"
 
-      Rails.logger.info "WhatsApp API response: #{response.code} - #{response.body}"
-
-      response.code == '200'
+      response.status == 200
     rescue StandardError => e
       Rails.logger.error "WhatsApp API call failed: #{e.message}"
+      false
+    end
+
+    def send_text_message(text)
+      conn = Faraday.new(url: API_URL) do |f|
+        f.request :json
+        f.response :logger, Rails.logger, bodies: true # opcional: para loggear requests/responses
+        f.adapter Faraday.default_adapter
+      end
+
+      response = conn.post("#{@phone_number_id}/messages") do |req|
+        req.headers['Authorization'] = "Bearer #{@access_token}"
+        req.headers['Content-Type'] = 'application/json'
+        req.body = {
+          messaging_product: 'whatsapp',
+          to: @to,
+          type: 'text',
+          text: {
+            body: text
+          }
+        }
+      end
+
+      Rails.logger.info "WhatsApp API response (text): #{response.status} - #{response.body}"
+
+      response.status == 200
+    rescue StandardError => e
+      Rails.logger.error "WhatsApp API send_text_message failed: #{e.message}"
       false
     end
   end
