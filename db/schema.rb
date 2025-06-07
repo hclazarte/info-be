@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_06_07_134027) do
+ActiveRecord::Schema[7.0].define(version: 2025_06_07_171120) do
   create_table "campania_propietarios_emails", force: :cascade do |t|
     t.integer "comercio_id", limit: 19, precision: 19, null: false
     t.string "email", null: false
@@ -217,6 +217,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_06_07_134027) do
     t.integer "remitente", precision: 38, default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "destinatario", precision: 38
     t.index ["whatsapp_chat_id"], name: "index_whatsapp_mensajes_on_whatsapp_chat_id"
   end
 

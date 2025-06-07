@@ -170,18 +170,6 @@ module Webhooks
         template_language: nil,
         template_variables: []
       ).send_text_message(cuerpo_mensaje)
-
-      # Luego de la plantilla, enviar el cuerpo completo como mensaje de texto normal (no plantilla)
-      Whatsapp::SendMessageService.new(
-        to: comercio_telefono,
-        template_name: nil, # si tienes un método especial para texto libre
-        template_language: nil,
-        template_variables: []
-      ).tap do |service|
-        # Aquí en lugar de .call, harías un método para enviar texto libre
-        # (esto depende de cómo armes tu SendMessageService; te puedo dar ejemplo)
-        service.send_text_message(cuerpo_mensaje)
-      end
     end
 
     def notificar_usuario_confirmacion(chat)
