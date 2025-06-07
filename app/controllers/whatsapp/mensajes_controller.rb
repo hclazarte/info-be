@@ -23,7 +23,8 @@ module Whatsapp
       # Guarda el mensaje del usuario
       mensaje = chat.whatsapp_mensajes.create!(
         cuerpo: cuerpo,
-        remitente: :usuario
+        remitente: :usuario,
+        destinatario: :comercio
       )
 
       Whatsapp::SendMessageService.new(
