@@ -27,6 +27,10 @@ class Comercio < ApplicationRecord
     campania_iniciada == 1
   end
 
+  def whatsapp_autorizado?
+    whatsapp_fecha_autorizado.present? && whatsapp_fecha_autorizado > 24.hours.ago
+  end
+
   # Ignorar campos no utilizados o redundantes
   self.ignored_columns = %w[com_descr]
 end

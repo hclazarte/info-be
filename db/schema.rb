@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_06_07_171120) do
+ActiveRecord::Schema[7.0].define(version: 2025_06_10_211443) do
   create_table "campania_propietarios_emails", force: :cascade do |t|
     t.integer "comercio_id", limit: 19, precision: 19, null: false
     t.string "email", null: false
@@ -77,6 +77,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_06_07_171120) do
     t.string "email_verificado"
     t.integer "campania_iniciada", precision: 38, default: 0, null: false
     t.boolean "whatsapp_verificado", default: true, null: false
+    t.datetime "whatsapp_fecha_autorizado"
     t.index ["ciudad_id"], name: "index_comercios_on_ciudad_id"
   end
 
@@ -201,24 +202,25 @@ ActiveRecord::Schema[7.0].define(version: 2025_06_07_171120) do
     t.index ["email", "comercio_id"], name: "index_solicitudes_on_email_and_comercio_id_unique", unique: true
   end
 
+  create_table "usuarios_whatsapp", force: :cascade do |t|
+    t.string "celular", null: false
+    t.string "nombre"
+    t.boolean "whatsapp_verificado", default: false
+    t.datetime "whatsapp_fecha_autorizado"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["celular"], name: "index_usuarios_whatsapp_on_celular", unique: true
+  end
+
   create_table "whatsapp_chats", force: :cascade do |t|
     t.integer "comercio_id", precision: 38, null: false
     t.string "nombre"
-    t.string "celular", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.boolean "whatsapp_verificado", default: false, null: false
+    t.integer "usuarios_whatsapp_id", precision: 38
+    t.text "mensaje"
     t.index ["comercio_id"], name: "index_whatsapp_chats_on_comercio_id"
-  end
-
-  create_table "whatsapp_mensajes", force: :cascade do |t|
-    t.integer "whatsapp_chat_id", precision: 38, null: false
-    t.text "cuerpo", null: false
-    t.integer "remitente", precision: 38, default: 0, null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.integer "destinatario", precision: 38
-    t.index ["whatsapp_chat_id"], name: "index_whatsapp_mensajes_on_whatsapp_chat_id"
+    t.index ["usuarios_whatsapp_id"], name: "index_whatsapp_chats_on_usuarios_whatsapp_id"
   end
 
   create_table "zonas", force: :cascade do |t|
@@ -244,7 +246,6 @@ ActiveRecord::Schema[7.0].define(version: 2025_06_07_171120) do
   add_foreign_key "logs", "zonas"
   add_foreign_key "solicitudes", "comercios"
   add_foreign_key "whatsapp_chats", "comercios"
-  add_foreign_key "whatsapp_mensajes", "whatsapp_chats"
   add_foreign_key "zonas", "ciudades", column: "ciudad_id"
   add_foreign_key "zonas_shape", "zonas", column: "id", name: "fk_zonas_shape", on_delete: :cascade
 end

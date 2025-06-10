@@ -1,7 +1,6 @@
 class WhatsappChat < ApplicationRecord
+  belongs_to :usuarios_whatsapp
   belongs_to :comercio
-  has_many :whatsapp_mensajes, dependent: :destroy
 
-  validates :celular, presence: true
-  validates :comercio_id, presence: true
+  validates :mensaje, presence: true
 end
