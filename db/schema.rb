@@ -217,11 +217,11 @@ ActiveRecord::Schema[7.0].define(version: 2025_06_11_161151) do
     t.string "nombre"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "usuarios_whatsapp_id", precision: 38
+    t.integer "usuario_whatsapp_id", precision: 38
     t.text "mensaje"
     t.integer "estado", precision: 38
     t.index ["comercio_id"], name: "index_whatsapp_chats_on_comercio_id"
-    t.index ["usuarios_whatsapp_id"], name: "index_whatsapp_chats_on_usuarios_whatsapp_id"
+    t.index ["usuario_whatsapp_id"], name: "index_whatsapp_chats_on_usuario_whatsapp_id"
   end
 
   create_table "zonas", force: :cascade do |t|
