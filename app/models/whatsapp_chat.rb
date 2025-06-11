@@ -1,6 +1,6 @@
 class WhatsappChat < ApplicationRecord
-  belongs_to :usuarios_whatsapp
-  belongs_to :comercio
+  belongs_to :usuarios_whatsapp, optional: true
+  belongs_to :comercio, optional: true
 
   validates :mensaje, presence: true
   enum estado: { nuevo: 0, enviado: 1, recibido: 2}
