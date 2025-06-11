@@ -55,7 +55,9 @@ module Webhooks
               Rails.logger.info("Chat ##{pending_chat.id} no autorizado → se mantiene en estado NUEVO")
             end
           end
-        elsif usuario_whatsapp
+        end
+        
+        if usuario_whatsapp
           Rails.logger.info("Mensaje recibido del USUARIO #{usuario_whatsapp.celular}")
           usuario_whatsapp.update!(whatsapp_fecha_autorizado: Time.current)
 
@@ -71,7 +73,9 @@ module Webhooks
               Rails.logger.info("Chat ##{pending_chat.id} no autorizado → se mantiene en estado NUEVO")
             end
           end
-        else
+        end
+
+        if comercio.nil? && usuario_whatsapp.nil?
           Rails.logger.warn("Mensaje recibido de número DESCONOCIDO #{from} → no se actualiza ninguna autorización")
         end
       end
