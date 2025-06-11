@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_06_11_161151) do
+ActiveRecord::Schema[7.0].define(version: 2025_06_11_193554) do
   create_table "campania_propietarios_emails", force: :cascade do |t|
     t.integer "comercio_id", limit: 19, precision: 19, null: false
     t.string "email", null: false
