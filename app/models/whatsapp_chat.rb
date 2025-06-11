@@ -3,8 +3,9 @@ class WhatsappChat < ApplicationRecord
   belongs_to :comercio
 
   validates :mensaje, presence: true
-
-   def texto_para_envio
+  enum estado: { nuevo: 0, enviado: 1 }
+  
+  def texto_para_envio
     <<~MSG
     Usuario: #{usuarios_whatsapp.nombre}
     Celular: #{usuarios_whatsapp.celular}
