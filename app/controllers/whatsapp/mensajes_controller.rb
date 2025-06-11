@@ -15,7 +15,7 @@ module Whatsapp
       comercio = Comercio.find(comercio_id)
       empresa = comercio.empresa
 
-      usuario_whatsapp = UsuariosWhatsapp.find_or_initialize_by(celular: celular)
+      usuario_whatsapp = UsuarioWhatsapp.find_or_initialize_by(celular: celular)
       usuario_whatsapp.nombre = nombre
       usuario_whatsapp.save!
 

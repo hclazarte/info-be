@@ -1,4 +1,5 @@
-class UsuariosWhatsapp < ApplicationRecord
+class UsuarioWhatsapp < ApplicationRecord
+  self.table_name = 'usuarios_whatsapp'
   has_many :whatsapp_chats, dependent: :destroy
 
   validates :celular, presence: true, uniqueness: true

@@ -28,7 +28,7 @@ module Webhooks
         Rails.logger.info("Mensaje recibido de #{from}: '#{text}'")
 
         comercio = Comercio.find_by(telefono_whatsapp: from)
-        usuario_whatsapp = UsuariosWhatsapp.find_by(celular: from)
+        usuario_whatsapp = UsuarioWhatsapp.find_by(celular: from)
 
         # Guarda el mensaje en un nuevo WhatsappChat con estado recibido
         chat = WhatsappChat.create!(
