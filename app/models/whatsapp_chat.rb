@@ -1,5 +1,5 @@
 class WhatsappChat < ApplicationRecord
-  belongs_to :usuarios_whatsapp, optional: true
+  belongs_to :usuario_whatsapp, optional: true
   belongs_to :comercio, optional: true
 
   validates :mensaje, presence: true
@@ -7,8 +7,8 @@ class WhatsappChat < ApplicationRecord
   
   def texto_para_envio
     <<~MSG
-    Usuario: #{usuarios_whatsapp.nombre}
-    Celular: #{usuarios_whatsapp.celular}
+    Usuario: #{usuario_whatsapp.nombre}
+    Celular: #{usuario_whatsapp.celular}
     Mensaje: #{mensaje}
     MSG
   end

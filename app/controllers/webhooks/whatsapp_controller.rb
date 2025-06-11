@@ -33,7 +33,7 @@ module Webhooks
         # Guarda el mensaje en un nuevo WhatsappChat con estado recibido
         chat = WhatsappChat.create!(
           comercio_id: comercio&.id,
-          usuarios_whatsapp_id: usuario_whatsapp&.id,
+          usuario_whatsapp_id: usuario_whatsapp&.id,
           mensaje: text,
           estado: :recibido
         )
@@ -47,7 +47,7 @@ module Webhooks
           chats_pendientes = WhatsappChat.where(comercio_id: comercio.id, estado: :nuevo)
 
           chats_pendientes.each do |pending_chat|
-            if comercio.whatsapp_autorizado? && pending_chat.usuarios_whatsapp&.whatsapp_autorizado?
+            if comercio.whatsapp_autorizado? && pending_chat.usuario_whatsapp&.whatsapp_autorizado?
               enviar_texto_al_comercio(pending_chat)
               pending_chat.enviado!
               Rails.logger.info("Chat ##{pending_chat.id} enviado y actualizado a estado ENVIADO")
@@ -60,7 +60,7 @@ module Webhooks
           usuario_whatsapp.update!(whatsapp_fecha_autorizado: Time.current)
 
           # Buscar todos los chats nuevos del usuario
-          chats_pendientes = WhatsappChat.where(usuarios_whatsapp_id: usuario_whatsapp.id, estado: :nuevo)
+          chats_pendientes = WhatsappChat.where(usuario_whatsapp_id: usuario_whatsapp.id, estado: :nuevo)
 
           chats_pendientes.each do |pending_chat|
             if pending_chat.comercio&.whatsapp_autorizado? && usuario_whatsapp.whatsapp_autorizado?

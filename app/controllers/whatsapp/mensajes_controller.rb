@@ -21,7 +21,7 @@ module Whatsapp
 
       chat = WhatsappChat.create!(
         comercio_id: comercio.id,
-        usuarios_whatsapp_id: usuario_whatsapp.id,
+        usuario_whatsapp_id: usuario_whatsapp.id,
         mensaje: cuerpo,
         estado: :nuevo
       )
