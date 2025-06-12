@@ -58,14 +58,14 @@ class ComercioFilterService
   # Helpers para obtener nombres (sin alterar modelos existentes)
   def nombre_ciudad(id)
     return unless id
-    Ciudad.find_by(id: id)&.nombre
+    Ciudad.find_by(id: id)&.ciudad
   rescue StandardError
     nil
   end
 
   def nombre_zona(id)
     return unless id
-    Zona.find_by(id: id)&.zona
+    Zona.find_by(id: id)&.descripcion
   rescue StandardError
     nil
   end
