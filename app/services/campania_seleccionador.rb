@@ -1,4 +1,45 @@
 class CampaniaSeleccionador
+
+  def self.seleccionar_comercios_nuevos
+    hoy = Time.zone.today
+
+    comercio_scope = Comercio
+      .left_joins(:solicitudes)
+      .where.not(email: nil)
+      .where(bloqueado: 0)
+      .where(campania_iniciada: 0)
+      .where(activo: 1)
+      .where("solicitudes.fecha_fin_servicio IS NULL OR solicitudes.fecha_fin_servicio <= ?", hoy)
+      .where.not(fecha_encuesta: nil)
+      .where("fecha_encuesta > ?", hoy - 100)
+      .select(:id, :email, :fecha_encuesta, :empresa)  # seleccionar SOLO columnas seguras
+      .distinct
+      .order(:fecha_encuesta)
+      .limit(200)
+
+    return [] if comercio_scope.empty?
+
+    seleccionados = comercio_scope.to_a
+    puts "[seleccionar_comercios_nuevos] Se seleccionaron #{seleccionados.size} comercios nuevos."
+
+    # Paso 2: Marcar comercios y crear entradas de campaña
+    Comercio.where(id: seleccionados.map(&:id)).update_all(campania_iniciada: 1)
+
+    campanias_creadas = seleccionados.map do |comercio|
+      CampaniaPropietariosEmail.create!(
+        comercio_id: comercio.id,
+        email: comercio.email,
+        enviado: false,
+        clic: false,
+        intentos_envio: 0
+      )
+    end
+
+    puts "[seleccionar_comercios_nuevos] Se crearon #{campanias_creadas.size} registros de CampaniaPropietariosEmail."
+
+    campanias_creadas
+  end
+
   def self.seleccionar_comercios
     hoy = Time.zone.today
 

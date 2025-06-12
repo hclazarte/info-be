@@ -6,6 +6,7 @@ class CampaniaWorker
   def perform (fecha = nil)
     if fecha.nil?
       campanias = CampaniaSeleccionador.seleccionar_comercios
+      campanias += CampaniaSeleccionador.seleccionar_comercios_nuevos
       puts "[CampaniaWorker] Ejecutando nueva campaña."
     else
       fecha_parseada = Date.parse(fecha) rescue nil
