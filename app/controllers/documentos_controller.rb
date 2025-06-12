@@ -153,10 +153,6 @@ class DocumentosController < ApplicationController
     texto[/([A-ZÁÉÍÓÚÑ ]{5,})\s+C[IL]:?\s*\d+/i, 1]&.strip
   end
 
-  def normalizar_texto(texto)
-    I18n.transliterate(texto.to_s).downcase.gsub('.', '').gsub(',', '').strip
-  end
-
   def nombre_coincide?(nombre, texto_ocr)
     return false if nombre.blank? || texto_ocr.blank?
   
