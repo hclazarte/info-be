@@ -22,6 +22,10 @@ class CampaniaSeleccionador
     seleccionados = comercio_scope.to_a
     puts "[seleccionar_comercios_nuevos] Se seleccionaron #{seleccionados.size} comercios nuevos."
 
+    seleccionados.each_with_index do |comercio, i|
+      puts "[#{i + 1}] Seleccionado Comercio ID: #{comercio.id}, Email: #{comercio.email}, Fecha Encuesta: #{comercio.fecha_encuesta}"
+    end
+
     # Paso 2: Marcar comercios y crear entradas de campaña
     Comercio.where(id: seleccionados.map(&:id)).update_all(campania_iniciada: 1)
 
@@ -99,6 +103,11 @@ class CampaniaSeleccionador
       else
         puts "[#{i + 1}] No se pudo seleccionar un comercio en los intentos permitidos."
       end
+    end
+
+    puts "[seleccionar_comercios_nuevos] Se seleccionaron #{seleccionados.size} comercios nuevos."
+    seleccionados.each_with_index do |comercio, i|
+      puts "[#{i + 1}] Seleccionado Comercio ID: #{comercio.id}, Email: #{comercio.email}, Fecha Encuesta: #{comercio.fecha_encuesta}"
     end
 
     # Paso 3: Marcar comercios y crear entradas de campaña

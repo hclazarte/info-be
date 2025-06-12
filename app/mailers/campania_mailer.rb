@@ -18,10 +18,15 @@ class CampaniaMailer < ApplicationMailer
     mail(
       to: @campania.email,
       subject: 'Formulario de inscripción para completar su registro en Infomóvil',
-      content_transfer_encoding: 'base64',
-      content_type: 'text/html; charset=UTF-8'
     ) do |format|
-      format.html
+      format.html do
+        render html: render_to_string(
+          template: 'campania_mailer/promocion_comercio',
+          layout: 'mailer'
+        ).html_safe, 
+        content_type: 'text/html; charset=UTF-8; format=flowed',
+        content_transfer_encoding: 'base64'
+      end
     end
   end
 end
