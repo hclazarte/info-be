@@ -8,12 +8,15 @@ namespace :propietarios do
     puts "[#{Time.now}] Iniciando actualización de email_verificado..."
     puts "Buscando correos enviados antes del #{umbral_fecha}, sin rebote, no tramitadores y con email_verificado = NULL"
 
-    emails_candidatos = CampaniaPropietariosEmail
-      .where("ultima_fecha_envio <= ?", umbral_fecha)
-      .where(email_rebotado: 0)
-      .where("es_tramitador = 0 OR es_tramitador IS NULL")
-      .pluck(:email)
-      .uniq
+  emails_candidatos = CampaniaPropietariosEmail
+    .where("ultima_fecha_envio <= ?", umbral_fecha)
+    .where(email_rebotado: 0)
+    .where("es_tramitador = 0 OR es_tramitador IS NULL")
+    .pluck(:email)
+    .uniq
+    .select do |email|
+      Comercio.where(email: email).where(email_verificado: nil).exists?
+    end
 
     puts "Se encontraron #{emails_candidatos.count} correos candidatos. Verificando tramitadores..."
 
