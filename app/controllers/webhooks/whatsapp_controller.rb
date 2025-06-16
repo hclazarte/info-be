@@ -65,7 +65,7 @@ module Webhooks
           chats_pendientes = WhatsappChat.where(usuario_whatsapp_id: usuario_whatsapp.id, estado: :nuevo)
 
           chats_pendientes.each do |pending_chat|
-            if pending_chat.comercio&.whatsapp_autorizado? && usuario_whatsapp.whatsapp_autorizado?
+            if pending_chat.comercio&.whatsapp_autorizado?
               enviar_texto_al_comercio(pending_chat)
               pending_chat.enviado!
               Rails.logger.info("Chat ##{pending_chat.id} enviado y actualizado a estado ENVIADO")

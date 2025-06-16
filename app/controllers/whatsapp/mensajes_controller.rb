@@ -28,7 +28,7 @@ module Whatsapp
 
       Rails.logger.info("WhatsappChat ##{chat.id} creado para usuario #{usuario_whatsapp.celular} y comercio #{comercio.id}")
 
-      if comercio.whatsapp_autorizado? && usuario_whatsapp.whatsapp_autorizado?
+      if comercio.whatsapp_autorizado?
         Rails.logger.info("Ambos autorizados → enviando texto libre al comercio")
 
         comercio_telefono = comercio.telefono_whatsapp

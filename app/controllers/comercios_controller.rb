@@ -77,17 +77,6 @@ class ComerciosController < ApplicationController
     else
       render json: { errors: @comercio.errors.full_messages }, status: :unprocessable_entity
     end
-  end  
-
-  def autorizar_comercio_por_token
-    token = params[:token] || request.headers['Authorization']&.split('Bearer ')&.last
-    solicitud = Solicitud.find_by(otp_token: token)
-
-    @comercio = Comercio.find(params[:id])
-
-    return if solicitud && solicitud.comercio_id == @comercio.id
-
-    render json: { error: 'No autorizado para modificar este comercio' }, status: :unauthorized
   end
 
   def por_email
