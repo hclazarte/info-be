@@ -11,7 +11,7 @@ namespace :propietarios do
     emails_candidatos = CampaniaPropietariosEmail
       .where("ultima_fecha_envio <= ?", umbral_fecha)
       .where(email_rebotado: 0)
-      .where("es_tramitador IS NOT TRUE") # incluye NULL y false
+      .where("es_tramitador = 0 OR es_tramitador IS NULL")
       .pluck(:email)
       .uniq
 
