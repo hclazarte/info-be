@@ -6,29 +6,28 @@ namespace :propietarios do
     umbral_fecha = 2.days.ago.to_date
 
     puts "[#{Time.now}] Iniciando actualización de email_verificado..."
-    puts "Buscando correos enviados antes del #{umbral_fecha}, sin rebote y con email_verificado = NUll"
+    puts "Buscando correos enviados antes del #{umbral_fecha}, sin rebote, no tramitadores y con email_verificado = NULL"
 
     emails_candidatos = CampaniaPropietariosEmail
       .where("ultima_fecha_envio <= ?", umbral_fecha)
       .where(email_rebotado: 0)
+      .where("es_tramitador IS NOT TRUE") # incluye NULL y false
       .pluck(:email)
       .uniq
 
     puts "Se encontraron #{emails_candidatos.count} correos candidatos. Verificando tramitadores..."
 
-    emails_validos = emails_candidatos.reject do |email|
-      cantidad = Comercio.where(email: email).count
-      if cantidad > 5
-        puts "Descartado como tramitador: #{email} (presente en #{cantidad} comercios)"
-        true
-      else
-        false
-      end
-    end
-
     emails_actualizados = []
 
-    emails_validos.each do |email|
+    emails_candidatos.each do |email|
+      cantidad = Comercio.where(email: email).count
+
+      if cantidad > 5
+        puts "Descartado como tramitador: #{email} (presente en #{cantidad} comercios)"
+        CampaniaPropietariosEmail.where(email: email).update_all(es_tramitador: true)
+        next
+      end
+
       actualizados = Comercio
         .where(email: email)
         .where("email_verificado IS NULL")
