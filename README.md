@@ -176,21 +176,35 @@ En el caso de solicitudes sujetas a convenios, promociones u otros criterios par
 ## Estado `rechazada`
 En cualquier punto del proceso, si la solicitud no cumple con los requisitos mínimos o la documentación es inválida, puede ser marcada como `rechazada` (`estado = 5`). En ese caso, el proceso se detiene y será necesario crear una nueva solicitud para reiniciar el flujo.
 
-## Envío de Correos de Campaña a Propietarios – Infomóvil
+## **Envío de Correos de Campaña a Propietarios – Infomóvil**
 
-El comando:
+El siguiente comando ejecuta el envío automático de correos de campaña a propietarios de comercios registrados en Infomóvil:
 
 ```bash
 rake campania:ejecutar
 ```
 
-realiza lo siguiente:
+### **Descripción del proceso**
 
-1. **Selecciona 50 comercios** elegibles para la campaña, usando un algoritmo de ponderación logarítmica que prioriza comercios más nuevos.
-2. **Marca esos comercios** con `campania_iniciada = 1` para no volver a seleccionarlos.
-3. **Crea registros en la tabla `campania_propietarios_emails`**, asociando el comercio, su email, y datos de seguimiento (`enviado`, `clic`, `intentos_envio`, `ultima_fecha_envio`).
-4. **Envía los correos** usando `CampaniaMailer.promocion_comercio` con `deliver_later`.
-5. **Actualiza los campos** `intentos_envio` e `ultima_fecha_envio` en la tabla `campania_propietarios_emails`.
+1. **Carga la configuración** desde el archivo `config/campania_email.yml` (si existe), para determinar la cantidad de comercios a seleccionar. Si no existe el archivo, se usarán los valores por defecto (`50` aleatorios y `50` nuevos).
+
+2. **Selecciona comercios nuevos** mediante el método `CampaniaSeleccionador.seleccionar_comercios_nuevos`, priorizando aquellos con fecha de encuesta reciente (últimos 100 días), sin solicitudes activas, sin campañas previas, y con email válido.
+
+3. **Selecciona comercios aleatorios ponderados** usando un algoritmo de selección basado en ponderación logarítmica, que otorga mayor probabilidad a comercios con encuestas más recientes.
+
+4. **Marca los comercios seleccionados** estableciendo el campo `campania_iniciada = 1` para evitar que sean considerados nuevamente en futuras campañas.
+
+5. **Registra los comercios en la tabla `campania_propietarios_emails`**, asociando el `comercio_id`, su `email`, y campos de seguimiento (`enviado`, `clic`, `intentos_envio`, `ultima_fecha_envio`).
+
+6. **Envía los correos de campaña** utilizando `CampaniaMailer.promocion_comercio` con `deliver_later`, enviando de forma asíncrona por Sidekiq.
+
+7. **Actualiza los registros de seguimiento**, incrementando `intentos_envio` y estableciendo la nueva `ultima_fecha_envio` al momento del envío.
+
+### **Notas**
+
+* El envío solo se realiza a comercios válidos y activos que no hayan participado antes.
+* Para pruebas, puede comentarse la sección de producción y habilitar el bloque de prueba (redirigiendo a correos específicos).
+* El proceso genera salida por consola para cada comercio seleccionado y enviado.
 
 ---
 
@@ -238,16 +252,21 @@ Se envía seguimiento solo a solicitudes que cumplan **todas** estas condiciones
 rake solicitudes:seguimiento
 ```
 ---
-# Tarea Rake: Actualización de email_verificado
+### **Tarea Rake: `propietarios:actualizar_email_verificado`**
 
-Este script actualiza el campo `email_verificado` en la tabla `comercios`, asignándole el valor del email, siempre que:
+**Descripción:**
+Este script actualiza el campo `email_verificado` en la tabla `comercios`, copiando el valor del campo `email`, bajo las siguientes condiciones:
 
-- El correo fue enviado hace más de 48 horas (`ultima_fecha_envio`).
-- No ha rebotado (`email_rebotado = 0`).
-- El correo no pertenece a un tramitador (no está asociado a más de 5 comercios).
-- El campo `email_verificado` está en `NULL`.
+**Criterios de actualización:**
 
-### Ejecución
+* El correo fue enviado hace más de **48 horas** (`ultima_fecha_envio` < ahora - 48h).
+* El correo **no ha rebotado** (`email_rebotado = 0`).
+* El correo **no pertenece a un tramitador**, es decir, **no está asociado a más de 5 comercios**.
+* El campo `email_verificado` está **en NULL**.
+
+**Ejecución:**
 
 ```bash
 bundle exec rake propietarios:actualizar_email_verificado
+```
+

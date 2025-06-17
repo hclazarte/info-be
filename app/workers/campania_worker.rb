@@ -1,12 +1,14 @@
 class CampaniaWorker
+  CONFIG_PATH = Rails.root.join('config', 'campania_email.yml')
   include Sidekiq::Worker
-
   sidekiq_options queue: :default, retry: 2
 
   def perform (fecha = nil)
+    config = load_config
+
     if fecha.nil?
-      campanias = CampaniaSeleccionador.seleccionar_comercios
-      campanias += CampaniaSeleccionador.seleccionar_comercios_nuevos
+      campanias = CampaniaSeleccionador.seleccionar_comercios(config[:aleatorios])
+      campanias += CampaniaSeleccionador.seleccionar_comercios_nuevos(config[:nuevos])
       puts "[CampaniaWorker] Ejecutando nueva campaña."
     else
       fecha_parseada = Date.parse(fecha) rescue nil
@@ -54,5 +56,24 @@ class CampaniaWorker
       campania.update(ultima_fecha_envio: Time.current)
     end
     puts "CampaniaWorker: envío de correos finalizada."
+  end
+
+  private
+
+  def load_config
+    valores_por_defecto = { nuevos: 50, aleatorios: 50 }
+
+    if File.exist?(CONFIG_PATH)
+      archivo = YAML.load_file(CONFIG_PATH).transform_keys(&:to_sym)
+      valores = valores_por_defecto.merge(archivo)
+
+      # Validación simple
+      {
+        nuevos: valores[:nuevos].to_i > 0 ? valores[:nuevos].to_i : 50,
+        aleatorios: valores[:aleatorios].to_i > 0 ? valores[:aleatorios].to_i : 50
+      }
+    else
+      valores_por_defecto
+    end
   end
 end

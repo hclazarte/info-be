@@ -28,6 +28,7 @@
 # Ignore master key for decrypting credentials and more.
 /config/master.key
 /config/crawl_info.yml
+/config/campania_email.yml
 
 # byebug_history
 .byebug_history

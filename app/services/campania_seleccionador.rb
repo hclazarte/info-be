@@ -1,6 +1,6 @@
 class CampaniaSeleccionador
 
-  def self.seleccionar_comercios_nuevos
+  def self.seleccionar_comercios_nuevos(cantidad = 50)
     hoy = Time.zone.today
 
     comercio_scope = Comercio
@@ -15,7 +15,7 @@ class CampaniaSeleccionador
       .select(:id, :email, :fecha_encuesta, :empresa)  # seleccionar SOLO columnas seguras
       .distinct
       .order(:fecha_encuesta)
-      .limit(200)
+      .limit(cantidad)
 
     return [] if comercio_scope.empty?
 
@@ -44,7 +44,7 @@ class CampaniaSeleccionador
     campanias_creadas
   end
 
-  def self.seleccionar_comercios
+  def self.seleccionar_comercios(cantidad = 50)
     hoy = Time.zone.today
 
     # Paso 1: Buscar comercios válidos (sin cargar todos en memoria)
@@ -76,7 +76,7 @@ class CampaniaSeleccionador
     seleccionados = []
     total_registros = comercio_scope.count
 
-    50.times do |i|
+    cantidad.times do |i|
       suma_peso = 0
       intentos = 0
       seleccionado = nil
@@ -105,7 +105,7 @@ class CampaniaSeleccionador
       end
     end
 
-    puts "[seleccionar_comercios_nuevos] Se seleccionaron #{seleccionados.size} comercios nuevos."
+    puts "[seleccionar_comercios] Se seleccionaron #{seleccionados.size} comercios nuevos."
     seleccionados.each_with_index do |comercio, i|
       puts "[#{i + 1}] Seleccionado Comercio ID: #{comercio.id}, Email: #{comercio.email}, Fecha Encuesta: #{comercio.fecha_encuesta}"
     end
