@@ -129,7 +129,7 @@ class ComerciosController < ApplicationController
       if solicitud_existente
         solicitud_existente.update!(
           otp_token: SecureRandom.hex(10),
-          otp_expires_at: otp_expires_at: 24.hours.from_now
+          otp_expires_at: 24.hours.from_now
         )
         EnviarTokenJob.perform_async(solicitud_existente.id)
         return render json: { message: 'Solicitud existente actualizada', token: solicitud_existente.otp_token }, status: :ok
