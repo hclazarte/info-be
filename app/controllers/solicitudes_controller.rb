@@ -23,7 +23,7 @@ class SolicitudesController < ApplicationController
   
         solicitud.assign_attributes(
           otp_token:      SecureRandom.hex(10),
-          otp_expires_at: 30.minutes.from_now,
+          otp_expires_at: 24.hours.from_now,
           estado:         :documentos_validados                         # enum = 1
         )
   
@@ -51,7 +51,7 @@ class SolicitudesController < ApplicationController
       if solicitud_existente
         solicitud_existente.update!(
           otp_token:      SecureRandom.hex(10),
-          otp_expires_at: 30.minutes.from_now
+          otp_expires_at: 24.hours.from_now
         )
         EnviarTokenJob.perform_async(solicitud_existente.id)
         return render json: { message: 'Solicitud existente actualizada',
@@ -64,7 +64,7 @@ class SolicitudesController < ApplicationController
         email:          email,
         comercio_id:    comercio_id,
         otp_token:      SecureRandom.hex(10),
-        otp_expires_at: 30.minutes.from_now,
+        otp_expires_at: 24.hours.from_now,
         estado:         :pendiente_verificacion                         # enum = 0
       )
   
