@@ -139,7 +139,7 @@ class ComerciosController < ApplicationController
         comercio: comercio,
         email: email,
         otp_token: SecureRandom.hex(10),
-        otp_expires_at: otp_expires_at: 24.hours.from_now,
+        otp_expires_at: 24.hours.from_now,
         estado: :documentos_validados,
         nit_ok: 1,
         ci_ok: 1,
