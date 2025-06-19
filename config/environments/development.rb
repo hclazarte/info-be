@@ -2,8 +2,14 @@ require 'active_support/core_ext/integer/time'
 
 Rails.application.configure do
   config.base_url = 'https://dev.infomovil.com.bo'
+  # Confía en tu Nginx (localhost) y en toda la red 192.168.x.x
+  config.action_dispatch.trusted_proxies = [
+    IPAddr.new('127.0.0.1'),      # loopback local
+    IPAddr.new('::1'),            # loopback IPv6
+    IPAddr.new('192.168.0.0/16')  # tu LAN
+  ]
+  
   # Settings specified here will take precedence over those in config/application.rb.
-
   # In the development environment your application's code is reloaded any time
   # it changes. This slows down response time but is perfect for development
   # since you don't have to restart the web server when you make code changes.
