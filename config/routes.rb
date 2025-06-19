@@ -49,5 +49,8 @@ Rails.application.routes.draw do
     namespace :whatsapp do
       resources :mensajes, only: [:create]
     end
+    
+    # Log CLicks
+    resources :log_clics, only: [:create]
   end
 end

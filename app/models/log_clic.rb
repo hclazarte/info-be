@@ -1,4 +1,5 @@
 class LogClic < ApplicationRecord
+  self.table_name = 'log_clics'
   belongs_to :comercio
 
   enum plataforma: { escritorio: 0, movil: 1 }
