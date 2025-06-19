@@ -2,6 +2,12 @@ require 'active_support/core_ext/integer/time'
 
 Rails.application.configure do
   config.base_url = 'https://infomovil.com.bo'
+  # Confía en tu Nginx (localhost) y en toda la red 192.168.x.x
+  config.action_dispatch.trusted_proxies = [
+    IPAddr.new('127.0.0.1'),      # loopback local
+    IPAddr.new('::1'),            # loopback IPv6
+    IPAddr.new('192.168.0.0/16')  # tu LAN
+  ]
   # Settings specified here will take precedence over those in config/application.rb.
 
   # Code is not reloaded between requests.
