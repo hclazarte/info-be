@@ -8,6 +8,7 @@ class LogClicsController < ApplicationController
 
     # Si es IP de testing o localhost, no hacemos nada
     if excluded_ip?(ip)
+      Rails.logger.info "IP excluida, omitiendo registro de clic: #{ip}"
       head :no_content and return
     end
 
@@ -21,6 +22,7 @@ class LogClicsController < ApplicationController
     if log.save
       render json: { id: log.id }, status: :created
     else
+      Rails.logger.error "LogClic no guardado: #{@log_clic.errors.full_messages.join(', ')}"
       render json: { errors: log.errors.full_messages }, status: :unprocessable_entity
     end
   rescue ActionController::ParameterMissing => e
