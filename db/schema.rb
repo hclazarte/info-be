@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_06_16_202239) do
+ActiveRecord::Schema[7.0].define(version: 2025_06_19_185350) do
   create_table "campania_propietarios_emails", force: :cascade do |t|
     t.integer "comercio_id", limit: 19, precision: 19, null: false
     t.string "email", null: false
@@ -135,10 +135,10 @@ ActiveRecord::Schema[7.0].define(version: 2025_06_16_202239) do
   create_table "log_clics", force: :cascade do |t|
     t.string "ip", limit: 45, null: false
     t.datetime "fecha", null: false
-    t.string "fuente", limit: 50
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "comercio_id", precision: 38, null: false
+    t.integer "plataforma", precision: 38, default: 0, null: false
     t.index ["comercio_id"], name: "index_log_clics_on_comercio_id"
   end
 
