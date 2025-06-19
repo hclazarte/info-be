@@ -3,7 +3,7 @@
 namespace :propietarios do
   desc "Actualiza el campo email_verificado a 1 para correos válidos"
   task actualizar_email_verificado: :environment do
-    umbral_fecha = 2.days.ago.to_date
+    umbral_fecha = 24.hours.ago.to_date
 
     puts "[#{Time.now}] Iniciando actualización de email_verificado..."
     puts "Buscando correos enviados antes del #{umbral_fecha}, sin rebote, no tramitadores y con email_verificado = NULL"
