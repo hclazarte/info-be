@@ -30,6 +30,7 @@ module RecaptchaVerifiable
     trusted_ips = [
       '127.0.0.1', '::1',
       '190.181.25.130',
+      '172.18.0.1',
       ''
     ]
 

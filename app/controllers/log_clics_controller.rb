@@ -1,6 +1,7 @@
 # app/controllers/api/log_clics_controller.rb
 class LogClicsController < ApplicationController
   skip_before_action :verify_authenticity_token
+  skip_before_action :verify_recaptcha, only: :create
   before_action :validate_params!
 
   def create
