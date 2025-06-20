@@ -6,7 +6,7 @@ class LogClicsController < ApplicationController
 
   def create
     Rails.logger.info "XFF HEADER raw: #{request.headers['X-Forwarded-For'].inspect}"
-    ip = request.remote_ip
+    ip = client_ip
 
     Si es IP de testing o localhost, no hacemos nada
     if excluded_ip?(ip)

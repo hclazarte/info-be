@@ -37,7 +37,7 @@ class InicioController < ApplicationController
     else
       if path.strip == '' || path.strip == '/'
         Rails.logger.info("Tu mensaje aquí")
-        ciudad_ini = CiudadDetectadaPorIp.buscar(request.remote_ip) || Ciudad.find_by('UPPER(ciudad) LIKE ?', '%LA PAZ%')
+        ciudad_ini = CiudadDetectadaPorIp.buscar(client_ip) || Ciudad.find_by('UPPER(ciudad) LIKE ?', '%LA PAZ%')
         zonas_ini = Zona.where('ciudad_id = ?', ciudad_ini.id)
       end
     end

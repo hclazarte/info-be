@@ -34,8 +34,8 @@ module RecaptchaVerifiable
       ''
     ]
 
-    return true if request.remote_ip.start_with?('192.168.0.')
+    return true if client_ip.start_with?('192.168.0.')
 
-    trusted_ips.include?(request.remote_ip)
+    trusted_ips.include?(client_ip)
   end
 end
