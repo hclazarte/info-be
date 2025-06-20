@@ -6,7 +6,7 @@ Rails.application.configure do
   config.action_dispatch.trusted_proxies = [
     IPAddr.new('127.0.0.1'),      # loopback local
     IPAddr.new('::1'),            # loopback IPv6
-    IPAddr.new('192.168.0.0/16')  # tu LAN
+    IPAddr.new('192.168.0.0/16'),  # tu LAN
     IPAddr.new('172.18.0.0/16')    # red Docker por defecto
   ]
   # Settings specified here will take precedence over those in config/application.rb.
