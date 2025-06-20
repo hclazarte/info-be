@@ -6,13 +6,13 @@ class LogClicsController < ApplicationController
 
   def create
     Rails.logger.info "XFF HEADER raw: #{request.headers['X-Forwarded-For'].inspect}"
-    ip = extract_client_ip
+    ip = request.remote_ip
 
-    # Si es IP de testing o localhost, no hacemos nada
-    # if excluded_ip?(ip)
-    #   Rails.logger.info "IP excluida, omitiendo registro de clic: #{ip}"
-    #   head :no_content and return
-    # end
+    Si es IP de testing o localhost, no hacemos nada
+    if excluded_ip?(ip)
+      Rails.logger.info "IP excluida, omitiendo registro de clic: #{ip}"
+      head :no_content and return
+    end
 
     log = LogClic.new(
       comercio_id: params[:comercio_id],
@@ -30,13 +30,6 @@ class LogClicsController < ApplicationController
   end
 
   private
-  def extract_client_ip
-    if request.headers['X-Forwarded-For'].present?
-      request.headers['X-Forwarded-For'].split(',').first.strip
-    else
-      request.remote_ip
-    end
-  end
 
   def validate_params!
     params.require(:comercio_id)
