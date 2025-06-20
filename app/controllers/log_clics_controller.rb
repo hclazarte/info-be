@@ -5,6 +5,7 @@ class LogClicsController < ApplicationController
   before_action :validate_params!
 
   def create
+    Rails.logger.info "XFF HEADER raw: #{request.headers['X-Forwarded-For'].inspect}"
     ip = extract_client_ip
 
     # Si es IP de testing o localhost, no hacemos nada
