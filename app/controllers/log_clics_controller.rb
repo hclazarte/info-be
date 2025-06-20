@@ -8,10 +8,10 @@ class LogClicsController < ApplicationController
     ip = extract_client_ip
 
     # Si es IP de testing o localhost, no hacemos nada
-    if excluded_ip?(ip)
-      Rails.logger.info "IP excluida, omitiendo registro de clic: #{ip}"
-      head :no_content and return
-    end
+    # if excluded_ip?(ip)
+    #   Rails.logger.info "IP excluida, omitiendo registro de clic: #{ip}"
+    #   head :no_content and return
+    # end
 
     log = LogClic.new(
       comercio_id: params[:comercio_id],
