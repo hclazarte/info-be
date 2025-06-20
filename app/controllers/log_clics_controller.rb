@@ -8,7 +8,7 @@ class LogClicsController < ApplicationController
     Rails.logger.info "XFF HEADER raw: #{request.headers['X-Forwarded-For'].inspect}"
     ip = client_ip
 
-    Si es IP de testing o localhost, no hacemos nada
+    # Si es IP de testing o localhost, no hacemos nada
     if excluded_ip?(ip)
       Rails.logger.info "IP excluida, omitiendo registro de clic: #{ip}"
       head :no_content and return
