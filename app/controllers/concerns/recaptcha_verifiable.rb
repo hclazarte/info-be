@@ -2,8 +2,7 @@ module RecaptchaVerifiable
   extend ActiveSupport::Concern
 
   included do
-    # Comentado el before_action para desactivar recaptcha por completo
-    # before_action :verify_recaptcha, only: [:lista]
+    before_action :verify_recaptcha, only: [:lista]
   end
 
   private
@@ -14,6 +13,7 @@ module RecaptchaVerifiable
   end
 
   def verify_recaptcha
+    true
     return unless Rails.env.production?
     return if ip_whitelisted?
 
