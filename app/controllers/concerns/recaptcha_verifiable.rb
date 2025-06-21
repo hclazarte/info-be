@@ -2,7 +2,8 @@ module RecaptchaVerifiable
   extend ActiveSupport::Concern
 
   included do
-    before_action :verify_recaptcha, only: [:lista] # o las acciones que necesites
+    # Comentado el before_action para desactivar recaptcha por completo
+    # before_action :verify_recaptcha, only: [:lista]
   end
 
   private
