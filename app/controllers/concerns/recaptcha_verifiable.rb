@@ -10,12 +10,14 @@ module RecaptchaVerifiable
     token = params[:recaptcha_token]
     return render json: { error: 'Falta el token de reCAPTCHA' }, status: :bad_request unless token
 
+    Rails.logger.info "Verificando token: #{token}"
     response = Faraday.post('https://www.google.com/recaptcha/api/siteverify', {
                               secret: ENV['RECAPTCHA_SECRET_KEY'],
                               response: token
                             })
 
     result = JSON.parse(response.body)
+    Rails.logger.info "Resultado reCAPTCHA: #{result.inspect}"
 
     return true if result['success'] && result['score'].to_f > 0.5
 
