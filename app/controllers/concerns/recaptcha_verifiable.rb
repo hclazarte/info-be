@@ -3,11 +3,6 @@ module RecaptchaVerifiable
 
   private
 
-  def client_ip
-    header = request.headers['X-Forwarded-For']
-    header.present? ? header.split(',').first.strip : request.remote_ip
-  end
-
   def verify_recaptcha
     return true unless recaptcha_enabled?
     return true if ip_whitelisted?
