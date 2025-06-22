@@ -1,6 +1,8 @@
 class CorreosUsuariosController < ApplicationController
   include RecaptchaVerifiable
 
+  before_action :verify_recaptcha, only: :create
+
   def create
     comercio_id = params.dig(:correos_usuario, :comercio_id)
     comercio = Comercio.find_by(id: comercio_id)

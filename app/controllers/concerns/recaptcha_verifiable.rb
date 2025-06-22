@@ -1,10 +1,6 @@
 module RecaptchaVerifiable
   extend ActiveSupport::Concern
 
-  included do
-    before_action :verify_recaptcha, only: [:lista]
-  end
-
   private
 
   def client_ip
@@ -13,9 +9,8 @@ module RecaptchaVerifiable
   end
 
   def verify_recaptcha
-    true
-    return unless Rails.env.production?
-    return if ip_whitelisted?
+    return true unless recaptcha_enabled?
+    return true if ip_whitelisted?
 
     token = params[:recaptcha_token]
     return render json: { error: 'Falta el token de reCAPTCHA' }, status: :bad_request unless token
@@ -27,7 +22,7 @@ module RecaptchaVerifiable
 
     result = JSON.parse(response.body)
 
-    return if result['success'] && result['score'].to_f > 0.5
+    return true if result['success'] && result['score'].to_f > 0.5
 
     render json: { error: 'Verificación de reCAPTCHA fallida' }, status: :forbidden
   end
@@ -43,5 +38,9 @@ module RecaptchaVerifiable
     return true if client_ip.start_with?('192.168.0.')
 
     trusted_ips.include?(client_ip)
+  end
+
+  def recaptcha_enabled?
+    ENV['INFOMOVIL_RECAPTCHA_ENABLE'].to_s.downcase == 'true'
   end
 end

@@ -1,10 +1,8 @@
 class ComerciosController < ApplicationController
-  # Salta por completo la verificación de reCAPTCHA en producción y desarrollo
-  skip_before_action :verify_recaptcha, only: :lista
-
-
+  include RecaptchaVerifiable
   include TokenAutenticable
-  before_action :autorizar_comercio_por_token, only: [:update]
+
+  before_action :verify_recaptcha, only: :crear_no_seprec
 
   STOP_LIST = %w[
     A B C D E F G H I J K L M N Ñ O P Q R S T U V W X Y Z Á É Í Ó Ú
