@@ -41,13 +41,13 @@ class ComerciosController < ApplicationController
     resultados = base_scope
                   .select(:id, :latitud, :longitud, :zona_nombre, :calle_numero,
                           :empresa, :servicios, :telefono1, :telefono2,
-                          :telefono_whatsapp, :autorizado, :email_verificado)
+                          :whatsapp_verificado, :autorizado, :email_verificado)
                   .offset(offset)
                   .limit(per_page)
                   .map do |comercio|
                     comercio.as_json(only: [:id, :latitud, :longitud, :zona_nombre,
                                             :calle_numero, :empresa, :servicios,
-                                            :telefono1, :telefono2, :telefono_whatsapp,
+                                            :telefono1, :telefono2, :whatsapp_verificado,
                                             :autorizado]).merge(
                       email_verificado: comercio.email_verificado.present?
                     )
