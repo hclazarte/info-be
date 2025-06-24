@@ -39,7 +39,7 @@ class CampaniaSeleccionador
       )
     end
 
-    puts "[seleccionar_comercios_nuevos] Se crearon #{campanias_creadas.size} registros de CampaniaPropietariosEmail."
+    puts "************************** Se crearon #{campanias_creadas.size} campañas para comercios nuevos."
 
     campanias_creadas
   end
@@ -96,7 +96,6 @@ class CampaniaSeleccionador
       end
 
       if seleccionado
-        puts "[#{i + 1}] Seleccionado Comercio ID: #{seleccionado.id}, Email: #{seleccionado.email}, Fecha Encuesta: #{seleccionado.fecha_encuesta}"
         seleccionados << seleccionado
         total_registros -= 1
         comercio_scope = comercio_scope.where.not(id: seleccionado.id)
@@ -105,10 +104,10 @@ class CampaniaSeleccionador
       end
     end
 
-    puts "[seleccionar_comercios] Se seleccionaron #{seleccionados.size} comercios nuevos."
     seleccionados.each_with_index do |comercio, i|
       puts "[#{i + 1}] Seleccionado Comercio ID: #{comercio.id}, Email: #{comercio.email}, Fecha Encuesta: #{comercio.fecha_encuesta}"
     end
+    puts "************************** Se crearon #{seleccionados.size} campañas para comercios aleatorios."
 
     # Paso 3: Marcar comercios y crear entradas de campaña
     if seleccionados.any?

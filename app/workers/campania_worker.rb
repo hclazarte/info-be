@@ -45,17 +45,17 @@ class CampaniaWorker
 
     # PRODUCCIÓN:
     AdministracionMailer.notificacion("Campaña Propietarios email iniciada").deliver_later
-    campanias.each do |campania|
+    campanias.each_with_index do |campania, i|
       begin
         EmailProtegido.deliver_later(CampaniaMailer, :promocion_comercio, campania)
-        puts "Enviando correo a #{campania.email}"
+        puts "[#{i + 1}] Enviando correo a #{campania.email}"
       rescue EmailProtegido::EmailBloqueadoError => e
         puts e.message         # “Envío bloqueado: …”
       end
       campania.increment!(:intentos_envio, 1, touch: true)
       campania.update(ultima_fecha_envio: Time.current)
     end
-    puts "CampaniaWorker: envío de correos finalizada."
+    puts "************************** CampaniaWorker: envío #{campanias.size} correos."
   end
 
   private
