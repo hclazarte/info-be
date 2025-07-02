@@ -7,7 +7,7 @@ class ComercioFilterService
   def initialize(ciudad_id: nil, zona_id: nil, text: nil)
     @ciudad_id = ciudad_id.presence
     @zona_id   = zona_id.presence
-    @text      = text.to_s
+    @text = text.to_s.gsub('-', ' ')
   end
 
   # Devuelve un ActiveRecord::Relation listo para encadenar (paginación, select, order…)

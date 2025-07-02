@@ -22,6 +22,7 @@ class ComerciosController < ApplicationController
     TANTA TANTAS TANTO TANTOS TE TENER TI TODA TODAS TODO TODOS TOMAR TUYA
     TUYO TÚ UN UNA UNAS UNOS USTED USTEDES VARIAS VARIOS VOSOTRAS VOSOTROS
     VUESTRA VUESTRAS VUESTRO VUESTROS Y YO ÉL
+    AND OR NOT NEAR WITHIN ACCUMULATE MINUS SCORE ABOUT EQUIV NULL TRUE FALSE
   ].map(&:downcase).freeze
 
   # GET /comercios
@@ -163,77 +164,6 @@ class ComerciosController < ApplicationController
       :zona_nombre, :calle_numero, :planta, :numero_local, :nit, :ciudad_id, :zona_id,
       :autorizado, :documentos_validados, :autorizado
     )
-  end
-
-  # Construir condiciones WHERE dinámicamente
-  def build_where_conditions(ciudad_id, zona_id, text)
-    conditions = []
-
-    # Obtener nombres de ciudad y zona si existen
-    ciudad_nombre = get_ciudad_nombre(ciudad_id) if ciudad_id.present?
-    zona_nombre = get_zona_nombre(zona_id) if zona_id.present?
-
-    conditions << "CIUDAD_ID = #{ciudad_id.to_i}" if ciudad_id.present?
-    conditions << "ZONA_ID = #{zona_id.to_i}" if zona_id.present?
-    conditions << 'ACTIVO = 1'
-    conditions << 'BLOQUEADO = 0'
-
-    if text.present?
-      clean_text = remove_city_and_zone(text, ciudad_nombre, zona_nombre)
-      conditions.concat(process_words(clean_text))
-    end
-
-    conditions.join(' AND ')
-  end
-
-  # Procesar palabras y excluir las de la stop list
-  def process_words(input)
-    input.to_s.downcase.split.reject { |word| STOP_LIST.include?(word) }.map do |word|
-      "CONTAINS(COM_DESCR, BUSQUEDA('#{word}')) > 0"
-    end
-  end
-
-  # Eliminar el nombre de la ciudad y la zona del texto
-  def remove_city_and_zone(text, ciudad_nombre, zona_nombre)
-    words = text.to_s.downcase.split
-    words.reject! { |word| word == ciudad_nombre.to_s.downcase } if ciudad_nombre.present?
-    words.reject! { |word| word == zona_nombre.to_s.downcase } if zona_nombre.present?
-    words.join(' ')
-  end
-
-  # Métodos para obtener nombres de ciudad y zona
-  def get_ciudad_nombre(ciudad_id)
-    ciudad_id = ciudad_id.to_i
-    return nil if ciudad_id.zero?
-
-    begin
-      ciudad = Ciudad.find_by(id: ciudad_id)
-      if ciudad.nil?
-        Rails.logger.error "Ciudad con ID #{ciudad_id} no encontrada"
-        return nil
-      end
-      ciudad.nombre
-    rescue StandardError => e
-      Rails.logger.error "Error al obtener la ciudad: #{e.message}"
-      nil
-    end
-  end
-
-  def get_zona_nombre(zona_id)
-    zona_id = zona_id.to_i
-    return nil if zona_id.zero?
-
-    begin
-      zona = Zona.find_by(id: zona_id)
-      if zona.nil?
-        Rails.logger.error "Zona con ID #{zona_id} no encontrada"
-        return nil
-      end
-      zona.zona # Asegúrate de usar el nombre correcto de la columna
-    rescue StandardError => e
-      Rails.logger.error "Error al obtener la zona: #{e.message}"
-      nil
-    end
   end
 
 end
