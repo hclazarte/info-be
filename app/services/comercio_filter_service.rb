@@ -21,7 +21,7 @@ class ComercioFilterService
     scope = scope.where(zona_id:   @zona_id)   if @zona_id
     scope = apply_text_filter(scope)           if @text.present?
 
-    scope.order(id: :desc)
+    scope.order('autorizado DESC, id DESC')
   end
 
   private
