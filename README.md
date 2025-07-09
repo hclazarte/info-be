@@ -270,3 +270,89 @@ Este script actualiza el campo `email_verificado` en la tabla `comercios`, copia
 bundle exec rake propietarios:actualizar_email_verificado
 ```
 
+Perfecto. Aquí tienes la documentación técnica actualizada que describe el funcionamiento del webhook, los endpoints involucrados y la configuración en Meta para la integración con la **WhatsApp Cloud API**, basada en tu código actual.
+
+---
+
+## Documentación: Webhook de WhatsApp (Cloud API)
+
+### 1. Objetivo
+
+El webhook permite **recibir mensajes entrantes desde WhatsApp Cloud API**, registrar los mensajes en la base de datos y reenviarlos al comercio correspondiente si el comercio lo autorizados.
+
+---
+
+### 2. Endpoints definidos
+
+#### `GET /api/webhooks/whatsapp`
+
+**Función:** Verificación del webhook por parte de Meta.
+
+Este endpoint responde con el valor de `hub.challenge` si el token proporcionado por Meta coincide con el configurado en el entorno.
+
+
+
+---
+
+#### `POST /api/webhooks/whatsapp`
+
+**Función:** Recepción de mensajes entrantes desde WhatsApp.
+
+Este endpoint procesa el JSON enviado por Meta cuando un usuario envía un mensaje al número de WhatsApp asociado.
+
+**Pasos realizados:**
+
+1. Se extrae el número del remitente y el cuerpo del mensaje.
+2. Se guarda el mensaje en la tabla `WhatsappChat` con estado `:recibido`.
+3. Si el número coincide con un comercio, se actualiza el campo `whatsapp_fecha_autorizado` del comercio.
+4. Si el número coincide con un `usuario_whatsapp`, también se actualiza su campo `whatsapp_fecha_autorizado`.
+5. Se verifica si existen mensajes pendientes (`estado: :nuevo`) que ahora pueden ser reenviados al comercio. Si el comercio está autorizados, el mensaje se envía.
+
+---
+
+### 3. Comportamiento ante mensajes entrantes
+
+* **Si el número pertenece a un comercio:**
+  Se marca como autorizado (`whatsapp_fecha_autorizado`) y se evalúan los mensajes pendientes de usuarios para ese comercio.
+
+* **Si el número pertenece a un usuario:**
+  Se marca como autorizado, y se revisan los mensajes pendientes dirigidos al comercio respectivo.
+
+* **Si el número es desconocido:**
+  El mensaje se guarda, pero no se actualiza ninguna autorización. Se loguea la situación como advertencia.
+
+---
+
+### 4. Configuración en Meta (Facebook Developers)
+
+**Pasos realizados:**
+
+1. Se seleccionó el producto **WhatsApp Business Account** en la sección *Webhooks*.
+2. Se definió la URL de devolución de llamada (callback):
+
+   ```
+   https://infomovil.com.bo/api/webhooks/whatsapp
+   ```
+3. Se ingresó el identificador de verificación:
+
+   ```
+   (por ejemplo) INFOMOVIL_WHATSAPP_VERIFY_TOKEN
+   ```
+4. El sistema respondió exitosamente a la verificación (`hub.challenge`), y se completó la suscripción.
+5. Se seleccionaron los campos:
+
+   * `messages`
+   * `message_status`
+
+---
+
+### 5. Variables de entorno necesarias
+
+En producción, deben estar definidas las siguientes variables:
+
+```bash
+INFOMOVIL_WHATSAPP_VERIFY_TOKEN=(infomovil whatsapp verify token)
+WHATSAPP_ACCESS_TOKEN=(token generado desde Meta para enviar mensajes)
+```
+
+---
