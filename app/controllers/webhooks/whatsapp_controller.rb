@@ -50,6 +50,7 @@ module Webhooks
             if comercio.whatsapp_autorizado? && pending_chat.usuario_whatsapp&.whatsapp_autorizado?
               enviar_texto_al_comercio(pending_chat)
               pending_chat.enviado!
+              enviar_confirmacion_al_usuario(pending_chat)
               Rails.logger.info("Chat ##{pending_chat.id} enviado y actualizado a estado ENVIADO")
             else
               Rails.logger.info("Chat ##{pending_chat.id} no autorizado → se mantiene en estado NUEVO")
@@ -68,6 +69,7 @@ module Webhooks
             if pending_chat.comercio&.whatsapp_autorizado?
               enviar_texto_al_comercio(pending_chat)
               pending_chat.enviado!
+              enviar_confirmacion_al_usuario(pending_chat)
               Rails.logger.info("Chat ##{pending_chat.id} enviado y actualizado a estado ENVIADO")
             else
               Rails.logger.info("Chat ##{pending_chat.id} no autorizado → se mantiene en estado NUEVO")
@@ -99,5 +101,26 @@ module Webhooks
         template_variables: []
       ).send_text_message(chat.texto_para_envio)
     end
+
+    def enviar_confirmacion_al_usuario(chat)
+      usuario = chat.usuario_whatsapp
+      comercio = chat.comercio
+      return unless usuario&.celular.present? && comercio&.empresa.present?
+
+      mensaje = <<~MSG.strip
+        Su mensaje fue enviado a #{comercio.empresa}. Ellos deberían contactarle directamente a su WhatsApp.
+        Es un placer servirle. Gracias por usar Infomóvil.
+      MSG
+
+      Rails.logger.info("Enviando confirmación al usuario #{usuario.celular} para Chat ##{chat.id}")
+
+      Whatsapp::SendMessageService.new(
+        to: usuario.celular,
+        template_name: nil,
+        template_language: nil,
+        template_variables: []
+      ).send_text_message(mensaje)
+    end
+
   end
 end
