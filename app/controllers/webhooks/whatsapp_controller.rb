@@ -103,8 +103,14 @@ module Webhooks
     end
 
     def enviar_confirmacion_al_usuario(chat)
+      Rails.logger.info("Entrando a enviar_confirmacion_al_usuario para Chat ##{chat.id}")
+
       usuario = chat.usuario_whatsapp
       comercio = chat.comercio
+
+      Rails.logger.info("Usuario: #{usuario.inspect}")
+      Rails.logger.info("Comercio: #{comercio.inspect}")
+
       return unless usuario&.celular.present? && comercio&.empresa.present?
 
       mensaje = <<~MSG.strip
