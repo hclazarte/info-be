@@ -28,30 +28,30 @@ module Whatsapp
 
       Rails.logger.info("WhatsappChat ##{chat.id} creado para usuario #{usuario_whatsapp.celular} y comercio #{comercio.id}")
 
-      if comercio.whatsapp_autorizado?
-        Rails.logger.info("Ambos autorizados → enviando texto libre al comercio")
+      unless usuario_whatsapp.whatsapp_autorizado?
+        Rails.logger.info("Usuario no autorizado → solicitando autorización")
 
+        Whatsapp::SendMessageService.new(
+          to: celular,
+          template_name: 'infomovil_usuario_informacion',
+          template_language: 'es',
+          template_variables: [
+            {
+              parameter_name: 'customer_name',
+              text: empresa
+            }
+          ]
+        ).send_template_message
+      end
+
+      unless comercio.whatsapp_autorizado?
         comercio_telefono = comercio.telefono_whatsapp
         if comercio_telefono.present?
+          Rails.logger.info("Comercio no autorizado → solicitando autorización")
+
           Whatsapp::SendMessageService.new(
             to: comercio_telefono,
-            template_name: nil,
-            template_language: nil,
-            template_variables: []
-          ).send_text_message(chat.texto_para_envio)
-
-          chat.enviado!
-        else
-          Rails.logger.warn("Comercio #{comercio.id} no tiene telefono_whatsapp definido → no se puede enviar texto libre")
-        end
-
-      else
-        unless usuario_whatsapp.whatsapp_autorizado?
-          Rails.logger.info("Usuario no autorizado → solicitando autorización")
-
-          Whatsapp::SendMessageService.new(
-            to: celular,
-            template_name: 'infomovil_usuario_informacion',
+            template_name: 'infomovil_contacto_comercios',
             template_language: 'es',
             template_variables: [
               {
@@ -60,27 +60,23 @@ module Whatsapp
               }
             ]
           ).send_template_message
+        else
+          Rails.logger.warn("Comercio #{comercio.id} no tiene telefono_whatsapp definido → no se puede solicitar autorización")
         end
+      end
 
-        unless comercio.whatsapp_autorizado?
-          comercio_telefono = comercio.telefono_whatsapp
-          if comercio_telefono.present?
-            Rails.logger.info("Comercio no autorizado → solicitando autorización")
+      if comercio.whatsapp_autorizado?
+        Rails.logger.info("Comercio autorizado → enviando texto libre al comercio")
 
-            Whatsapp::SendMessageService.new(
-              to: comercio_telefono,
-              template_name: 'infomovil_contacto_comercios',
-              template_language: 'es',
-              template_variables: [
-                {
-                  parameter_name: 'customer_name',
-                  text: empresa
-                }
-              ]
-            ).send_template_message
-          else
-            Rails.logger.warn("Comercio #{comercio.id} no tiene telefono_whatsapp definido → no se puede solicitar autorización")
+        comercio_telefono = comercio.telefono_whatsapp
+        if comercio_telefono.present?
+          Whatsapp::ChatDeliveryService.new(chat).tap do |servicio|
+            servicio.enviar_al_comercio
+            chat.enviado!
+            servicio.enviar_confirmacion_al_usuario
           end
+        else
+          Rails.logger.warn("Comercio #{comercio.id} no tiene telefono_whatsapp definido → no se puede enviar texto libre")
         end
       end
 
