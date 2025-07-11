@@ -2,6 +2,7 @@ namespace :solicitudes do
   desc "Envío de seguimiento para solicitudes incompletas con recordatorio de formulario"
   task seguimiento: :environment do
     limite = 72.hours.ago
+    errores = []
 
     Solicitud.where("updated_at < ?", limite)
              .where("estado < ?", 2)
@@ -17,9 +18,16 @@ namespace :solicitudes do
         solicitud.increment!(:intentos, 1, touch: true)
         puts "Enviado a #{solicitud.email} (Solicitud ##{solicitud.id})"
       rescue => e
-        puts "Error en solicitud ##{solicitud.id}: #{e.message}"
+        error_msg = "Error en solicitud ##{solicitud.id}: #{e.class} - #{e.message}"
+        errores << error_msg
+        puts error_msg
       end
+    end
 
+    if errores.any?
+      puts "\n--- Resumen de errores ---"
+      errores.each { |err| puts err }
+      exit(1)
     end
   end
 end
