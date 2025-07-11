@@ -38,7 +38,7 @@ class FormularioInscripcionPdf
       end
     end    
 
-    resultado.to_pdf
+    resultado.to_pdf.force_encoding("ASCII-8BIT")
   ensure
     pdf_temp.close
     pdf_temp.unlink
