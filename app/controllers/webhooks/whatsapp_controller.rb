@@ -88,49 +88,5 @@ module Webhooks
 
       head :ok
     end
-
-    # private
-
-    # def enviar_texto_al_comercio(chat)
-    #   comercio = chat.comercio
-    #   comercio_telefono = comercio&.telefono_whatsapp
-    #   return unless comercio && comercio_telefono.present?
-
-    #   Rails.logger.info("Enviando texto para Chat ##{chat.id} al comercio #{comercio_telefono}")
-
-    #   Whatsapp::SendMessageService.new(
-    #     to: comercio_telefono,
-    #     template_name: nil,
-    #     template_language: nil,
-    #     template_variables: []
-    #   ).send_text_message(chat.texto_para_envio)
-    # end
-
-    # def enviar_confirmacion_al_usuario(chat)
-    #   Rails.logger.info("Entrando a enviar_confirmacion_al_usuario para Chat ##{chat.id}")
-
-    #   usuario = chat.usuario_whatsapp
-    #   comercio = chat.comercio
-
-    #   Rails.logger.info("Usuario: #{usuario.inspect}")
-    #   Rails.logger.info("Comercio: #{comercio.inspect}")
-
-    #   return unless usuario&.celular.present? && comercio&.empresa.present?
-
-    #   mensaje = <<~MSG.strip
-    #     Su mensaje fue enviado a #{comercio.empresa}. Ellos deberían contactarle directamente a su WhatsApp.
-    #     Es un placer servirle. Gracias por usar Infomóvil.
-    #   MSG
-
-    #   Rails.logger.info("Enviando confirmación al usuario #{usuario.celular} para Chat ##{chat.id}")
-
-    #   Whatsapp::SendMessageService.new(
-    #     to: usuario.celular,
-    #     template_name: nil,
-    #     template_language: nil,
-    #     template_variables: []
-    #   ).send_text_message(mensaje)
-    # end
-
   end
 end
