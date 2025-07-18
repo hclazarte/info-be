@@ -13,7 +13,7 @@ class ConfirmacionMailer < ApplicationMailer
     ) do |format|
       format.html do
         render html: render_to_string(
-          template: 'sugerencias_mailer/confirmacion_usuario',
+          template: 'confirmacion_mailer/confirmacion_usuario',
           layout: 'mailer'
         ).html_safe,
         content_type: 'text/html; charset=UTF-8; format=flowed',
