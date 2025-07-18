@@ -6,10 +6,6 @@ class ConfirmacionMailer < ApplicationMailer
     @email = correo.remitente
     
     Rails.logger.info "Enviando confirmación automática a: #{@email}"
-    unsubscribe_link = ApplicationController.helpers.unsubscribe_url(@email)
-
-    headers['List-Unsubscribe'] =
-      "<#{unsubscribe_link}>, <mailto:portal@infomovil.com.bo?subject=unsubscribe>"
 
     mail(
       to: @email,
