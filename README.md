@@ -237,7 +237,7 @@ Se envía seguimiento solo a solicitudes que cumplan **todas** estas condiciones
 
 * `updated_at` mayor a 72 horas atrás
 * `estado` menor a 2
-* `intentos` menor a 3
+* `intentos` menor a 2
 * `email_rebotado` igual a 0
 
 #### Qué hace la tarea

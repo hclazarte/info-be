@@ -6,7 +6,7 @@ namespace :solicitudes do
 
     Solicitud.where("updated_at < ?", limite)
              .where("estado < ?", 2)
-             .where("intentos < ?", 3)
+             .where("intentos < ?", 2)
              .where(email_rebotado: 0)
              .find_each do |solicitud|
 
