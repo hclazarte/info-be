@@ -7,6 +7,7 @@ class CorreosController < ApplicationController
 
     if correo.save
       BuzonMailer.enviar_mensaje_portal(correo).deliver_later # <-- Asegura que es deliver_later
+      ConfirmacionMailer.confirmacion_usuario(correo).deliver_later
       render json: { message: 'Mensaje recibido correctamente', id: correo.id }, status: :created
     else
       render json: { error: correo.errors.full_messages }, status: :unprocessable_entity
