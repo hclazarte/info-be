@@ -3,9 +3,11 @@ class SolicitudSeguimientoMailer < ApplicationMailer
   helper :unsub
   default from: 'solicitudes@infomovil.com.bo'
 
-  def enviar_formulario(solicitud, pdf_data)
+  def enviar_formulario(solicitud)
     @solicitud = solicitud
     @comercio  = solicitud.comercio
+
+    pdf_data = FormularioInscripcionPdf.new(@comercio).generar
 
     unsubscribe_link = ApplicationController.helpers.unsubscribe_url(@solicitud.email)
 
