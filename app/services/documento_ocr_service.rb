@@ -5,7 +5,7 @@ class DocumentoOcrService
 
   def extraer_texto
     imagen_path = convertir_a_imagen_si_pdf(@archivo)
-    RTesseract.new(imagen_path).to_s
+    RTesseract.new(imagen_path, lang: 'spa').to_s
   end
 
   private
