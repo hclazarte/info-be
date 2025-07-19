@@ -3,6 +3,7 @@ class ComerciosController < ApplicationController
   include TokenAutenticable
 
   before_action :verify_recaptcha, only: :crear_no_seprec
+  before_action :set_comercio, only: [:update]
 
   STOP_LIST = %w[
     A B C D E F G H I J K L M N Ñ O P Q R S T U V W X Y Z Á É Í Ó Ú
@@ -162,8 +163,14 @@ class ComerciosController < ApplicationController
       :telefono1, :telefono2, :telefono_whatsapp, :email, :pagina_web, :servicios,
       :contacto, :palabras_clave, :bloqueado, :activo, :horario, :latitud, :longitud,
       :zona_nombre, :calle_numero, :planta, :numero_local, :nit, :ciudad_id, :zona_id,
-      :autorizado, :documentos_validados, :autorizado
+      :autorizado, :documentos_validados
     )
   end
-
+  
+  def set_comercio
+    @comercio = Comercio.find_by(id: params[:id])
+    unless @comercio
+      render json: { error: 'Comercio no encontrado' }, status: :not_found
+    end
+  end
 end
