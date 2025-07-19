@@ -141,7 +141,7 @@ class DocumentosController < ApplicationController
       end
 
       codigo_vale = extraer_codigo_vale(texto)
-      vale = Vale.find_by(codigo: codigo)
+      vale = Vale.find_by(codigo: codigo_vale)
 
       if vale.nil?
         return render json: { validado: false, mensaje: 'El vale no existe' }
