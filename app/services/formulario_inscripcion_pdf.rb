@@ -12,12 +12,6 @@ class FormularioInscripcionPdf
     ciudad = Ciudad.find(@comercio.ciudad_id)
     nombre_ciudad = ciudad&.ciudad.to_s
 
-    @comercio.attributes.each do |k, v|
-      if v.is_a?(String) && !v.valid_encoding?
-        puts "Campo inválido en comercio ##{comercio.id}: #{k} contiene bytes no válidos"
-      end
-    end
-
     # Paso 1: crear capa con datos del comercio
     Prawn::Document.generate(pdf_temp.path, page_size: 'LETTER', margin: 0) do |pdf|
       pdf.font 'Helvetica'

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_07_05_172812) do
+ActiveRecord::Schema[7.0].define(version: 2025_07_19_133832) do
   create_table "campania_propietarios_emails", force: :cascade do |t|
     t.integer "comercio_id", limit: 19, precision: 19, null: false
     t.string "email", null: false
@@ -214,6 +214,19 @@ ActiveRecord::Schema[7.0].define(version: 2025_07_05_172812) do
     t.index ["celular"], name: "index_usuarios_whatsapp_on_celular", unique: true
   end
 
+  create_table "vales", force: :cascade do |t|
+    t.string "codigo", null: false
+    t.integer "comercio_id", precision: 38
+    t.boolean "usado", default: false, null: false
+    t.datetime "usado_en"
+    t.datetime "fecha_vencimiento", null: false
+    t.string "motivo"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["codigo"], name: "index_vales_on_codigo", unique: true
+    t.index ["comercio_id"], name: "index_vales_on_comercio_id"
+  end
+
   create_table "whatsapp_chats", force: :cascade do |t|
     t.integer "comercio_id", precision: 38
     t.string "nombre"
@@ -248,6 +261,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_07_05_172812) do
   add_foreign_key "logs", "ciudades", column: "ciudad_id"
   add_foreign_key "logs", "zonas"
   add_foreign_key "solicitudes", "comercios"
+  add_foreign_key "vales", "comercios"
   add_foreign_key "whatsapp_chats", "comercios"
   add_foreign_key "zonas", "ciudades", column: "ciudad_id"
   add_foreign_key "zonas_shape", "zonas", column: "id", name: "fk_zonas_shape", on_delete: :cascade
