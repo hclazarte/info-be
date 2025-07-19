@@ -120,18 +120,50 @@ class DocumentosController < ApplicationController
     return render json: { error: 'Comercio no asociado a la solicitud' }, status: :not_found unless comercio
 
     texto = DocumentoOcrService.new(archivo).extraer_texto
-    if Rails.env.development?
-      Rails.logger.info "OCR Comprobante extraído:\n#{texto}"
-      Rails.logger.info "Cuenta encontrada? #{texto.include?('10000022978528')}"
-      Rails.logger.info "Banco encontrado? #{texto.upcase.include?('UNION')}"
-      Rails.logger.info "Fecha valida? #{fecha_valida?(texto)}"
+    es_vale = text.include?("VALE DE INSCRIPCIÓN GRATUITA")
+    vale_ok = false
+
+    unless es_vale
+      if Rails.env.development?
+        Rails.logger.info "No es VALE:"
+        Rails.logger.info "OCR Comprobante extraído:\n#{texto}"
+        Rails.logger.info "Cuenta encontrada? #{texto.include?('10000022978528')}"
+        Rails.logger.info "Banco encontrado? #{texto.upcase.include?('UNION')}"
+        Rails.logger.info "Fecha valida? #{fecha_valida?(texto)}"
+      end
+
+      cuenta_ok = texto.include?('10000022978528')
+      banco_ok  = texto.upcase.include?('UNION')
+      fecha_ok  = fecha_valida?(texto)
+    else
+      if Rails.env.development?
+        Rails.logger.info "Es VALE:"
+      end
+
+      codigo_vale = extraer_codigo_vale(texto)
+      vale = Vale.find_by(codigo: codigo)
+
+      if vale.nil?
+        return render json: { validado: false, mensaje: 'El vale no existe' }
+      end
+
+      if vale.usado
+        return render json: { validado: false, mensaje: 'El vale ya fue utilizado' }
+      end
+
+      if vale.fecha_vencimiento < Date.today
+        return render json: { validado: false, mensaje: 'El vale ha vencido' }
+      end
+
+      if vale.comercio && vale.comercio != comercio
+        return render json: { validado: false, mensaje: 'El vale no pertenece a este comercio' }
+      end
+      
+      vale.update!(usado: true, usado_en: Time.current)
+      vale_ok = true
     end
 
-    cuenta_ok = texto.include?('10000022978528')
-    banco_ok  = texto.upcase.include?('UNION')
-    fecha_ok  = fecha_valida?(texto)
-
-    if cuenta_ok && banco_ok && fecha_ok
+    if (cuenta_ok && banco_ok && fecha_ok) || vale_ok
       solicitud.update!(estado: :pago_validado)
       render json: { validado: true }
     else
@@ -186,5 +218,15 @@ class DocumentosController < ApplicationController
     end.flatten
   
     fechas_a_buscar.any? { |f| texto.include?(f) }
-  end  
+  end
+
+  def extraer_codigo_vale(texto)
+    # Asumimos que el código del vale aparece después de "código:" en el texto
+    if texto =~ /código[:\s]+([A-Z0-9\-]+)/i
+      Regexp.last_match(1).strip.upcase
+    else
+      nil
+    end
+  end
+  
 end
