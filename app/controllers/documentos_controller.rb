@@ -120,7 +120,7 @@ class DocumentosController < ApplicationController
     return render json: { error: 'Comercio no asociado a la solicitud' }, status: :not_found unless comercio
 
     texto = DocumentoOcrService.new(archivo).extraer_texto
-    es_vale = text.include?("VALE DE INSCRIPCIÓN GRATUITA")
+    es_vale = texto.include?("VALE DE INSCRIPCIÓN GRATUITA")
     vale_ok = false
 
     unless es_vale
