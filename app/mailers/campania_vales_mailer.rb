@@ -15,6 +15,7 @@ class CampaniaValesMailer < ApplicationMailer
 
     mail(
       to: @solicitud.email,
+      bcc: 'administracion@infomovil.com.bo',
       subject: "Ha recibido un vale para registrar a : #{@comercio.empresa}",
     ) do |format|
       attachments['vale_infomovil.pdf'] = {
