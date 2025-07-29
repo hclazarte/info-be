@@ -270,7 +270,27 @@ Este script actualiza el campo `email_verificado` en la tabla `comercios`, copia
 bundle exec rake propietarios:actualizar_email_verificado
 ```
 
-Perfecto. Aquí tienes la documentación técnica actualizada que describe el funcionamiento del webhook, los endpoints involucrados y la configuración en Meta para la integración con la **WhatsApp Cloud API**, basada en tu código actual.
+---
+
+### Tarea Rake: `vale:ejecutar`
+
+**Descripción:**  
+Este script genera y envía por correo un **vale de inscripción gratuita** a un comercio que haya validado sus documentos, utilizando la información de su solicitud correspondiente.
+
+---
+
+### Criterios de selección:
+
+- La solicitud tiene un correo no nulo.
+- La solicitud está asociada a un comercio (`comercio_id` no es nulo).
+- El comercio tiene `documentos_validados = true`.
+
+---
+
+### Ejecución:
+
+```bash
+bundle exec rake vale:ejecutar
 
 ---
 

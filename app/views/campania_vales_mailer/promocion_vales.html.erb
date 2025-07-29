@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Vale de inscripción Infomóvil</title>
+  </head>
+  <body style="font-family: sans-serif; background-color: #f9f9f9; padding: 20px;">
+    <div style="max-width: 600px; margin: auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.05);">
+      <h2 style="color: #2c3e50;">¡Ha recibido un vale para registrar su comercio en Infomóvil por un valor de Bs. 50!</h2>
+
+      <% if @comercio.present? %>
+        <p><strong><%= @comercio.empresa %></strong>, gracias por su interés en formar parte de nuestra plataforma.</p>
+      <% else %>
+        <p>Gracias por su interés en formar parte de la plataforma Infomóvil.</p>
+      <% end %>
+
+      <p>Le otorgamos un <strong>vale de inscripción gratuita</strong> que puede usar en lugar de un comprobante de pago para registrar su comercio.</p>
+
+      <p><strong>¿Cómo utilizar el vale?</strong></p>
+      <ul>
+        <li>Ingrese al formulario de inscripción en Infomóvil haciendo click en el botón.</li>
+        <li>En la sección “Tipo de Plan”, seleccione <strong>De Pago (Bs. 50/año)</strong>.</li>
+        <li>Complete los datos solicitados: teléfonos, palabras clave, servicios, página web, etc.</li>
+        <li>Cuando llegue al paso de <strong>pago</strong>, en vez de subir un comprobante bancario, <strong>adjunte el archivo PDF que acompaña este correo</strong>.</li>
+      </ul>
+
+      <p style="margin-top: 20px;">El vale es válido hasta el: <strong><%= @vale.fecha_vencimiento.strftime("%Y-%m-%d") %></strong></p>
+
+      <p style="margin: 20px 0;">
+        <a href="<%= @base_url %>/app/registro-comercio?token=<%= @solicitud.otp_token %>"
+          style="background-color: #2d89ef; color: white; padding: 12px 20px; text-decoration: none; border-radius: 5px;">
+          Ir al formulario de inscripción
+        </a>
+      </p>
+
+      <h3>¿Por qué estar en Infomóvil?</h3>
+      <ul>
+        <li>Visibilidad frente a miles de potenciales clientes.</li>
+        <li>Presencia destacada en Google.</li>
+        <li>Ubicación en el mapa, priorizando negocios cercanos a los usuarios.</li>
+        <li>Acceso a campañas de promoción exclusivas.</li>
+      </ul>
+
+      <p>Infomóvil es un directorio boliviano con más de 15 años de trayectoria ayudando a negocios como el suyo a crecer.</p>
+
+      <p>Ante cualquier duda, puede responder directamente a este correo o escribirnos a <strong>promociones@infomovil.com.bo</strong>.</p>
+
+      <p style="font-family: 'Brush Script MT', cursive; font-size: 24px; color: #2c3e50; margin-top: 40px;">
+         Infomóvil
+      </p>
+
+      <p style="font-size: 12px; color: #777; margin-top: 30px;">
+        ¿No desea recibir más correos?
+        <a href="<%= unsubscribe_url(@solicitud.email) %>" style="color: #555;">
+          Cancele su suscripción aquí
+        </a>.
+      </p>
+    </div>
+  </body>
+</html>
