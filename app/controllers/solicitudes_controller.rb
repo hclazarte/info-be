@@ -6,77 +6,73 @@ class SolicitudesController < ApplicationController
   def create
     email       = params[:email]
     comercio_id = params[:comercio_id]
-  
+
     return render json: { error: 'Email es obligatorio' },
                   status: :unprocessable_entity unless email.present?
-  
-    comercio = Comercio.find(comercio_id)
+
+    comercio = Comercio.find_by(id: comercio_id)
     return render json: { error: 'Comercio no encontrado' },
                   status: :not_found unless comercio
-  
+
     ActiveRecord::Base.transaction do
+      solicitud = nil
+      mensaje   = ''
+      status    = :ok
+
       if comercio.email == email
         solicitud = Solicitud.where(comercio_id: comercio_id, email: email)
-                             .where.not(estado: :rechazada)
-                             .order(created_at: :desc)
-                             .first_or_initialize
-  
+                            .where.not(estado: :rechazada)
+                            .order(created_at: :desc)
+                            .first_or_initialize
+
         solicitud.assign_attributes(
           otp_token:      SecureRandom.hex(10),
           otp_expires_at: 24.hours.from_now,
-          estado:         :documentos_validados                         # enum = 1
+          estado:         :documentos_validados
         )
-  
+
         comercio.update!(
           email_verificado:     email,
           documentos_validados: true
         )
-  
-        solicitud.save!
-        EnviarTokenJob.perform_async(solicitud.id)
-  
-        return render json: { message: 'Solicitud procesada sin validación de documentos',
-                              token:   solicitud.otp_token },
-                      status: :ok
+
+        mensaje = 'Solicitud procesada sin validación de documentos'
+      else
+        solicitud = Solicitud.where(comercio_id: comercio_id, email: email)
+                            .where.not(estado: :rechazada)
+                            .order(created_at: :desc)
+                            .first
+
+        if solicitud
+          solicitud.update!(
+            otp_token:      SecureRandom.hex(10),
+            otp_expires_at: 24.hours.from_now
+          )
+          mensaje = 'Solicitud existente actualizada'
+        else
+          solicitud = Solicitud.create!(
+            email:          email,
+            comercio_id:    comercio_id,
+            otp_token:      SecureRandom.hex(10),
+            otp_expires_at: 24.hours.from_now,
+            estado:         :pendiente_verificacion
+          )
+          mensaje = 'Solicitud creada exitosamente'
+          status  = :created
+        end
       end
-  
-      # ─────────────────────────────────────────────
-      # 3. Flujo original (no coincide el email)
-      # ─────────────────────────────────────────────
-      solicitud_existente = Solicitud.where(comercio_id: comercio_id, email: email)
-                                     .where.not(estado: 5)
-                                     .order(created_at: :desc)
-                                     .first
-  
-      if solicitud_existente
-        solicitud_existente.update!(
-          otp_token:      SecureRandom.hex(10),
-          otp_expires_at: 24.hours.from_now
-        )
-        EnviarTokenJob.perform_async(solicitud_existente.id)
-        return render json: { message: 'Solicitud existente actualizada',
-                              token:   solicitud_existente.otp_token },
-                      status: :ok
-      end
-  
-      # Si no existe una solicitud válida, se crea una nueva
-      solicitud = Solicitud.create!(
-        email:          email,
-        comercio_id:    comercio_id,
-        otp_token:      SecureRandom.hex(10),
-        otp_expires_at: 24.hours.from_now,
-        estado:         :pendiente_verificacion                         # enum = 0
-      )
-  
+
       EnviarTokenJob.perform_async(solicitud.id)
-      render json: { message: 'Solicitud creada exitosamente',
-                     token:   solicitud.otp_token },
-             status: :created
+
+      render json: {
+        message: mensaje,
+        token:   solicitud.otp_token
+      }, status: status
     end
   rescue ActiveRecord::RecordInvalid => e
     render json: { errors: e.record.errors.full_messages },
-           status: :unprocessable_entity
-  end   
+          status: :unprocessable_entity
+  end
 
   def buscar_por_token
     solicitud = Solicitud.includes(:comercio)
@@ -123,6 +119,39 @@ class SolicitudesController < ApplicationController
     else
       render json: { errors: @solicitud.errors.full_messages }, status: :unprocessable_entity
     end
+  end
+
+  def preparar_escenario
+    comercio = Comercio.find_by(id:53257)
+    return render json: { error: 'Comercio no encontrado' }, status: :not_found unless comercio
+
+    email = 'hclazarte@hotmail.com'
+
+    Solicitud.where(comercio_id: comercio.id).delete_all
+
+    comercio.update!(
+        contacto: nil,
+        palabras_clave: nil,
+        pagina_web: nil,
+        telefono2: nil,
+        telefono_whatsapp: nil,
+        email: 'hclazarte@hotmail.com',
+        documentos_validados: 0,
+        autorizado:0,
+        email_verificado:nil
+    )
+
+    solicitud = Solicitud.create!(
+      email: email,
+      comercio_id: comercio.id,
+      otp_token: SecureRandom.hex(10),
+      otp_expires_at: 24.hours.from_now,
+      estado: :pendiente_verificacion
+    )
+
+    render json: {
+      url: "#{Rails.configuration.base_url}/app/registro-comercio?token=#{solicitud.otp_token}"
+    }
   end
 
   private
