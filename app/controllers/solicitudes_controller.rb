@@ -150,7 +150,7 @@ class SolicitudesController < ApplicationController
     )
 
     render json: {
-      url: "#{Rails.configuration.base_url}/app/registro-comercio?token=#{solicitud.otp_token}"
+      token: solicitud.otp_token
     }
   end
 
