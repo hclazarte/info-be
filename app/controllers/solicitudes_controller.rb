@@ -119,7 +119,7 @@ class SolicitudesController < ApplicationController
       status    = :ok
 
       if comercio.email == email
-        solicitud = Solicitud.where(comercio_id: comercio_id, email: email)
+        solicitud = Solicitud.where(comercio_id: comercio.id, email: email)
                             .where.not(estado: :rechazada)
                             .order(created_at: :desc)
                             .first_or_initialize
@@ -136,7 +136,7 @@ class SolicitudesController < ApplicationController
 
         mensaje = 'Solicitud procesada sin validación de documentos'
       else
-        solicitud = Solicitud.where(comercio_id: comercio_id, email: email)
+        solicitud = Solicitud.where(comercio_id: comercio.id, email: email)
                             .where.not(estado: :rechazada)
                             .order(created_at: :desc)
                             .first
@@ -150,7 +150,7 @@ class SolicitudesController < ApplicationController
         else
           solicitud = Solicitud.create!(
             email:          email,
-            comercio_id:    comercio_id,
+            comercio_id:    comercio.id,
             otp_token:      SecureRandom.hex(10),
             otp_expires_at: 24.hours.from_now,
             estado:         :pendiente_verificacion
