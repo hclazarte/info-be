@@ -26,7 +26,7 @@ Rails.application.routes.draw do
     post 'solicitudes', to: 'solicitudes#create', as: 'crear_solicitud'
     get 'solicitudes/buscar_por_token', to: 'solicitudes#buscar_por_token', as: 'buscar_solicitud_por_token'
     patch 'solicitudes/:id', to: 'solicitudes#update', as: 'actualizar_solicitud'
-    post 'solicitudes/preparar_escenario', to: 'solicitudes#preparar_escenario'
+    post 'solicitudes/preparar_escenarios', to: 'solicitudes#preparar_escenarios'
 
     # Documentos
     post 'documentos/nit',         to: 'documentos#validar_nit'

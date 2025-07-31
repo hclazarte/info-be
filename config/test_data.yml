@@ -1,0 +1,42 @@
+casos_solicitudes:
+  - email: hclazarte@noexiste.com
+    comercio:
+      id: 53257
+      ciudad_id: 7
+      zona_id: 5
+      zona_nombre: 'SAN PEDRO'
+      calle_numero: 'AV. 20 DE OCTUBRE Nº 1839'
+      planta: null
+      numero_local: null
+      telefono1: null
+      palabras_clave: null
+      telefono2: null
+      telefono_whatsapp: '59170513586'
+      pagina_web: null
+      servicios: null
+      contacto: null
+      email: 'hclazarte@hotmail.com'
+      documentos_validados: 0
+      autorizado: 0
+      email_verificado: null
+
+  - email: jackyfukushima@gmail.com
+    comercio:
+      id: 53258
+      ciudad_id: 44
+      zona_id: 31
+      zona_nombre: 'CENTRAL'
+      calle_numero: 'AYACUCHO Nº s/n'
+      planta: null
+      numero_local: null
+      telefono1: null
+      palabras_clave: null
+      telefono2: null
+      telefono_whatsapp: '59172300013'
+      pagina_web: null
+      servicios: null
+      contacto: null
+      email: 'jackyfukushima@gmail.com'
+      documentos_validados: 0
+      autorizado: 0
+      email_verificado: null
