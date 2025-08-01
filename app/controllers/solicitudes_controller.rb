@@ -127,8 +127,9 @@ class SolicitudesController < ApplicationController
         solicitud.assign_attributes(
           otp_token:      SecureRandom.hex(10),
           otp_expires_at: 24.hours.from_now,
-          estado:         :documentos_validados
+          estado:         :documentos_validados,
         )
+        solicitud.save!
 
         comercio.update!(
           email_verificado:     email
