@@ -78,32 +78,30 @@ class SolicitudesController < ApplicationController
     end
   end
 
-  def preparar_escenarios
+  def preparar_escenario
+    alias_param = params[:alias]
     casos = YAML.load_file(Rails.root.join('config', 'test_data.yml'))['casos_solicitudes']
-    resultados = []
+    caso = casos[alias_param]
 
-    casos.each do |caso|
-      email = caso['email']
-      comercio_attrs = caso['comercio']
+    return render json: { error: 'Caso no encontrado' }, status: :not_found unless caso
 
-      next unless comercio_attrs && comercio_attrs['id'] && email
+    email = caso['email']
+    comercio_attrs = caso['comercio']
+    return render json: { error: 'Datos incompletos' }, status: :unprocessable_entity unless email && comercio_attrs
 
-      comercio = Comercio.find_or_initialize_by(id: comercio_attrs['id'])
-      comercio.assign_attributes(comercio_attrs)
-      comercio.save!
+    comercio = Comercio.find_or_initialize_by(id: comercio_attrs['id'])
+    comercio.assign_attributes(comercio_attrs)
+    comercio.save!
 
-      Solicitud.where(comercio_id: comercio.id).delete_all
+    Solicitud.where(comercio_id: comercio.id).delete_all
 
-      result = actualiza_informacion(email, comercio)
-      solicitud = result[:solicitud]
+    result = actualiza_informacion(email, comercio)
+    solicitud = result[:solicitud]
 
-      resultados << {
-        comercio_id: comercio.id,
-        token: solicitud.otp_token
-      }
-    end
-
-    render json: resultados
+    render json: {
+      comercio_id: comercio.id,
+      token: solicitud.otp_token
+    }
   end
 
   private

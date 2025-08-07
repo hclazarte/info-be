@@ -1,5 +1,6 @@
 casos_solicitudes:
-  - email: hclazarte@noexiste.com
+  tr01:
+    email: hclazarte@noexiste.com
     comercio:
       id: 53257
       ciudad_id: 7
@@ -19,8 +20,8 @@ casos_solicitudes:
       documentos_validados: 0
       autorizado: 0
       email_verificado: null
-
-  - email: jackyfukushima@gmail.com
+  tr02:
+    email: jackyfukushima@gmail.com
     comercio:
       id: 53258
       ciudad_id: 44
