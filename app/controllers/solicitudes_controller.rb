@@ -79,6 +79,8 @@ class SolicitudesController < ApplicationController
   end
 
   def preparar_escenario
+    return head :forbidden if Rails.env.production?
+    
     alias_param = params[:alias]
     casos = YAML.load_file(Rails.root.join('config', 'test_data.yml'))['casos_solicitudes']
     caso = casos[alias_param]
@@ -98,9 +100,17 @@ class SolicitudesController < ApplicationController
     result = actualiza_informacion(email, comercio)
     solicitud = result[:solicitud]
 
+    path = ComprobanteTest.generar
+    pdf_base64 = Base64.encode64(File.read(path))
+
     render json: {
       comercio_id: comercio.id,
-      token: solicitud.otp_token
+      token: solicitud.otp_token,
+      comprobante_pdf: {
+        filename: 'comprobante.pdf',
+        content_base64: pdf_base64,
+        mime_type: 'application/pdf'
+      }
     }
   end
 
