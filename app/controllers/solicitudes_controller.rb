@@ -80,38 +80,49 @@ class SolicitudesController < ApplicationController
 
   def preparar_escenario
     return head :forbidden if Rails.env.production?
-    
-    alias_param = params[:alias]
+
+    alias_param = params[:alias].to_s
     casos = YAML.load_file(Rails.root.join('config', 'test_data.yml'))['casos_solicitudes']
     caso = casos[alias_param]
-
     return render json: { error: 'Caso no encontrado' }, status: :not_found unless caso
 
     email = caso['email']
     comercio_attrs = caso['comercio']
     return render json: { error: 'Datos incompletos' }, status: :unprocessable_entity unless email && comercio_attrs
 
+    # Asegurar email coincidente entre comercio y solicitud
+    comercio_attrs = comercio_attrs.merge('email' => email)
+
     comercio = Comercio.find_or_initialize_by(id: comercio_attrs['id'])
     comercio.assign_attributes(comercio_attrs)
     comercio.save!
 
+    # Limpiar solicitudes anteriores de este comercio para que el test sea determinista
     Solicitud.where(comercio_id: comercio.id).delete_all
 
+    # actualiza_informacion debe crear la solicitud y asegurar el email coincidente
     result = actualiza_informacion(email, comercio)
     solicitud = result[:solicitud]
 
-    path = ComprobanteTest.generar
-    pdf_base64 = Base64.encode64(File.read(path))
+    # Sólo tr04 requiere comprobante ya cargado (plan de pago)
+    incluir_comprobante = (alias_param == 'tr04')
 
-    render json: {
+    payload = {
       comercio_id: comercio.id,
-      token: solicitud.otp_token,
-      comprobante_pdf: {
+      token: solicitud.otp_token
+    }
+
+    if incluir_comprobante
+      path = ComprobanteTest.generar
+      pdf_base64 = Base64.encode64(File.read(path))
+      payload[:comprobante_pdf] = {
         filename: 'comprobante.pdf',
         content_base64: pdf_base64,
         mime_type: 'application/pdf'
       }
-    }
+    end
+
+    render json: payload
   end
 
   private

@@ -41,3 +41,67 @@ casos_solicitudes:
       documentos_validados: 0
       autorizado: 0
       email_verificado: null
+  tr03:
+    email: gloriaalcazarleyton@gmail.com
+    comercio:
+      id: 87642
+      ciudad_id: 54
+      zona_id: null
+      zona_nombre: 'CENTRAL'
+      calle_numero: 'AV. BUSCH Nº 50'
+      planta: null
+      numero_local: null
+      telefono1: '9523069'
+      palabras_clave: null
+      telefono2: null
+      telefono_whatsapp: null
+      pagina_web: null
+      servicios: 'VENTA DE MEDICAMENTOS'
+      contacto: 'FARMACEUTICA MAMAN'
+      email: 'gloriaalcazarleyton@gmail.com'
+      documentos_validados: 1
+      autorizado: 0
+      email_verificado: null
+  tr04:
+    email: milton.ortuno@bie.com.bo
+    comercio:
+      id: 18115
+      ciudad_id: 25
+      zona_id: 94
+      zona_nombre: 'BARRIO LINDO'
+      calle_numero: 'C/ TENIENTE RIVERO, ESQUINA CUELLAR Nº 187'
+      planta: null
+      numero_local: null
+      telefono1: null
+      palabras_clave: null
+      telefono2: null
+      telefono_whatsapp: '59172125050'
+      pagina_web: null
+      servicios: 'SERVICIOS MÉDICOS HOSPITALARIOS DE 1ER, 2DO Y 3ER NIVEL.- NEFROLOGÍA (HEMODIÁLISIS, DIÁLISIS PERITONEAL, HEMO FILTRACIÓN, PLASMAFÉRESIS, HEMODIÁLISIS PORTÁTIL).- UROLOGÍA - CARDIOLOGÍA - TERAPIA INTENSIVA ÚTI - CIRUGÍA VASCULAR - NEUROLOGÍA - RADIOLOGÍA (RAYOS X, TOMOGRAFÍA, RADIOTERAPIA, ACELERADOR LINEAL) - MEDICINA CLÍNICA. - PSICOLOGÍA - NUTRICIÓN - LABORATORIOS ANÁLISIS CLÍNICOS. - INVESTIGACIÓN, DESARROLLO Y PRODUCCIÓN BIOQUÍMICA FARMACÉUTICA Y BIOLÓGICA MOLECULAR GENÉTICA. - DESARROLLO'
+      contacto: 'BIOINGENIERIA ESPECIALIZADA SRL BIESRL'
+      email: 'milton.ortuno@bie.com.bo'
+      documentos_validados: 1
+      autorizado: 1
+      email_verificado: null
+      comprobante_pdf: 'BASE64_PDF_AQUI'
+  tr05:
+    email: granicorp016@gmail.com
+    comercio:
+      id: 18036
+      ciudad_id: 24
+      zona_id: 45
+      zona_nombre: 'MUYURINA'
+      calle_numero: 'AVENIDA ANICETO ARCE Nº 611'
+      planta: null
+      numero_local: null
+      telefono1: '4227157'
+      palabras_clave: null
+      telefono2: null
+      telefono_whatsapp: null
+      pagina_web: null
+      servicios: 'EXPORTACION DE CEREALES Y OLEAGINOSAS'
+      contacto: 'GRANICORP'
+      email: 'granicorp016@gmail.com'
+      documentos_validados: 1
+      autorizado: 1
+      email_verificado: null
