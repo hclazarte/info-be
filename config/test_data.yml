@@ -122,4 +122,10 @@ casos_solicitudes:
       nit_ok: true
       ci_ok: true
       nombre: 'Jorge Rojas'
-      
+  tr06:
+    email: tr06.vencido@gmail.com
+    comercio:
+      id: 32184
+    solicitud:
+      estado: documentos_validados
+      otp_expires_at_testdate_offset: "-1h"   # token expirado
