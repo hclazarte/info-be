@@ -90,9 +90,6 @@ class SolicitudesController < ApplicationController
     comercio_attrs = caso['comercio']
     return render json: { error: 'Datos incompletos' }, status: :unprocessable_entity unless email && comercio_attrs
 
-    # Asegurar email coincidente entre comercio y solicitud
-    comercio_attrs = comercio_attrs.merge('email' => email)
-
     comercio = Comercio.find_or_initialize_by(id: comercio_attrs['id'])
     comercio.assign_attributes(comercio_attrs)
     comercio.save!
@@ -100,12 +97,18 @@ class SolicitudesController < ApplicationController
     # Limpiar solicitudes anteriores de este comercio para que el test sea determinista
     Solicitud.where(comercio_id: comercio.id).delete_all
 
-    # actualiza_informacion debe crear la solicitud y asegurar el email coincidente
+    # actualiza_informacion debe crear la solicitud
     result = actualiza_informacion(email, comercio)
     solicitud = result[:solicitud]
 
-    # Sólo tr04 requiere comprobante ya cargado (plan de pago)
-    incluir_comprobante = (alias_param == 'tr04')
+    # aplicar transformaciones de testdata (ej. *_testdate_offset)
+    # no incluir comprobante si se modifica el estado de la solicitud
+    incluir_comprobante = true
+    if caso['solicitud']
+      solicitud_attrs = TestDataGenerator.apply_testdata(caso['solicitud'])
+      solicitud.update!(solicitud_attrs)
+      incluir_comprobante = false
+    end
 
     payload = {
       comercio_id: comercio.id,

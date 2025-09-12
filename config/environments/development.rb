@@ -10,6 +10,9 @@ Rails.application.configure do
     IPAddr.new('172.18.0.0/16')    # red Docker por defecto
   ]
   
+  # Cargar las funciones de soporte de tests
+  config.autoload_paths << Rails.root.join('test/support')
+  
   # Settings specified here will take precedence over those in config/application.rb.
   # In the development environment your application's code is reloaded any time
   # it changes. This slows down response time but is perfect for development

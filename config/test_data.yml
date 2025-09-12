@@ -62,6 +62,12 @@ casos_solicitudes:
       documentos_validados: 1
       autorizado: 0
       email_verificado: null
+    solicitud:
+      estado: documentos_validados
+      otp_expires_at_testdate_offset: "+1h"      # token válido por ahora
+      nit_ok: true
+      ci_ok: true
+      nombre: 'Gloria Alcázar Méndez'
   tr04:
     email: milton.ortuno@bie.com.bo
     comercio:
@@ -83,7 +89,12 @@ casos_solicitudes:
       documentos_validados: 1
       autorizado: 1
       email_verificado: null
-      comprobante_pdf: 'BASE64_PDF_AQUI'
+    solicitud:
+      estado: documentos_validados
+      fecha_fin_servicio_testdate_offset: "+30d"   # plan vigente 30 días más
+      nit_ok: true
+      ci_ok: true
+      nombre: 'Miltón Ortuño'
   tr05:
     email: granicorp016@gmail.com
     comercio:
@@ -105,3 +116,9 @@ casos_solicitudes:
       documentos_validados: 1
       autorizado: 1
       email_verificado: null
+    solicitud:
+      estado: documentos_validados
+      otp_expires_at_testdate_offset: "+1h"      # token válido
+      nit_ok: true
+      ci_ok: true
+      nombre: 'Jorge Rojas'
