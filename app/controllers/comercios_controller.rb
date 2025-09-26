@@ -70,21 +70,30 @@ class ComerciosController < ApplicationController
     solicitud = Solicitud.where(comercio_id: @comercio.id)
                         .order(created_at: :desc).first
 
-    if solicitud&.gratuito?
-      # keys en params que tocan campos protegidos
-      intentados = comercio_params.slice(*Comercio::CAMPOS_DE_PAGO.map(&:to_s)).keys
 
-      if intentados.any?
-        intentados.each do |campo|
-          Rails.logger.warn(
-            "Intento bloqueado de actualización. Modelo=Comercio, Campo=#{campo}, " \
-            "Usuario=#{defined?(Current) ? (Current.user&.id || 'desconocido') : 'desconocido'}, " \
-            "ComercioID=#{@comercio.id}, SolicitudID=#{solicitud&.id}"
-          )
+    if solicitud&.gratuito?
+      # Simula la asignación (sin guardar) para que ActiveRecord marque qué cambiaría
+      @comercio.assign_attributes(comercio_params)
+
+      # Detecta qué campos protegidos REALMENTE cambiarían
+      protegidos = Comercio::CAMPOS_DE_PAGO
+      dirty_protegidos = protegidos.select { |attr| @comercio.will_save_change_to_attribute?(attr) }
+
+      if dirty_protegidos.any?
+        # Log (sin usuario)
+        Rails.logger.warn(
+          "Intento bloqueado de actualización. Modelo=Comercio, Campos=#{dirty_protegidos.join(',')}, " \
+          "ComercioID=#{@comercio.id}, SolicitudID=#{solicitud&.id}"
+        )
+
+        dirty_protegidos.each do |campo|
           @comercio.errors.add(campo, 'no puede ser modificado en plan gratuito')
         end
 
-        render json: { errors: @comercio.errors.full_messages.presence || 
+        # Revierte los cambios en memoria de esos campos para no “contaminar” la instancia
+        @comercio.restore_attributes(dirty_protegidos)
+
+        render json: { errors: @comercio.errors.full_messages.presence ||
                               ['No está permitido actualizar campos de pago en plan gratuito.'] },
               status: :unprocessable_entity and return
       end
