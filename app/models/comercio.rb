@@ -1,4 +1,5 @@
 class Comercio < ApplicationRecord
+  CAMPOS_DE_PAGO = %i[pagina_web telefono_whatsapp servicios].freeze
   # relaciones
   belongs_to :zona, optional: true
   belongs_to :ciudad
@@ -6,6 +7,7 @@ class Comercio < ApplicationRecord
   has_many :whatsapp_chats, dependent: :destroy
 
   scope :activos, -> { where(activo: true, bloqueado: false) }
+
 
   def activo?
     activo && !bloqueado

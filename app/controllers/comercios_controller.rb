@@ -66,6 +66,17 @@ class ComerciosController < ApplicationController
   def update
     was_not_authorized = @comercio.autorizado == 0
   
+    # Verificar si el plan es gratuito
+    solicitud = Solicitud.where(comercio_id: @comercio.id)
+                        .order(created_at: :desc).first
+
+    if solicitud&.gratuito?
+      # Eliminar los campos de pago de los params antes de update
+      Comercio::CAMPOS_DE_PAGO.each do |campo|
+        comercio_params.delete(campo) if comercio_params.key?(campo)
+      end
+    end
+
     if @comercio.update(comercio_params)
       if @comercio.autorizado == 1 && was_not_authorized
         solicitud = Solicitud.where(comercio_id: @comercio.id, email: @comercio.email_verificado).order(created_at: :desc).first

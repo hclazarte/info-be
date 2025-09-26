@@ -17,4 +17,8 @@ class Solicitud < ApplicationRecord
   def email_rebotado?
     email_rebotado == 1
   end
+
+  def gratuito?
+    fecha_fin_servicio.nil? || fecha_fin_servicio < Time.zone.now
+  end
 end
