@@ -71,9 +71,22 @@ class ComerciosController < ApplicationController
                         .order(created_at: :desc).first
 
     if solicitud&.gratuito?
-      # Eliminar los campos de pago de los params antes de update
-      Comercio::CAMPOS_DE_PAGO.each do |campo|
-        comercio_params.delete(campo) if comercio_params.key?(campo)
+      # keys en params que tocan campos protegidos
+      intentados = comercio_params.slice(*Comercio::CAMPOS_DE_PAGO.map(&:to_s)).keys
+
+      if intentados.any?
+        intentados.each do |campo|
+          Rails.logger.warn(
+            "Intento bloqueado de actualización. Modelo=Comercio, Campo=#{campo}, " \
+            "Usuario=#{defined?(Current) ? (Current.user&.id || 'desconocido') : 'desconocido'}, " \
+            "ComercioID=#{@comercio.id}, SolicitudID=#{solicitud&.id}"
+          )
+          @comercio.errors.add(campo, 'no puede ser modificado en plan gratuito')
+        end
+
+        render json: { errors: @comercio.errors.full_messages.presence || 
+                              ['No está permitido actualizar campos de pago en plan gratuito.'] },
+              status: :unprocessable_entity and return
       end
     end
 
