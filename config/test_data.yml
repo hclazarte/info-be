@@ -1,5 +1,7 @@
 casos_solicitudes:
   tr01:
+    comprobante: true
+    delete_comercio: false
     email: hclazarte@noexiste.com
     comercio:
       id: 53257
@@ -21,6 +23,8 @@ casos_solicitudes:
       autorizado: 0
       email_verificado: null
   tr02:
+    comprobante: true
+    delete_comercio: false
     email: jackyfukushima@gmail.com
     comercio:
       id: 53258
@@ -42,6 +46,8 @@ casos_solicitudes:
       autorizado: 0
       email_verificado: null
   tr03:
+    comprobante: false
+    delete_comercio: false
     email: gloriaalcazarleyton@gmail.com
     comercio:
       id: 87642
@@ -69,6 +75,8 @@ casos_solicitudes:
       ci_ok: true
       nombre: 'Gloria Alcázar Méndez'
   tr04:
+    comprobante: false
+    delete_comercio: false
     email: milton.ortuno@bie.com.bo
     comercio:
       id: 18115
@@ -96,6 +104,8 @@ casos_solicitudes:
       ci_ok: true
       nombre: 'Miltón Ortuño'
   tr05:
+    comprobante: false
+    delete_comercio: false
     email: granicorp016@gmail.com
     comercio:
       id: 18036
@@ -123,9 +133,34 @@ casos_solicitudes:
       ci_ok: true
       nombre: 'Jorge Rojas'
   tr06:
+    comprobante: false
+    delete_comercio: false
     email: tr06.vencido@gmail.com
     comercio:
       id: 32184
     solicitud:
       estado: documentos_validados
       otp_expires_at_testdate_offset: "-1h"   # token expirado
+  tr07:
+    comprobante: true
+    delete_comercio: true
+    email: hectorlazarte@yahoo.com.mx
+    comercio:
+        id: 1
+        calle_numero: "Av. Murillo N° 1234"
+        empresa: "TIENDA DON TOLERAS"
+        observacion: "PLATAFORMA"
+        ciudad_id: 7
+        persona_natural: 0
+        documentos_validados: 1
+        activo: 1
+        fecha_registro_testdate_offset: "+0d"
+        fecha_encuesta_testdate_offset: "+0d"
+    solicitud:
+        email: "hectorlazarte@yahoo.com.mx"
+        comercio_id: 1
+        estado: 1
+        nit_ok: 1
+        ci_ok: 1
+        email_rebotado: 0
+        intentos: 0

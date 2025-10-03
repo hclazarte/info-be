@@ -87,27 +87,40 @@ class SolicitudesController < ApplicationController
     return render json: { error: 'Caso no encontrado' }, status: :not_found unless caso
 
     email = caso['email']
-    comercio_attrs = caso['comercio']
-    return render json: { error: 'Datos incompletos' }, status: :unprocessable_entity unless email && comercio_attrs
+    comercio_input = caso['comercio']
+    return render json: { error: 'Datos incompletos' }, status: :unprocessable_entity unless email && comercio_input
+    
+    solicitud = caso['solicitud']
+    comprobante = if caso.key?('comprobante') 
+                    !!caso['comprobante']     
+                  else
+                    false
+                  end
+    delete_comercio = if caso.key?('delete_comercio') 
+                        !!caso['delete_comercio']     
+                      else
+                        false
+                      end
 
-    comercio = Comercio.find_or_initialize_by(id: comercio_attrs['id'])
-    comercio.assign_attributes(comercio_attrs)
-    comercio.save!
+    comercio_attrs = TestDataGenerator.apply_testdata(comercio_input).with_indifferent_access
 
-    # Limpiar solicitudes anteriores de este comercio para que el test sea determinista
-    Solicitud.where(comercio_id: comercio.id).delete_all
+    Solicitud.where(comercio_id: comercio_attrs[:id]).delete_all
 
-    # actualiza_informacion debe crear la solicitud
+    if delete_comercio
+      Comercio.where(id: comercio_attrs[:id]).delete_all
+      comercio = Comercio.create!(comercio_attrs)
+    else
+      comercio = Comercio.find_or_initialize_by(id: comercio_attrs['id'])
+      comercio.assign_attributes(comercio_attrs)
+      comercio.save!
+    end
+
     result = actualiza_informacion(email, comercio)
     solicitud = result[:solicitud]
 
-    # aplicar transformaciones de testdata (ej. *_testdate_offset)
-    # no incluir comprobante si se modifica el estado de la solicitud
-    incluir_comprobante = true
     if caso['solicitud']
-      solicitud_attrs = TestDataGenerator.apply_testdata(caso['solicitud'])
+      solicitud_attrs = TestDataGenerator.apply_testdata(caso['solicitud']).with_indifferent_access
       solicitud.update!(solicitud_attrs)
-      incluir_comprobante = false
     end
 
     payload = {
@@ -115,7 +128,7 @@ class SolicitudesController < ApplicationController
       token: solicitud.otp_token
     }
 
-    if incluir_comprobante
+    if comprobante
       path = ComprobanteTest.generar
       pdf_base64 = Base64.encode64(File.read(path))
       payload[:comprobante_pdf] = {
