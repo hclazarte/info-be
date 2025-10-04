@@ -65,6 +65,10 @@ class ComerciosController < ApplicationController
 
   def update
     was_not_authorized = @comercio.autorizado == 0
+    
+    if params[:comercio].is_a?(ActionController::Parameters)
+      params[:comercio] = params[:comercio].except(:id, :empresa, :seprec)
+    end
   
     # Verificar si el plan es gratuito
     solicitud = Solicitud.where(comercio_id: @comercio.id)
@@ -99,7 +103,6 @@ class ComerciosController < ApplicationController
       end
     end
 
-    params[:comercio]&.except!(:id, :empresa, :seprec)
     if @comercio.update(comercio_params)
       if @comercio.autorizado == 1 && was_not_authorized
         solicitud = Solicitud.where(comercio_id: @comercio.id, email: @comercio.email_verificado).order(created_at: :desc).first
