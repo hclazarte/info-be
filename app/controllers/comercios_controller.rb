@@ -99,6 +99,7 @@ class ComerciosController < ApplicationController
       end
     end
 
+    params[:comercio]&.except!(:id, :empresa, :seprec)
     if @comercio.update(comercio_params)
       if @comercio.autorizado == 1 && was_not_authorized
         solicitud = Solicitud.where(comercio_id: @comercio.id, email: @comercio.email_verificado).order(created_at: :desc).first
@@ -151,7 +152,7 @@ class ComerciosController < ApplicationController
         empresa: empresa,
         nit: nit,
         email: email,
-        email_verificado: nil,
+        email_verificado: email,
         fecha_registro: Date.today,
         fecha_encuesta: Date.today,
         observacion: 'PLATAFORMA',

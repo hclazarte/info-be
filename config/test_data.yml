@@ -154,6 +154,8 @@ casos_solicitudes:
         persona_natural: 0
         documentos_validados: 1
         activo: 1
+        email: hectorlazarte@yahoo.com.mx
+        email_verificado: hectorlazarte@yahoo.com.mx
         fecha_registro_testdate_offset: "+0d"
         fecha_encuesta_testdate_offset: "+0d"
     solicitud:
