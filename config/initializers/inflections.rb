@@ -20,4 +20,5 @@ ActiveSupport::Inflector.inflections(:es) do |inflect|
   inflect.irregular 'solicitud', 'solicitudes'
   inflect.irregular 'email_bloqueado', 'emails_bloqueados'
   inflect.irregular 'correo_usuario', 'correos_usuarios'
+  inflect.irregular 'promotor', 'promotores'
 end
