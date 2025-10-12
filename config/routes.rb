@@ -53,5 +53,8 @@ Rails.application.routes.draw do
     
     # Log CLicks
     resources :log_clics, only: [:create]
+
+    # Promotores
+    resources :promotores, only: [:create]
   end
 end
