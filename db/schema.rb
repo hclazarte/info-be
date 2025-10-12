@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_07_19_133832) do
+ActiveRecord::Schema[7.0].define(version: 2025_10_12_203153) do
   create_table "campania_propietarios_emails", force: :cascade do |t|
     t.integer "comercio_id", limit: 19, precision: 19, null: false
     t.string "email", null: false
@@ -182,6 +182,16 @@ ActiveRecord::Schema[7.0].define(version: 2025_07_19_133832) do
   end
 
   add_context_index "padron", ["pad_descr"], name: "textindex_pad"
+
+  create_table "promotores", force: :cascade do |t|
+    t.string "nombre", null: false
+    t.string "email", null: false
+    t.string "telefono", null: false
+    t.integer "estado", precision: 38, default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_promotores_on_email", unique: true
+  end
 
   create_table "solicitudes", force: :cascade do |t|
     t.string "email", null: false
