@@ -26,6 +26,7 @@ class PromotoresController < ApplicationController
     promotor.estado ||= :solicitado
 
     if promotor.save
+      PromotorMailer.informativo(promotor).deliver_later
       render json: {
         id: promotor.id,
         promotor: promotor.as_json(only: [:id, :nombre, :email, :telefono, :estado, :created_at, :updated_at])
