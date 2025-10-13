@@ -8,8 +8,8 @@ class PromotoresController < ApplicationController
     if existing
       if existing.solicitado?
         # Actualiza solo los campos editables desde la solicitud
-        PromotorMailer.informativo(promotor).deliver_later
         if existing.update(promotor_params.slice(:nombre, :telefono))
+          PromotorMailer.informativo(existing).deliver_later
           render json: {
             id: existing.id,
             promotor: existing.as_json(only: [:id, :nombre, :email, :telefono, :estado, :created_at, :updated_at])
