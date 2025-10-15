@@ -43,6 +43,7 @@ Rails.application.routes.draw do
 
     # Correos Usuarios
     resources :correos_usuarios, only: [:create]
+    post '/correos/enviar', to: 'correos#enviar'
 
     # Webhook para WhatsApp
     get  'webhooks/whatsapp', to: 'webhooks/whatsapp#verify'
