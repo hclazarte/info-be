@@ -2,8 +2,9 @@
 # frozen_string_literal: true
 
 class KeywordsController < ApplicationController
-  # No auth: la interfaz está protegida por OTP_TOKEN en el front.
-  # Forzamos JSON en respuesta.
+  include RecaptchaVerifiable
+
+  before_action :verify_recaptcha, only: :suggest
 
   def sugerir
     payload = sugerir_params
@@ -24,12 +25,17 @@ class KeywordsController < ApplicationController
 
   private
 
-  # Permitimos los campos conocidos y dejamos pasar extras sin romper (por compatibilidad)
+  # Permitimos campos del payload y el token de reCAPTCHA
   def sugerir_params
     params.permit(
-      :negocio, :rubro,
+      :negocio, :rubro, :recaptcha_token,
       tipo: [], top_servicios: [], promocionar_ahora: [], marcas: [],
       ubicacion: [], diferenciadores: [], publico_objetivo: []
-    ).to_h
+    ).to_h.except("recaptcha_token") # el token NO se pasa al servicio
+  end
+
+  # Si tu concern usa client_ip, garantizamos su existencia aquí
+  def client_ip
+    request.remote_ip.to_s
   end
 end
