@@ -87,3 +87,5 @@ gem 'rtesseract'
 gem 'jwt'
 
 gem 'rubocop', '~> 1.75', group: :development
+
+gem "openai", "~> 0.34"

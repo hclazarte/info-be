@@ -57,5 +57,8 @@ Rails.application.routes.draw do
 
     # Promotores
     resources :promotores, only: [:create]
+
+    # Sugerrencia de Keywords
+    post "keywords/sugerir", to: "keywords#sugerir"
   end
 end
