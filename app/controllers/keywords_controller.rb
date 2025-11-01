@@ -2,12 +2,17 @@
 # frozen_string_literal: true
 
 class KeywordsController < ApplicationController
-  include RecaptchaVerifiable
-
-  before_action :verify_recaptcha, only: :suggest
 
   def sugerir
     payload = sugerir_params
+
+    # Guardar el JSON exacto del payload en el comercio (opcional)
+    if params[:comercio_id].present?
+      if (comercio = Comercio.find_by(id: params[:comercio_id]))
+        comercio.update!(wizard_payload: payload.to_json)
+      end
+    end
+
     result  = SugerirKeywordsService.call(payload, model: :"gpt-4.1-mini")
 
     render json: {
@@ -19,23 +24,25 @@ class KeywordsController < ApplicationController
     render json: { message: e.message }, status: :service_unavailable
   rescue SugerirKeywordsService::ProviderError => e
     render json: { message: e.message, retry_after: 10 }, status: :service_unavailable
-  rescue ActionController::ParameterMissing => e
-    render json: { errors: [{ field: e.param, message: "obligatorio" }] }, status: :unprocessable_entity
+  rescue ActiveRecord::RecordInvalid => e
+    render json: { message: "No se pudo guardar wizard_payload: #{e.message}" }, status: :unprocessable_entity
   end
 
   private
 
-  # Permitimos campos del payload y el token de reCAPTCHA
+  # Ahora SOLO permitimos empresa/servicios + el resto. Se quitan :negocio y :rubro.
   def sugerir_params
     params.permit(
-      :negocio, :rubro, :recaptcha_token,
-      tipo: [], top_servicios: [], promocionar_ahora: [], marcas: [],
-      ubicacion: [], diferenciadores: [], publico_objetivo: []
-    ).to_h.except("recaptcha_token") # el token NO se pasa al servicio
-  end
-
-  # Si tu concern usa client_ip, garantizamos su existencia aquí
-  def client_ip
-    request.remote_ip.to_s
+      :empresa,          # String (antes "negocio")
+      :servicios,        # String (antes "rubro"; corresponde al campo visible SERVICIOS)
+      :comercio_id,      # opcional, para guardar wizard_payload
+      tipo: [],
+      top_servicios: [],
+      promocionar_ahora: [],
+      marcas: [],
+      ubicacion: [],
+      diferenciadores: [],
+      publico_objetivo: []
+    ).to_h.except("comercio_id") # al servicio NO le pasamos el id
   end
 end
