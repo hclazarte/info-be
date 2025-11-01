@@ -33,37 +33,61 @@ class SolicitudesController < ApplicationController
 
   def buscar_por_token
     solicitud = Solicitud.includes(:comercio)
-                         .find_by(otp_token: params[:token])
+                        .find_by(otp_token: params[:token])
 
     if solicitud&.otp_expires_at && solicitud.otp_expires_at.future?
+      comercio = solicitud.comercio
+
+      comercio_json = if comercio
+        # Construye el JSON base del comercio con los campos actuales
+        base = comercio.as_json(only: %i[
+          id
+          latitud
+          longitud
+          zona_nombre
+          calle_numero
+          planta
+          numero_local
+          telefono1
+          telefono2
+          telefono_whatsapp
+          horario
+          empresa
+          email
+          pagina_web
+          servicios
+          contacto
+          palabras_clave
+          bloqueado
+          activo
+          nit
+          ciudad_id
+          zona_id
+          documentos_validados
+          autorizado
+        ])
+
+        # Añade bandera seprec
+        base.merge!(seprec: comercio.seprec?)
+
+        # Añade wizard_payload, parseando si viene como String
+        wp = comercio.wizard_payload
+        if wp.is_a?(String)
+          begin
+            base[:wizard_payload] = JSON.parse(wp)
+          rescue JSON::ParserError
+            base[:wizard_payload] = wp # deja el string si no parsea
+          end
+        else
+          base[:wizard_payload] = wp # ya puede ser Hash/Array/nil si hay cast en el modelo
+        end
+
+        base
+      end
+
       render json: {
         solicitud: solicitud.as_json(only: %i[id email nombre estado ci_ok nit_ok fecha_fin_servicio]),
-        comercio: solicitud.comercio&.as_json(only: %i[
-                                                id
-                                                latitud
-                                                longitud
-                                                zona_nombre
-                                                calle_numero
-                                                planta
-                                                numero_local
-                                                telefono1
-                                                telefono2
-                                                telefono_whatsapp
-                                                horario
-                                                empresa
-                                                email
-                                                pagina_web
-                                                servicios
-                                                contacto
-                                                palabras_clave
-                                                bloqueado
-                                                activo
-                                                nit
-                                                ciudad_id
-                                                zona_id
-                                                documentos_validados
-                                                autorizado
-                                              ]).merge(seprec: solicitud.comercio.seprec?)
+        comercio: comercio_json
       }
     else
       render json: { error: 'Token inválido o expirado' }, status: :not_found
