@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_11_01_141044) do
+ActiveRecord::Schema[7.0].define(version: 2025_11_01_183606) do
   create_table "campania_propietarios_emails", force: :cascade do |t|
     t.integer "comercio_id", limit: 19, precision: 19, null: false
     t.string "email", null: false
@@ -61,7 +61,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_11_01_141044) do
     t.string "ofertas", limit: 600
     t.binary "logo"
     t.string "contacto", limit: 100
-    t.string "palabras_clave", limit: 500
+    t.string "palabras_clave", limit: 2000
     t.boolean "bloqueado", default: false, null: false
     t.boolean "activo", default: true, null: false
     t.integer "seprec", precision: 38
