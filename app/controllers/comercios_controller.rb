@@ -65,36 +65,37 @@ class ComerciosController < ApplicationController
 
   def update
     was_not_authorized = @comercio.autorizado == 0
-    
+
     if params[:comercio].is_a?(ActionController::Parameters)
       params[:comercio] = params[:comercio].except(:id, :empresa, :seprec)
     end
-  
-    # Verificar si el plan es gratuito
-    solicitud = Solicitud.where(comercio_id: @comercio.id)
-                        .order(created_at: :desc).first
 
+    # === Normalización de wizard_payload ===
+    if params[:comercio].is_a?(ActionController::Parameters) && params[:comercio].key?(:wizard_payload)
+      wp = params[:comercio][:wizard_payload]
+      unless wp.is_a?(String)
+        wp = (wp.respond_to?(:to_unsafe_h) ? wp.to_unsafe_h : wp)
+        # wp = wp.to_json  # <-- activa si tu modelo NO castea JSON
+      end
+      params[:comercio][:wizard_payload] = wp
+    end
+    # === fin normalización ===
+
+    solicitud = Solicitud.where(comercio_id: @comercio.id).order(created_at: :desc).first
 
     if solicitud&.gratuito?
-      # Simula la asignación (sin guardar) para que ActiveRecord marque qué cambiaría
       @comercio.assign_attributes(comercio_params)
 
-      # Detecta qué campos protegidos REALMENTE cambiarían
-      protegidos = Comercio::CAMPOS_DE_PAGO
+      protegidos = (Comercio::CAMPOS_DE_PAGO - [:wizard_payload])
       dirty_protegidos = protegidos.select { |attr| @comercio.will_save_change_to_attribute?(attr) }
 
       if dirty_protegidos.any?
-        # Log (sin usuario)
         Rails.logger.warn(
           "Intento bloqueado de actualización. Modelo=Comercio, Campos=#{dirty_protegidos.join(',')}, " \
           "ComercioID=#{@comercio.id}, SolicitudID=#{solicitud&.id}"
         )
 
-        dirty_protegidos.each do |campo|
-          @comercio.errors.add(campo, 'no puede ser modificado en plan gratuito')
-        end
-
-        # Revierte los cambios en memoria de esos campos para no “contaminar” la instancia
+        dirty_protegidos.each { |campo| @comercio.errors.add(campo, 'no puede ser modificado en plan gratuito') }
         @comercio.restore_attributes(dirty_protegidos)
 
         render json: { errors: @comercio.errors.full_messages.presence ||
@@ -109,11 +110,10 @@ class ComerciosController < ApplicationController
         unless solicitud
           render json: { errors: ['No se encontró una solicitud válida para habilitar el comercio.'] }, status: :unprocessable_entity and return
         end
-  
         solicitud.estado = :comercio_habilitado
         solicitud.save
       end
-  
+
       render json: { message: 'Comercio actualizado correctamente' }
     else
       render json: { errors: @comercio.errors.full_messages }, status: :unprocessable_entity
@@ -200,7 +200,7 @@ class ComerciosController < ApplicationController
       :telefono1, :telefono2, :telefono_whatsapp, :email, :pagina_web, :servicios,
       :contacto, :palabras_clave, :bloqueado, :activo, :horario, :latitud, :longitud,
       :zona_nombre, :calle_numero, :planta, :numero_local, :nit, :ciudad_id, :zona_id,
-      :autorizado, :documentos_validados
+      :autorizado, :documentos_validados, :wizard_payload
     )
   end
   

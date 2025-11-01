@@ -7,7 +7,7 @@ class Comercio < ApplicationRecord
   has_many :whatsapp_chats, dependent: :destroy
 
   scope :activos, -> { where(activo: true, bloqueado: false) }
-
+  attribute :wizard_payload, :json
 
   def activo?
     activo && !bloqueado
