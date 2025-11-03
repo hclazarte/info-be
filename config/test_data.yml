@@ -13,6 +13,7 @@ casos_solicitudes:
       numero_local: null
       telefono1: null
       palabras_clave: null
+      ofertas: null
       telefono2: null
       telefono_whatsapp: '59170513586'
       pagina_web: null
@@ -36,6 +37,7 @@ casos_solicitudes:
       numero_local: null
       telefono1: null
       palabras_clave: null
+      ofertas: null
       telefono2: null
       telefono_whatsapp: '59172300013'
       pagina_web: null
@@ -59,6 +61,7 @@ casos_solicitudes:
       numero_local: null
       telefono1: '9523069'
       palabras_clave: null
+      ofertas: null
       telefono2: null
       telefono_whatsapp: null
       pagina_web: null
@@ -88,6 +91,7 @@ casos_solicitudes:
       numero_local: null
       telefono1: null
       palabras_clave: null
+      ofertas: null
       telefono2: null
       telefono_whatsapp: '59172125050'
       pagina_web: null
@@ -117,6 +121,7 @@ casos_solicitudes:
       numero_local: null
       telefono1: '4227157'
       palabras_clave: null
+      ofertas: null
       telefono2: null
       telefono_whatsapp: null
       pagina_web: null

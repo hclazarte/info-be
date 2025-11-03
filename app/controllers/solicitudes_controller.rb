@@ -58,6 +58,7 @@ class SolicitudesController < ApplicationController
           servicios
           contacto
           palabras_clave
+          ofertas
           bloqueado
           activo
           nit
