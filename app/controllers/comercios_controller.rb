@@ -198,7 +198,7 @@ class ComerciosController < ApplicationController
   def comercio_params
     params.require(:comercio).permit(
       :telefono1, :telefono2, :telefono_whatsapp, :email, :pagina_web, :servicios,
-      :contacto, :palabras_clave, :bloqueado, :activo, :horario, :latitud, :longitud,
+      :contacto, :palabras_clave, :ofertas, :bloqueado, :activo, :horario, :latitud, :longitud,
       :zona_nombre, :calle_numero, :planta, :numero_local, :nit, :ciudad_id, :zona_id,
       :autorizado, :documentos_validados, :wizard_payload
     )
