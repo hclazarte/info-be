@@ -14,33 +14,38 @@ require 'action_view/railtie'
 require 'action_cable/engine'
 require 'rails/test_unit/railtie'
 
-# Require the gems listed in Gemfile, including any gems
-# you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
 module Info
   class Application < Rails::Application
-    # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.0
-
-    # Configuration for the application, engines, and railties goes here.
-    #
-    # These settings can be overridden in specific environments using the files
-    # in config/environments, which are processed later.
-    #
-    # config.time_zone = "Central Time (US & Canada)"
-    # config.eager_load_paths << Rails.root.join("extras")
-    config.time_zone = 'America/La_Paz'          # lectura / presentación
+    config.time_zone = 'America/La_Paz'
     config.active_job.queue_adapter = :sidekiq
   end
 end
 
+# CORS para DEVELOPMENT
 if Rails.env.development?
   Rails.application.config.middleware.insert_before 0, Rack::Cors do
     allow do
-      origins 'http://localhost:3001', 'http://localhost:5173','https://geosoft.website'
+      origins 'http://localhost:3001',
+              'http://localhost:5173',
+              'https://geosoft.website'
 
-      resource '*', # Permitir todos los endpoints
+      resource '*',
+               headers: :any,
+               methods: %i[get post put patch delete options head]
+    end
+  end
+end
+
+# CORS para PRODUCTION
+if Rails.env.production?
+  Rails.application.config.middleware.insert_before 0, Rack::Cors do
+    allow do
+      origins 'https://geosoft.website'
+
+      resource '*',
                headers: :any,
                methods: %i[get post put patch delete options head]
     end
@@ -50,7 +55,7 @@ end
 Sidekiq.configure_server do |config|
   if Rails.env.production?
   end
-  redis_url = 'redis://redis:6379/0'
 
+  redis_url = 'redis://redis:6379/0'
   config.redis = { url: redis_url }
 end
