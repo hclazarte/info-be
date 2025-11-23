@@ -10,4 +10,9 @@ class CorreoUsuario < ApplicationRecord
   validates :asunto, presence: true
   validates :cuerpo, presence: true
   validates :intentos, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
+
+  # Validación exacta para celular boliviano de 8 dígitos
+  validates :numero_celular,
+            allow_nil: true,
+            format: { with: /\A[0-9]{8}\z/, message: "debe tener exactamente 8 dígitos" }
 end

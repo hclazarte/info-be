@@ -30,6 +30,13 @@ class CorreosUsuariosController < ApplicationController
   private
 
   def correo_params
-    params.require(:correos_usuario).permit(:nombre, :remitente, :asunto, :cuerpo, :comercio_id)
+    params.require(:correos_usuario).permit(
+      :nombre,
+      :remitente,
+      :asunto,
+      :cuerpo,
+      :comercio_id,
+      :numero_celular
+    )
   end
 end
