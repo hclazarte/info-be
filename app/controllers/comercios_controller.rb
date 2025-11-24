@@ -34,8 +34,8 @@ class ComerciosController < ApplicationController
 
     base_scope = ComercioFilterService
                   .new(ciudad_id: params[:ciudad_id],
-                        zona_id:   params[:zona_id],
-                        text:      params[:text])
+                      zona_id:   params[:zona_id],
+                      text:      params[:text])
                   .call
 
     total_count = base_scope.count
@@ -43,14 +43,18 @@ class ComerciosController < ApplicationController
     resultados = base_scope
                   .select(:id, :latitud, :longitud, :zona_nombre, :calle_numero,
                           :empresa, :servicios, :telefono1, :telefono2, :telefono_whatsapp,
-                          :whatsapp_verificado, :autorizado, :email_verificado)
+                          :whatsapp_verificado, :autorizado, :email_verificado,
+                          :ciudad_id)
                   .offset(offset)
                   .limit(per_page)
                   .map do |comercio|
-                    comercio.as_json(only: [:id, :latitud, :longitud, :zona_nombre,
-                                            :calle_numero, :empresa, :servicios,
-                                            :telefono1, :telefono2, :telefono_whatsapp, :whatsapp_verificado,
-                                            :autorizado]).merge(
+                    comercio.as_json(only: [
+                      :id, :latitud, :longitud, :zona_nombre,
+                      :calle_numero, :empresa, :servicios,
+                      :telefono1, :telefono2, :telefono_whatsapp,
+                      :whatsapp_verificado, :autorizado,
+                      :ciudad_id
+                    ]).merge(
                       email_verificado: comercio.email_verificado.present?
                     )
                   end
