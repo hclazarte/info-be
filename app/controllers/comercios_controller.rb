@@ -44,7 +44,7 @@ class ComerciosController < ApplicationController
                   .select(:id, :latitud, :longitud, :zona_nombre, :calle_numero,
                           :empresa, :servicios, :telefono1, :telefono2, :telefono_whatsapp,
                           :whatsapp_verificado, :autorizado, :email_verificado,
-                          :ciudad_id)
+                          :ciudad_id, :pagina_web)
                   .offset(offset)
                   .limit(per_page)
                   .map do |comercio|
@@ -53,7 +53,7 @@ class ComerciosController < ApplicationController
                       :calle_numero, :empresa, :servicios,
                       :telefono1, :telefono2, :telefono_whatsapp,
                       :whatsapp_verificado, :autorizado,
-                      :ciudad_id
+                      :ciudad_id, :pagina_web
                     ]).merge(
                       email_verificado: comercio.email_verificado.present?
                     )
