@@ -41,8 +41,15 @@ namespace :campania_geosoft do
     scope.find_each do |registro|
       begin
         puts "Enviando correo a #{registro.email} (Comercio ID #{registro.comercio_id})"
-        GeosoftCampaignMailer.campania_propietario(registro).deliver_later
+        EmailProtegido.deliver_later(
+          GeosoftCampaignMailer,
+          :campania_propietario,
+          registro
+        )
         enviados += 1
+      rescue EmailProtegido::EmailBloqueadoError => e
+        errores += 1
+        puts e.message
       rescue StandardError => e
         errores += 1
 
