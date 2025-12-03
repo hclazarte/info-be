@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+  </head>
+  <body>
+    <p>Estimado propietario de <strong><%= @nombre_comercio %></strong>,</p>
+
+    <p>
+      Geosoft se especializa en ayudar a empresas como la suya a mejorar su
+      presencia digital y la gestión de su infraestructura tecnológica.
+    </p>
+
+    <p>
+      A partir de la información que hemos recopilado en la encuesta realizada
+      a su comercio, hemos identificado oportunidades para optimizar:
+    </p>
+
+    <ul>
+      <li>La presencia de su negocio en Internet.</li>
+      <li>La velocidad y estabilidad de su red de datos.</li>
+      <li>La seguridad y confiabilidad de sus servicios en línea.</li>
+      <li>La administración de sus correos corporativos y hosting.</li>
+      <li>El desarrollo de sistemas o soluciones personalizadas si su negocio lo requiere.</li>
+    </ul>
+
+    <p>
+      En Geosoft podemos ofrecerle, entre otros servicios:
+    </p>
+
+    <ul>
+      <li>Diseño y publicación de sitios web administrados.</li>
+      <li>Configuración y administración de correos corporativos.</li>
+      <li>Implementación de soluciones de red y cableado estructurado.</li>
+      <li>Acompañamiento técnico para mantener sus servicios operativos.</li>
+      <li>Desarrollo de sistemas y soluciones de software a medida para su negocio.</li>
+    </ul>
+
+    <p>
+      Nos gustaría coordinar una breve reunión para presentarle una propuesta
+      ajustada a las necesidades de <strong><%= @nombre_comercio %></strong>.
+    </p>
+
+    <p>
+      Si está interesado, por favor responda a este correo indicando su
+      disponibilidad, o bien contáctenos a través de los siguientes medios:
+    </p>
+
+    <p>
+      Sitio web: <a href="https://geosoft.website" target="_blank">https://geosoft.website</a><br />
+      Contacto web: <a href="https://geosoft.website/#contacto" target="_blank">Contacto</a><br />      
+      Correo: <a href="mailto:consultas@geosoft.website">consultas@geosoft.website</a><br />
+      Teléfono: +591 69722903 <br />
+      WhatsApp: <a href="https://wa.me/59170513586" target="_blank">https://wa.me/59170513586</a>
+    </p>
+
+    <p>
+      Atentamente,<br />
+      <strong>Equipo Geosoft</strong>
+    </p>
+
+    <!-- Enlace para cancelar suscripción -->
+    <p style="font-size: 12px; color: #777; margin-top: 30px;">
+      ¿No deseas recibir más correos? 
+      <a href="<%= unsubscribe_url(@campania.email) %>" style="color: #555;">
+        Haz clic aquí para cancelar la suscripción
+      </a>.
+    </p>
+  </body>
+</html>
