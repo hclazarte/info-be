@@ -1,6 +1,7 @@
 class GeosoftCampaignMailer < ApplicationMailer
   helper :unsub
   default from: "campanias@geosoft.website"
+  default bcc: "geosoft.internacional@gmail.com"
 
   def campania_propietario(campania_propietarios_email)
     @campania = campania_propietarios_email
