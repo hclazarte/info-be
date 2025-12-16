@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_11_23_213039) do
+ActiveRecord::Schema[7.0].define(version: 2025_12_16_202140) do
   create_table "campania_propietarios_emails", force: :cascade do |t|
     t.integer "comercio_id", limit: 19, precision: 19, null: false
     t.string "email", null: false
@@ -80,6 +80,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_11_23_213039) do
     t.boolean "whatsapp_verificado", default: true, null: false
     t.datetime "whatsapp_fecha_autorizado"
     t.text "wizard_payload"
+    t.string "tipo_unidad_economica"
     t.index ["\"AUTORIZADO\"", "\"ID\""], name: "idx_comercios_autorizado_id"
     t.index ["ciudad_id"], name: "index_comercios_on_ciudad_id"
   end
