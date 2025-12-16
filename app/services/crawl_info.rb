@@ -94,6 +94,7 @@ class CrawlInfo
     comercio.fecha_encuesta = DateTime.parse(empresa_data.dig('datos', 'fechaInscripcion'))
     comercio.zona_nombre = format_zona(empresa_data)
     comercio.fundempresa = empresa_data.dig('datos', 'matriculaAnterior')
+    comercio.tipo_unidad_economica = empresa_data.dig('datos', 'tipoUnidadEconomica', 'descripcion')
     # comercio.numero_comercio
     comercio.calle_numero = "#{empresa_data.dig('datos', 'direccion', 'nombreVia')} Nº #{format_numero(empresa_data)}"
     # comercio.planta = empresa_data.dig("datos", "direccion", "piso")
